@@ -1,0 +1,89 @@
+/* CSS styles used in the shiny app */
+
+/* to avoid red text error messages in the whole app, take out for testing*/
+.shiny-output-error { visibility: hidden; }
+.shiny-output-error:before { visibility: hidden; }
+
+/* Style sidebars/well panels */
+.well {
+  background-color:#ffffff; 
+  border: 0 solid #336699;
+  padding: 5px; 
+  box-shadow: none; 
+  
+}
+
+
+
+
+/* NAVIGATION BAR/HEADER */
+  
+/* Changes colour of Navigation bar to dark blue like the tableau dashboard */  
+.navbar-default {
+  background-color: #336699; 
+  
+}  
+       
+/* Creates a white background for the image and rounded edges */
+.navbar-brand, .navbar-default:hover .navbar-brand:hover {
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 0 0 5px 0;
+  
+}
+
+/* Changes font to white in nav bar */
+.navbar-default .navbar-nav > li > a {
+  color: #ffffff;
+  
+}
+
+/* Changes colour of active (clicked) tab on the nav bar and adds rounded corners */
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:hover {
+  color: #ffffff; 
+  background-color: #336699;
+  border-radius: 10px 10px 0 0;
+  
+}
+
+/* Style the tab when hovered over */
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+  color: #ffffff;     
+  background-color: #336681;
+  border-radius: 10px 10px 0 0;
+  
+}
+
+
+
+
+/* INFO BUTTONS */
+
+/* Change the buttons to light blue background with dark blue font - must go above the radio button styling otherwise it is overridden */
+.btn:not(.dropdown-toggle):not(.btn-primary):not(.bs-select-all):not(.bs-deselect-all) {
+  margin: 0;
+  font-weight: bold;
+  background-color: #E6F2FB;
+  color: #0078D4;
+  border-color: #B3D7F2;
+  
+}
+
+
+/* FILTERS */
+
+/* this adds light purple background behind the title of the data type selectors */
+.form-group {
+  margin-bottom: 5px;
+  background-color: #ECEBF3;
+  border-radius: 10px;
+} 
+
+
+/* this adds a light purple shading to behind the drop-down boxes to make them standout */
+  .shiny-input-container:not(.shiny-input-container-inline):not(.shiny-input-radiogroup){
+    width: auto;
+    background-color: #ECEBF3;
+    padding:5px 5px 0 5px ;
+    border-radius: 10px;
+  } 
