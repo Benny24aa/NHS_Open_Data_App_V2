@@ -1,10 +1,11 @@
 #################################
-source("UI/Information UI.R"
+source("UI/Information UI.R")
+source("UI/Cancer/Cancer Information UI.R"
 )# Sourcing in Information Tab from different script
 source("UI/Reference File Download.R")
-source("UI/Cancer Data Download.R")
-source("UI/Mortality and Incidence UI.R")
-source("UI/Mortality and Incidence Health Board Comparison.R")
+source("UI/Cancer/Cancer Data Download.R")
+source("UI/Cancer/Mortality and Incidence UI.R")
+source("UI/Cancer/Mortality and Incidence Health Board Comparison.R")
 #################################
 navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
                               href= "",
@@ -15,10 +16,9 @@ navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
                               HTML("<html lang='en'>")),
            
            ##### Tab Panels
-           information, ### basic information/home page
-           Cancer_Mortality_Incidence,
-           Cancer_Mortality_Incidence_Comparison,
-           navbarMenu("Download Data", reference_file_download, cancer_data_download)
+           information,
+           navbarMenu("Cancer",cancer_information, Cancer_Mortality_Incidence, Cancer_Mortality_Incidence_Comparison, cancer_data_download),
+           navbarMenu("Download Data", reference_file_download)
 
            
            
