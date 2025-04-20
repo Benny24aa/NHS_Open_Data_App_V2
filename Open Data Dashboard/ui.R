@@ -5,7 +5,10 @@ source("UI/Cancer/Cancer Information UI.R"
 source("UI/Reference File Download.R")
 source("UI/Cancer/Cancer Data Download.R")
 source("UI/Cancer/Mortality and Incidence UI.R")
-source("UI/Cancer/Mortality and Incidence Health Board Comparison.R")
+source("UI/Cancer/Mortality and Incidence Health Board Comparison.R")#
+source("UI/Commentary Files/Roadmap.R")
+source("UI/Commentary Files/Using Dashboard.R")
+
 #################################
 navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
                               href= "",
@@ -17,6 +20,7 @@ navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
            
            ##### Tab Panels
            information,
+           navbarMenu("Dashboard Information", DashboardUse, Roadmap),
            navbarMenu("Cancer",cancer_information, Cancer_Mortality_Incidence, Cancer_Mortality_Incidence_Comparison, cancer_data_download),
            navbarMenu("Download Data", reference_file_download)
 

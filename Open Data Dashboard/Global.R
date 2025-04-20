@@ -11,3 +11,5 @@ source("Global/Incidence and Mortality.R")
 
 gender_palette <- c("Male" = "#0078D4",
                     "Female" = "#E1C7DF" )
+
+
