@@ -58,7 +58,7 @@ output$hb_compare_graph <- renderPlotly({
     filter(HBName != "All Scotland Data") %>% 
     filter(CancerSite == input$Cancer_Type_Input_compare) 
   
-  tooltip_1 <- c(paste0("Health Board: ", input$hb_name,  "<br>", "Data Type: ", input$datatype_input, "<br>",  "Measure Type: ", input$graphtype_input, "<br>", "Date: ", Cancer_Full_Data$Year, "<br>", "Total (All Ages): ", Cancer_Full_Data$AllAges,  "<br>",  "Crude Rate: ", round(Cancer_Full_Data$CrudeRate,2 ),  "<br>", "EASR: ", round(Cancer_Full_Data$EASR,2 ),  "<br>", "WASR: ", round(Cancer_Full_Data$WASR,2),  "<br>", "Standardised Ratio: ", round(Cancer_Full_Data$StandardisedRatio,2)))
+  tooltip_1 <- c(paste0("Health Board: ", Cancer_Full_Data$HBName,  "<br>", "Data Type: ", input$datatype_input_compare, "<br>",  "Measure Type: ", input$graphtype_input_compare, "<br>", "Date: ", Cancer_Full_Data$Year, "<br>", "Total (All Ages): ", Cancer_Full_Data$AllAges,  "<br>",  "Crude Rate: ", round(Cancer_Full_Data$CrudeRate,2 ),  "<br>", "EASR: ", round(Cancer_Full_Data$EASR,2 ),  "<br>", "WASR: ", round(Cancer_Full_Data$WASR,2),  "<br>", "Standardised Ratio: ", round(Cancer_Full_Data$StandardisedRatio,2)))
   
   
   Cancer_Full_Data <- Cancer_Full_Data %>% 

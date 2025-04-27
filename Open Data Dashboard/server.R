@@ -25,10 +25,10 @@ function(input, output) {
     
 
     
-    source(file.path("server/Information Server.R"), local = TRUE)$value ## Information page sourcing in
-    source(file.path("server/Download Reference Files.R"), local = TRUE)$value
-    source(file.path("server/Download Cancer Data.R"), local = TRUE)$value
-    source(file.path("server/Overview Graphs.R"), local = TRUE)$value
+    source(file.path("Server/Information Server.R"), local = TRUE)$value ## Information page sourcing in
+    source(file.path("Server/Download Reference Files.R"), local = TRUE)$value
+    source(file.path("Server/Download Cancer Data.R"), local = TRUE)$value
+    source(file.path("Server/Overview Graphs.R"), local = TRUE)$value
   
   }# End of Server
 

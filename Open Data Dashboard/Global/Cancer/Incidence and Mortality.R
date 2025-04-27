@@ -74,4 +74,9 @@ Cancer_HB_ScatterPlot_Mortality <- Cancer_Data_Mortality_HB %>%
 Cancer_Scatter_Data <- left_join(Cancer_HB_ScatterPlot_Mortality, Cancer_HB_ScatterPlot_Incidence, by = c("GeoName", "GeoCode", "CancerSiteICD10Code", "CancerSite", "Sex", "Year")) %>% 
   mutate(complied = Data2 == "Mortality" & Data == "Incidence") %>% 
   filter(complied == TRUE) %>% 
-  select(-Data2, -Data, -complied) 
+  select(-Data2, -Data, -complied) %>% 
+  mutate(Ratio = DeathsAllAges/AllAges)
+
+
+
+
