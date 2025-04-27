@@ -56,3 +56,22 @@ cancer_types <- cancer_types %>%
   filter(!grepl("All", CancerSite))
 
 cancer_types <- bind_rows(cancer_types_all_filtered, cancer_types)
+
+
+##### ratios
+
+Cancer_HB_ScatterPlot_Incidence <- Cancer_Data_Incidence_HB %>% 
+  select(GeoName, GeoCode, CancerSiteICD10Code, CancerSite, Sex, Year, AllAges) %>% 
+  mutate(Data = "Incidence") %>% 
+  mutate(Sex = gsub("Females", "Female", Sex))
+
+Cancer_HB_ScatterPlot_Mortality <- Cancer_Data_Mortality_HB %>% 
+  rename(DeathsAllAges = AllAges) %>% 
+  select(GeoName, GeoCode, CancerSiteICD10Code, CancerSite, Sex, Year, DeathsAllAges) %>% 
+  mutate(Data2 = "Mortality") 
+
+
+Cancer_Scatter_Data <- left_join(Cancer_HB_ScatterPlot_Mortality, Cancer_HB_ScatterPlot_Incidence, by = c("GeoName", "GeoCode", "CancerSiteICD10Code", "CancerSite", "Sex", "Year")) %>% 
+  mutate(complied = Data2 == "Mortality" & Data == "Incidence") %>% 
+  filter(complied == TRUE) %>% 
+  select(-Data2, -Data, -complied) 
