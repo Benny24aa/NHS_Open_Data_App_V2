@@ -14,3 +14,4 @@ gender_palette <- c("Male" = "#0078D4",
 
 
 com_list <- c("Cancer Section" = "Cancer", "Waiting List Section" = "WaitList")
+
