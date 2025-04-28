@@ -1,4 +1,4 @@
-cancer_information <- tabPanel(title = "Cancer Information Page", 
+cancer_information <- tabPanel(title = "Cancer Information Page",  
                         icon = icon("home"),
                         
                         fluidRow(

@@ -9,6 +9,7 @@ source("UI/Cancer/Mortality and Incidence Health Board Comparison.R")#
 source("UI/Commentary Files/Roadmap.R")
 source("UI/Commentary Files/Using Dashboard.R")
 source("UI/Commentary Files/Commentary.R")
+source("UI/Cancer/Cancer UI Setup.R")
 
 #################################
 navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
@@ -23,7 +24,8 @@ navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
            information,
            navbarMenu("Dashboard Information",icon = icon("info"), DashboardUse, Roadmap, Commentary),
            navbarMenu("Cancer", icon = icon("disease"), cancer_information, Cancer_Mortality_Incidence, Cancer_Mortality_Incidence_Comparison, cancer_data_download),
-           navbarMenu("Download Data",icon = icon("table"), reference_file_download)
+           navbarMenu("Download Data",icon = icon("table"), reference_file_download),
+           Cancer_UI_Setup
 
            
            
