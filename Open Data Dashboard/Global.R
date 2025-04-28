@@ -15,4 +15,4 @@ gender_palette <- c("Male" = "#0078D4",
 
 com_list <- c("Cancer Section" = "Cancer", "Waiting List Section" = "WaitList")
 
-cancer_dashboards <- c("Cancer Landing Page" = "Cancer_Landing_Page", "Cancer Overview" = "Cancer_Overview", "Cancer Comparison" = "Cancer_Comparison", "Cancer Download Data" = "Cancer_Download_Data")
+cancer_dashboards <- c("Landing Page" = "Cancer_Landing_Page", "Overview" = "Cancer_Overview", "Comparison" = "Cancer_Comparison", "Download Data" = "Cancer_Download_Data")
