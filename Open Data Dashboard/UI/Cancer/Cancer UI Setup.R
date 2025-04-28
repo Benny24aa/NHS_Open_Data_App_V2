@@ -34,14 +34,87 @@ Cancer_UI_Setup <- tabPanel(title = "Cancer Dashboard",  icon = icon("disease"),
                                    
                                    conditionalPanel(
                                      condition= 'input.cancer_dashboard_select == "Cancer_Overview"',
+                                     
+                                     fluidRow(
+                                       column(6,
+                                              h2("Health Board Overview", style = "color:  #336699 ; font-weight: 600"))),
+                                     
+                                     fluidRow(
+                                       
+                                       column(3, selectInput("hb_name", label = "Select Healthboard",
+                                                             choices = unique(HB_List$HBName,
+                                                                              multiple = FALSE))),
+                                       column(3, selectInput("datatype_input", label = "Select data you wish to view",
+                                                             choices = unique(Cancer_Data_Type$DataType,
+                                                                              multiple = TRUE))),
+                                       
+                                       column(3, selectInput("graphtype_input", label = "Select statistical graph type",
+                                                             choices = unique(GraphTypeOptions$Graph_Types,
+                                                                              multiple = TRUE))),
+                                       
+                                       column(3, selectInput("Cancer_Type_Input", label = "Select the cancer type you wish to explore",
+                                                             choices = unique(cancer_types$CancerSite,
+                                                                              multiple = TRUE)))),
+                                     
+                                     fluidRow(
+                                       column(3, plotlyOutput("scotland_info_graph_server", width = "400%", height = "600px"))),
+                                     fluidRow(
+                                       column(3, plotlyOutput("scotland_gender_graph_server", width = "400%", height = "600px")))
+                                     
+                                     
                                    ), # end of conditional panel
                                    
                                    conditionalPanel(
                                      condition= 'input.cancer_dashboard_select == "Cancer_Comparison"',
+                                     
+                                     fluidRow(
+  column(6,
+         h2("Health Board Comparison", style = "color:  #336699 ; font-weight: 600"))),
+
+fluidRow(
+  
+  # column(3,  selectizeInput("hb_name_compare", label = "Select Healthboard",
+  #                       choices = unique(HB_List$HBName,
+  #                                        multiple = FALSE,
+  #                                        selected = HB_List$HBName,
+  #                                        options = list( 
+  #                                          `actions-box` = TRUE)))),
+  # 
+ 
+  
+column(3, selectInput("datatype_input_compare", label = "Select data you wish to view",
+                      choices = unique(Cancer_Data_Type$DataType,
+                                       multiple = TRUE))),
+
+column(3, selectInput("graphtype_input_compare", label = "Select statistical graph type",
+                      choices = unique(GraphTypeOptions$Graph_Types,
+                                       multiple = TRUE))),
+
+column(3, selectInput("Cancer_Type_Input_compare", label = "Select the cancer type you wish to explore",
+                      choices = unique(cancer_types$CancerSite,
+                                       multiple = TRUE)))
+
+
+
+),
+
+fluidRow(
+  column(3, plotlyOutput("hb_compare_graph", width = "400%", height = "600px")))
+
+
+
                                    ), #end of conditional panel
                                   
                                     conditionalPanel(
                                      condition= 'input.cancer_dashboard_select == "Cancer_Download_Data"',
+                                     
+                                     h2("Select the dataset you wish to download", style = "color: #336699 ; font-weight: 600"),
+                                     p("This section allows you to view error data in table format. You can use the filters to select the data you're interested in and download it into a csv format using the download button."),
+                                     column(6, selectInput("cancer_download_select", "Select the data you want to explore.",
+                                                           choices = Cancer_Download_List)),
+                                     mainPanel(width = 12,
+                                               DT::dataTableOutput("data_download_cancer_table_filtered")),
+                                     column(6, downloadButton('download_table_csv', 'Download data')),
                                    ) #end of conditional panel
                                    
                                    
