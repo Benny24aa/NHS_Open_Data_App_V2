@@ -6,7 +6,7 @@ Cancer_UI_Setup <- tabPanel(title = "Cancer Dashboard",  icon = icon("disease"),
                                       radioGroupButtons("cancer_dashboard_select",
                                                         choices = cancer_dashboards, status = "primary",
                                                         direction = "vertical", justified = T)),
-                         mainPanel(width = 9,
+                         mainPanel(width = 10,
                                    
 
                                    conditionalPanel(
