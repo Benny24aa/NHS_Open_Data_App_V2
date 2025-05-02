@@ -78,5 +78,7 @@ Cancer_Scatter_Data <- left_join(Cancer_HB_ScatterPlot_Mortality, Cancer_HB_Scat
   mutate(Ratio = DeathsAllAges/AllAges)
 
 
-
+Cancer_Genders <- Cancer_Scatter_Data %>% 
+  select(Sex) %>% 
+  distinct()
 
