@@ -133,6 +133,12 @@ conditionalPanel(
   
   fluidRow(
     column(3, plotlyOutput("hb_cancer_outlier", width = "400%", height = "600px"))),
+ 
+   fluidRow(
+  column(3, selectInput("BoxPlot_Input_Cancer", label = "Select Data Type",
+                        choices = unique(GraphTypeOptionsStatsCancer$Graph_Types_Stats_Cancer,
+                                         multiple = TRUE)))),
+  
   fluidRow(
     column(3, plotlyOutput("hb_cancer_outlier_box", width = "400%", height = "600px")))
   
