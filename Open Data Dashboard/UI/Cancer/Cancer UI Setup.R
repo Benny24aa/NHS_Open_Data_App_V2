@@ -72,14 +72,6 @@ Cancer_UI_Setup <- tabPanel(title = "Cancer Dashboard",  icon = icon("disease"),
          h2("Health Board Comparison", style = "color:  #336699 ; font-weight: 600"))),
 
 fluidRow(
-  
-  # column(3,  selectizeInput("hb_name_compare", label = "Select Healthboard",
-  #                       choices = unique(HB_List$HBName,
-  #                                        multiple = FALSE,
-  #                                        selected = HB_List$HBName,
-  #                                        options = list( 
-  #                                          `actions-box` = TRUE)))),
-  # 
  
   
 column(3, selectInput("datatype_input_compare", label = "Select data you wish to view",
@@ -115,7 +107,37 @@ fluidRow(
                                      mainPanel(width = 12,
                                                DT::dataTableOutput("data_download_cancer_table_filtered")),
                                      column(6, downloadButton('download_table_csv', 'Download data')),
-                                   ) #end of conditional panel
+                                   ),#end of conditional panel
+
+
+conditionalPanel(
+  condition= 'input.cancer_dashboard_select == "Cancer_Statistics"',
+  
+  fluidRow(
+    column(6,
+           h2("Health Board Overview", style = "color:  #336699 ; font-weight: 600"))),
+  
+  fluidRow(
+    
+    column(3, selectInput("hb_name", label = "Select Healthboard",
+                          choices = unique(HB_List$HBName,
+                                           multiple = FALSE))),
+    
+    column(3, selectInput("Cancer_Type_Input_Stats", label = "Select the cancer type you wish to explore",
+                          choices = unique(cancer_types$CancerSite,
+                                           multiple = TRUE))),
+  
+  column(3, selectInput("Cancer_Gender_Input", label = "Select Gender",
+                        choices = unique(Cancer_Genders$Sex,
+                                         multiple = TRUE)))),
+  
+  fluidRow(
+    column(3, plotlyOutput("hb_cancer_outlier", width = "400%", height = "600px"))),
+  fluidRow(
+    column(3, plotlyOutput("hb_cancer_outlier_box", width = "400%", height = "600px")))
+  
+  
+)
                                    
                                    
                          ))) #End of TabPanel
