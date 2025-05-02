@@ -46,9 +46,6 @@ output$scotland_gender_graph_server <- renderPlotly({
   
 })
 
-
-
-
 output$hb_compare_graph <- renderPlotly({
   Cancer_Full_Data <- Cancer_Full_Data %>% 
     select(-CancerSiteICD10Code) %>% 
@@ -74,3 +71,41 @@ output$hb_compare_graph <- renderPlotly({
   
 })
 
+
+
+
+output$hb_cancer_outlier <- renderPlotly({
+  Cancer_Scatter_Data <-  Cancer_Scatter_Data %>% 
+    select(-CancerSiteICD10Code) %>% 
+    filter(GeoName != "All Scotland Data") %>% 
+    filter(CancerSite == input$Cancer_Type_Input_Stats) %>% 
+  filter(GeoName %in% input$hb_name) %>% 
+    filter(Sex == input$Cancer_Gender_Input)
+  
+  
+  Cancer_Scatter_Data <- Cancer_Scatter_Data %>% 
+    plot_ly(x = ~ AllAges,
+            y = ~ DeathsAllAges,
+            color = ~ GeoName,
+            hoverinfo="text" ) %>% 
+    layout(xaxis = list(title = "All Ages"),
+           yaxis = list(title = "All Deaths"))
+  
+})
+
+output$hb_cancer_outlier_box <-  renderPlotly({
+  Cancer_Scatter_Data <-  Cancer_Scatter_Data %>% 
+    select(-CancerSiteICD10Code) %>% 
+    filter(GeoName != "All Scotland Data") %>% 
+    filter(CancerSite == input$Cancer_Type_Input_Stats) %>% 
+    filter(GeoName %in% input$hb_name) %>% 
+    filter(Sex == input$Cancer_Gender_Input) %>% 
+  plot_ly(x = ~GeoName,
+          y = ~get(input$BoxPlot_Input_Cancer),
+          color = ~ GeoName,
+          type = "box",
+          quartilemethod="inclusive")%>% 
+    layout(xaxis = list(title = "Health Board Name"),
+           yaxis = list(title = input$BoxPlot_Input_Cancer))
+  
+})
