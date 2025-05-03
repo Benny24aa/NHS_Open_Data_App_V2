@@ -82,14 +82,21 @@ output$hb_cancer_outlier <- renderPlotly({
   filter(GeoName %in% input$hb_name) %>% 
     filter(Sex == input$Cancer_Gender_Input)
   
+  fit <- lm(DeathsAllAges ~ AllAges, data = Cancer_Scatter_Data)
+  
+  tooltip_1 <- c(paste0("Health Board: ", Cancer_Scatter_Data$GeoName, "<br>", "Date: ", Cancer_Scatter_Data$Year, "<br>", "Sex: ", Cancer_Scatter_Data$Sex, "<br>", "Cancer Site: ", Cancer_Scatter_Data$CancerSite, "<br>", "Incidence: ", Cancer_Scatter_Data$AllAges, "<br>", "Deaths: ", Cancer_Scatter_Data$DeathsAllAges))
   
   Cancer_Scatter_Data <- Cancer_Scatter_Data %>% 
     plot_ly(x = ~ AllAges,
             y = ~ DeathsAllAges,
             color = ~ GeoName,
-            hoverinfo="text" ) %>% 
+            text=tooltip_1, 
+            hoverinfo="text"  ) %>% 
     layout(xaxis = list(title = "All Ages"),
-           yaxis = list(title = "All Deaths"))
+           yaxis = list(title = "All Deaths"))%>% 
+    add_markers(y = ~DeathsAllAges) %>% 
+    add_lines(x = ~AllAges, y = fitted(fit))%>%
+    layout(showlegend = F)
   
 })
 
@@ -99,12 +106,15 @@ output$hb_cancer_outlier_box <-  renderPlotly({
     filter(GeoName != "All Scotland Data") %>% 
     filter(CancerSite == input$Cancer_Type_Input_Stats) %>% 
     filter(GeoName %in% input$hb_name) %>% 
-    filter(Sex == input$Cancer_Gender_Input) %>% 
+    filter(Sex == input$Cancer_Gender_Input) 
+  
+
+  Cancer_Scatter_Data <- Cancer_Scatter_Data %>% 
   plot_ly(x = ~GeoName,
           y = ~get(input$BoxPlot_Input_Cancer),
           color = ~ GeoName,
           type = "box",
-          quartilemethod="inclusive")%>% 
+          quartilemethod="inclusive" )%>% 
     layout(xaxis = list(title = "Health Board Name"),
            yaxis = list(title = input$BoxPlot_Input_Cancer))
   
