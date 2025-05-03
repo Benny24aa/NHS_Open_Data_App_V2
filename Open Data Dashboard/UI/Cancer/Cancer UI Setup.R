@@ -1,4 +1,4 @@
-Cancer_UI_Setup <- tabPanel(title = "Cancer Dashboard",  icon = icon("disease"),
+Cancer_UI_Setup <- tabPanel(title = "Mortality and Incidence",  icon = icon("disease"),
                        
                        
                        sidebarLayout(

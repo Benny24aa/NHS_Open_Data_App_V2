@@ -18,7 +18,7 @@ navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
            ##### Tab Panels
            information,
            navbarMenu("Dashboard Information",icon = icon("info"), DashboardUse, Roadmap, Commentary),
-           Cancer_UI_Setup,
+           navbarMenu("Cancer", icon = icon("disease"), Cancer_UI_Setup),
            navbarMenu("Download Data",icon = icon("table"), reference_file_download)
 
            
