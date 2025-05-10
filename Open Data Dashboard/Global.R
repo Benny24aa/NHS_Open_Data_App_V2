@@ -16,3 +16,5 @@ gender_palette <- c("Male" = "#0078D4",
 com_list <- c("Cancer Section" = "Cancer", "Waiting List Section" = "WaitList")
 
 cancer_dashboards <- c("Landing Page" = "Cancer_Landing_Page", "Overview" = "Cancer_Overview", "Comparison" = "Cancer_Comparison", "Statistical Analysis" = "Cancer_Statistics", "Download Data" = "Cancer_Download_Data")
+
+cancer_waiting_times <- c("Landing Page" = "Cancer_Waiting_Time_Page", "31 Days Standard" = "31_Days_Standards", "62 Days Standard" = "62_Days_Standard")
