@@ -14,3 +14,18 @@ HB_Lookup_Treatment <- HB_Lookup %>%
 Cancer_Waiting_Times_31_days_T <- full_join(Cancer_Waiting_Times_31_days_T, HB_Lookup_Treatment, by = "HBT") %>% 
   select(-GeoType, -HBT) %>% 
   rename(Health_Board_Patient_Treatment = HBName)
+
+Cancer_Waiting_Times_62_days <- get_resource(res_id = "23b3bbf7-7a37-4f86-974b-6360d6748e08")
+
+Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days %>% 
+  select(Quarter,HB,HBT, CancerType ,NumberOfEligibleReferrals62DayStandard, NumberOfEligibleReferralsTreatedWithin62Days) %>% 
+  mutate(Percent_62_Days = NumberOfEligibleReferralsTreatedWithin62Days/NumberOfEligibleReferrals62DayStandard * 100)
+
+Cancer_Waiting_Times_62_days_T <- full_join(Cancer_Waiting_Times_62_days_T, HB_Lookup, by = "HB") %>% 
+  select(-HB, -GeoType) %>% 
+  rename(Health_Board_Patient = HBName)
+
+
+Cancer_Waiting_Times_62_days_T <- full_join(Cancer_Waiting_Times_62_days_T, HB_Lookup_Treatment, by = "HBT") %>% 
+  select(-GeoType, -HBT) %>% 
+  rename(Health_Board_Patient_Treatment = HBName)
