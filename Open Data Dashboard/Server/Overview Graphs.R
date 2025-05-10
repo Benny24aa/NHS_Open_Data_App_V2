@@ -119,3 +119,33 @@ output$hb_cancer_outlier_box <-  renderPlotly({
            yaxis = list(title = input$BoxPlot_Input_Cancer))
   
 })
+
+
+########################
+# Cancer Waiting Times #
+########################
+
+output$cancer_waiting_list_overview_31_days <- renderPlotly({
+  
+  Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
+    select(-Health_Board_Patient_Treatment, -Percent_31_Days) %>%  ### Will only consider patients from initial Health Board before treatment for this graph
+    filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select)
+  
+  Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
+    group_by(Health_Board_Patient, CancerType, Quarter) %>% 
+    summarise(NumberOfEligibleReferrals31DayStandard = sum(NumberOfEligibleReferrals31DayStandard), .groups = 'drop') 
+
+    
+  
+  Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
+    filter(Health_Board_Patient %in% input$hb_name_waiting_times) %>% 
+    plot_ly(x = ~ Quarter,
+            y = ~ NumberOfEligibleReferrals31DayStandard,
+            type = 'scatter',
+            mode = 'lines',
+            hoverinfo="text") %>% 
+    layout(xaxis = list(title = "Quarter"),
+           yaxis = list(title = "Test"))
+    
+    })
+
