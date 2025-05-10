@@ -51,18 +51,18 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                                 
                                           
                                               fluidRow(
-                                                column(3, plotlyOutput("cancer_waiting_list_overview_31_days", width = "400%", height = "600px")))
+                                                column(3, plotlyOutput("cancer_waiting_list_overview_31_days", width = "400%", height = "600px"))),
                                               
-                                              # ,
+                                               
+
+                                               fluidRow(
+                                                 column(3, selectInput("Cancer_Quarter_Waiting_Times", label = "Select Data Type",
+                                                                       choices = unique(Cancer_Waiting_Times_31_days_T$Quarter,
+                                                                                       multiple = TRUE)))),
                                               
-                                              # fluidRow(
-                                              #   column(3, selectInput("Cancer_Quarter_Waiting_Times", label = "Select Data Type",
-                                              #                         choices = unique(Cancer_Waiting_Times_31_days_T$Quarter,
-                                              #                                          multiple = TRUE)))),
-                                              # 
-                                              # fluidRow(
-                                              #   column(3, plotlyOutput("", width = "400%", height = "600px")))
-                                              
+                                              fluidRow(
+                                                column(3, plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb", width = "400%", height = "600px")))
+
                                               
                                             )
                                             
