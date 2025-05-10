@@ -30,6 +30,38 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                                        h4(tags$b(" Disclosure and Data Security Statement", style = "color:  #336699 ; font-weight: 600")),
                                                        p("All content is available under the Open Government License V3.0, and is available on NHS Scotland Open Data except where otherwise stated. If you need any assistance with this, please visit the UK Government Website for more information regarding the Open Government License. This dashboard is not a representive of the NHS and therefore is not an official source of information.")),
                                               )#End of Fluid Row
+                                            ), ### End of conditional Panel
+                                            
+                                            conditionalPanel(
+                                              condition= 'input.cancer_waiting_time_select == "31_Days_Standards"',
+                                              
+                                              fluidRow(
+                                                column(6,
+                                                       h2("Health Board Overview", style = "color:  #336699 ; font-weight: 600"))),
+                                              
+                                              fluidRow(
+                                                
+                                                column(3, selectInput("hb_name_waiting_times", label = "Select Healthboard",
+                                                                      choices = unique(HB_List$HBName,
+                                                                                       multiple = TRUE))),
+                                                
+                                                column(3, selectInput("Cancer_Type_Input_Stats", label = "Select the cancer type you wish to explore",
+                                                                      choices = unique(Cancer_Waiting_Times_31_days_T$CancerSite,
+                                                                                       multiple = TRUE)))),
+                                                
+                                          
+                                              fluidRow(
+                                                column(3, plotlyOutput("", width = "400%", height = "600px"))),
+                                              
+                                              fluidRow(
+                                                column(3, selectInput("Cancer_Quarter_Waiting_Times", label = "Select Data Type",
+                                                                      choices = unique(Cancer_Waiting_Times_31_days_T$Quarter,
+                                                                                       multiple = TRUE)))),
+                                              
+                                              fluidRow(
+                                                column(3, plotlyOutput("", width = "400%", height = "600px")))
+                                              
+                                              
                                             )
                                             
                                             
