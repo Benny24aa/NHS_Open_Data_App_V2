@@ -61,9 +61,11 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                                                                        multiple = TRUE)))),
                                               
                                               fluidRow(
-                                                column(3, plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb", width = "400%", height = "600px")))
+                                                column(3, plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb", width = "400%", height = "600px"))),
 
-                                              
+                                              fluidRow(
+                                                column(3, plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb_compare", width = "400%", height = "600px"))
+                                              )
                                             ), ### End of conditional panel
                                             
                                             conditionalPanel(
@@ -95,7 +97,11 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                                                                        multiple = TRUE)))),
                                               
                                               fluidRow(
-                                                column(3, plotlyOutput("cancer_waiting_list_overview_62_days_treatmenthb", width = "400%", height = "600px")))
+                                                column(3, plotlyOutput("cancer_waiting_list_overview_62_days_treatmenthb", width = "400%", height = "600px"))),
+                                              
+                                              fluidRow(
+                                                column(3, plotlyOutput("cancer_waiting_list_overview_62_days_treatmenthb_compare", width = "400%", height = "600px")))
+                                              
                                               
                                               
                                             )
