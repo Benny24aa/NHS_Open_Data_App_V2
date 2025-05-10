@@ -154,12 +154,12 @@ output$cancer_waiting_list_overview_31_days_treatmenthb <- renderPlotly({
   
   Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
    select(-Percent_31_Days) %>%  ### Will only consider patients from initial Health Board before treatment for this graph
-    filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select) %>% 
   filter(Quarter == input$Cancer_Quarter_Waiting_Times) %>% 
     filter(Health_Board_Patient %in% input$hb_name_waiting_times) 
 
   
   Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
+    filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select) %>% 
     plot_ly(x = ~ Health_Board_Patient_Treatment,
             y = ~ NumberOfEligibleReferralsTreatedWithin31Days,
             color = ~ Health_Board_Patient_Treatment,
@@ -170,3 +170,54 @@ output$cancer_waiting_list_overview_31_days_treatmenthb <- renderPlotly({
   
 })
 
+
+#################
+
+### 62 days ####
+
+################
+
+output$cancer_waiting_list_overview_62_days <- renderPlotly({
+  
+  Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
+    select(-Health_Board_Patient_Treatment, -Percent_62_Days) %>%  ### Will only consider patients from initial Health Board before treatment for this graph
+    filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select_62)
+  
+  Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
+    group_by(Health_Board_Patient, CancerType, Quarter) %>% 
+    summarise(NumberOfEligibleReferrals62DayStandard = sum(NumberOfEligibleReferrals62DayStandard), .groups = 'drop') 
+  
+  
+  
+  Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
+    filter(Health_Board_Patient %in% input$hb_name_waiting_times) %>% 
+    plot_ly(x = ~ Quarter,
+            y = ~ NumberOfEligibleReferrals62DayStandard,
+            type = 'scatter',
+            mode = 'lines',
+            hoverinfo="text") %>% 
+    layout(xaxis = list(title = "Quarter"),
+           yaxis = list(title = "Test"))
+  
+})
+
+
+output$cancer_waiting_list_overview_62_days_treatmenthb <- renderPlotly({
+  
+  Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
+    select(-Percent_62_Days) %>%  ### Will only consider patients from initial Health Board before treatment for this graph
+    filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select_62) %>% 
+    filter(Quarter == input$Cancer_Quarter_Waiting_Times_62) %>% 
+    filter(Health_Board_Patient %in% input$hb_name_waiting_times) 
+  
+  
+  Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
+    plot_ly(x = ~ Health_Board_Patient_Treatment,
+            y = ~ NumberOfEligibleReferralsTreatedWithin62Days,
+            color = ~ Health_Board_Patient_Treatment,
+            type = 'bar',
+            hoverinfo="text") %>% 
+    layout(xaxis = list(title = "Quarter"),
+           yaxis = list(title = "Test"))
+  
+})
