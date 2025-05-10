@@ -45,21 +45,23 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                                                       choices = unique(HB_List$HBName,
                                                                                        multiple = TRUE))),
                                                 
-                                                column(3, selectInput("Cancer_Type_Input_Stats", label = "Select the cancer type you wish to explore",
-                                                                      choices = unique(Cancer_Waiting_Times_31_days_T$CancerSite,
+                                                column(3, selectInput("Cancer_Type_Input_Waiting_Times_Select", label = "Select the cancer type you wish to explore",
+                                                                      choices = unique(Cancer_Waiting_Times_31_days_T$CancerType,
                                                                                        multiple = TRUE)))),
                                                 
                                           
                                               fluidRow(
-                                                column(3, plotlyOutput("", width = "400%", height = "600px"))),
+                                                column(3, plotlyOutput("cancer_waiting_list_overview_31_days", width = "400%", height = "600px")))
                                               
-                                              fluidRow(
-                                                column(3, selectInput("Cancer_Quarter_Waiting_Times", label = "Select Data Type",
-                                                                      choices = unique(Cancer_Waiting_Times_31_days_T$Quarter,
-                                                                                       multiple = TRUE)))),
+                                              # ,
                                               
-                                              fluidRow(
-                                                column(3, plotlyOutput("", width = "400%", height = "600px")))
+                                              # fluidRow(
+                                              #   column(3, selectInput("Cancer_Quarter_Waiting_Times", label = "Select Data Type",
+                                              #                         choices = unique(Cancer_Waiting_Times_31_days_T$Quarter,
+                                              #                                          multiple = TRUE)))),
+                                              # 
+                                              # fluidRow(
+                                              #   column(3, plotlyOutput("", width = "400%", height = "600px")))
                                               
                                               
                                             )
