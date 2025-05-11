@@ -1,1 +1,1 @@
-This is the repository for a cancer based dashboard. The data is taken from NHS Open Data using PHSOpenData. The dashboard will be deployed in the near future.
+This is the repository for a cancer based dashboard. The data is taken from NHS Open Data using PHSOpenData. The dashboard will be deployed in the near future. Some parts of https://github.com/Benny24aa/NHS-Open-Data-Dashboard---R-Shiny will be transfered across soon. Accident and Emergency and Diagnostics code remain on this github currently.
