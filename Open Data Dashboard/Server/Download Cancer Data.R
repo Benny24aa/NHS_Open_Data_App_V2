@@ -1,7 +1,8 @@
 data_download_table_cancer <- reactive({
   
   table_data_cancer <- switch(input$cancer_download_select,
-                      "Cancer_Full_Data" = Cancer_Full_Data)
+                      "Cancer_Full_Data" = Cancer_Full_Data,
+                      "Cancer_Scatter_Data" = Cancer_Scatter_Data)
 
   # Cancer_Full_Data <- Cancer_Full_Data %>% 
   #   filter(HBName == input$hb_name)
