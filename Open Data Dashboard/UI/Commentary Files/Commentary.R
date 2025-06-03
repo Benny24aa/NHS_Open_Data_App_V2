@@ -1,4 +1,4 @@
-Commentary <- tabPanel(title = "Commentary and Updates", 
+Commentary <- tabPanel(title = "Commentary", 
                        
                        
                        sidebarLayout(
@@ -11,9 +11,9 @@ Commentary <- tabPanel(title = "Commentary and Updates",
                                    
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer"',
+                                     condition= 'input.com_select == "Cancer_Mortality_Incidence_Section"',
                                      p(h3("27/04/2025")),
-                                     h4("Cancer Healthboard Section "),
+                                     h4("Cancer Mortality and Incidence Commentary "),
                                      tags$ul(
                                        tags$li(""),
                                        tags$li(""),
@@ -21,9 +21,9 @@ Commentary <- tabPanel(title = "Commentary and Updates",
                                    ), #end of conditional panel
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "WaitList"',
+                                     condition= 'input.com_select == "Cancer_Waiting_List_Section"',
                                      p(h3("27/04/2025")),
-                                     h4("Waiting List Healthboard Section "),
+                                     h4("Cancer Waiting List Commentary"),
                                      tags$ul(
                                        tags$li(""))
                                    ) # end of conditional panel

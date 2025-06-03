@@ -15,7 +15,7 @@ gender_palette <- c("Male" = "#0078D4",
                     "Female" = "#E1C7DF" )
 
 
-com_list <- c("Cancer Section" = "Cancer", "Waiting List Section" = "WaitList")
+com_list <- c("Cancer Mortality and Incidence" = "Cancer_Mortality_Incidence_Section", "Cancer Waiting List" = "Cancer_Waiting_List_Section")
 
 cancer_dashboards <- c("Landing Page" = "Cancer_Landing_Page", "Overview" = "Cancer_Overview", "Comparison" = "Cancer_Comparison", "Statistical Analysis" = "Cancer_Statistics", "Download Data" = "Cancer_Download_Data")
 
