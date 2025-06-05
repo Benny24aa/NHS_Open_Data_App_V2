@@ -41,8 +41,10 @@ The cancer sites reported on include: bladder, bone and connective tissue, brain
                                      fluidRow(
                                        column(6,
                                               h2("Health Board Overview", style = "color:  #336699 ; font-weight: 600"))),
+                                     h4("Health Board Overview for Cancer Incidence and Mortality Data provides a summary of cancer-related health outcomes across geographic health authority areas in Scotland. It offers key insights into the burden of cancer, how it varies by Health Board, and supports policy planning, resource allocation, and public health interventions. This page includes the ability to filter for different indicators such as Crude Rates and EASR and more for both Incidence and Mortality. Use the filters below to filter for all graphs on this page. "),
                                      
-                                     fluidRow(
+                                     
+                                                                          fluidRow(
                                        
                                        column(3, selectInput("hb_name", label = "Select Healthboard",
                                                              choices = unique(HB_List$HBName,
@@ -58,9 +60,10 @@ The cancer sites reported on include: bladder, bone and connective tissue, brain
                                        column(3, selectInput("Cancer_Type_Input", label = "Select the cancer type you wish to explore",
                                                              choices = unique(cancer_types$CancerSite,
                                                                               multiple = TRUE)))),
-                                     
+                                     h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
                                      fluidRow(
                                        column(3, plotlyOutput("scotland_info_graph_server", width = "400%", height = "600px"))),
+                                     h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
                                      fluidRow(
                                        column(3, plotlyOutput("scotland_gender_graph_server", width = "400%", height = "600px")))
                                      
@@ -70,9 +73,12 @@ The cancer sites reported on include: bladder, bone and connective tissue, brain
                                    conditionalPanel(
                                      condition= 'input.cancer_dashboard_select == "Cancer_Comparison"',
                                      
-                                     fluidRow(
-  column(6,
-         h2("Health Board Comparison", style = "color:  #336699 ; font-weight: 600"))),
+
+  fluidRow(
+    column(6,
+           h2("Health Board Comparison", style = "color:  #336699 ; font-weight: 600"))),
+  h4("Health Board Comparison for Cancer Incidence and Mortality Data provides the user the ability to compare Health Boards using different incidators such as EASR and Crude Rates. Please use the filters above the graph to aid you. Click on the legend on the side of the graph to keep or remove Health Boards at your leisure. "),
+  
 
 fluidRow(
  
@@ -115,10 +121,12 @@ fluidRow(
 
 conditionalPanel(
   condition= 'input.cancer_dashboard_select == "Cancer_Statistics"',
-  
-  fluidRow(
-    column(6,
-           h2("Health Board Overview", style = "color:  #336699 ; font-weight: 600"))),
+
+fluidRow(
+  column(6,
+         h2("Health Board Statistics", style = "color:  #336699 ; font-weight: 600"))),
+h4("Soon"),
+
   
   fluidRow(
     
@@ -133,10 +141,10 @@ conditionalPanel(
   column(3, selectInput("Cancer_Gender_Input", label = "Select Gender",
                         choices = unique(Cancer_Genders$Sex,
                                          multiple = TRUE)))),
-  
+  h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
   fluidRow(
     column(3, plotlyOutput("hb_cancer_outlier", width = "400%", height = "600px"))),
- 
+  h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
    fluidRow(
   column(3, selectInput("BoxPlot_Input_Cancer", label = "Select Data Type",
                         choices = unique(GraphTypeOptionsStatsCancer$Graph_Types_Stats_Cancer,
