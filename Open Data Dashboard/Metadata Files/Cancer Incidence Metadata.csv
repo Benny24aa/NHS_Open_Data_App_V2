@@ -1,0 +1,24 @@
+Column,Type,Label,Description
+HB,text,"9 digit Geography codes for health board of residence, based on boundaries as at 1st April 2019",Health board labels
+CancerSiteICD10Code,text,The ICD10 codes that make up the diagnosed cancer site,
+CancerSite,text,The diagnosed cancer site,
+Sex,text,Sex,
+SexQF,text,Qualifier for Sex,Qualifier information
+Year,numeric,Year of diagnosis,
+IncidencesAllAges,numeric,Total number of new cancer registrations,
+CrudeRate,numeric,"The crude rate is calculated per 100,000 person-years at risk",
+CrudeRateLower95pcConfidenceInterval,numeric,Lower confidence interval for the crude rate,
+CrudeRateUpper95pcConfidenceInterval,numeric,Upper confidence interval for the crude rate,
+EASR,numeric,"The European age-standardised (using the 2013 European Standard Population) incidence rate per 100,000 person-years at risk",
+EASRLower95pcConfidenceInterval,text,Lower confidence interval for the European age-standardised rate,
+EASRLower95pcConfidenceIntervalQF,text,Qualifier for EASRLower95pcConfidenceInterval,Qualifier information
+EASRUpper95pcConfidenceInterval,text,Upper confidence interval for the European age-standardised rate,
+EASRUpper95pcConfidenceIntervalQF,text,Qualifier for EASRUpper95pcConfidenceInterval,Qualifier information
+WASR,numeric,"The World age-standardised incidence rate per 100,000 person-years at risk (World standard population)",
+WASRLower95pcConfidenceInterval,text,Lower confidence interval for the World age-standardised rate,
+WASRLower95pcConfidenceIntervalQF,text,Qualifier for WASRLower95pcConfidenceInterval,Qualifier information
+WASRUpper95pcConfidenceInterval,text,Upper confidence interval for the World age-standardised rate,
+WASRUpper95pcConfidenceIntervalQF,text,Qualifier for WASRUpper95pcConfidenceInterval,Qualifier information
+StandardisedIncidenceRatio,numeric,The standardised incidence ratio,
+SIRLower95pcConfidenceInterval,numeric,Lower confidence interval for the standardised incidence ratio,
+SIRUpper95pcConfidenceInterval,numeric,Upper confidence interval for the standardised incidence ratio,

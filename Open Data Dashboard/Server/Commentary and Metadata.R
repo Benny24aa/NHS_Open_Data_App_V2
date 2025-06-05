@@ -1,2 +1,4 @@
 output$cancer_mortality_metadata_table <- renderTable(Cancer_Metadata_Mortality)
 output$cancer_mortality_metadata_table <- renderDataTable(Cancer_Metadata_Mortality)
+output$cancer_incidence_metadata_table <- renderTable(Cancer_Metadata_Incidence)
+output$cancer_incidence_metadata_table <- renderDataTable(Cancer_Metadata_Incidence)
