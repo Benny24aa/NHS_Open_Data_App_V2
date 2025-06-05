@@ -13,7 +13,7 @@ source("Global/Cancer/Incidence and Mortality.R")
 source("Global/Cancer/Waiting Times.R")
 
 gender_palette <- c("Male" = "#0078D4",
-                    "Female" = "#E1C7DF" )
+                    "Female" = "#E1C7DF")
 
 
 com_list <- c("Cancer Mortality and Incidence" = "Cancer_Mortality_Incidence_Section", "Cancer Waiting List" = "Cancer_Waiting_List_Section")

@@ -93,3 +93,6 @@ HB_List <- HB_List %>%
   filter(HBName != "All Scotland Data")
 
 
+# scotland_shp <- st_read("Scottish Healthboards/SG_NHS_HealthBoards_2019.shp") %>% 
+#   select(-HBName)# Replace path
+

@@ -84,3 +84,4 @@ Cancer_Genders <- Cancer_Scatter_Data %>%
 
 Graph_Types_Stats_Cancer <- c("AllAges", "DeathsAllAges", "Ratio")
 GraphTypeOptionsStatsCancer <- data.frame(Graph_Types_Stats_Cancer)
+
