@@ -29,6 +29,7 @@ function(input, output) {
     source(file.path("Server/Download Reference Files.R"), local = TRUE)$value
     source(file.path("Server/Download Cancer Data.R"), local = TRUE)$value
     source(file.path("Server/Overview Graphs.R"), local = TRUE)$value
+    source(file.path("Server/Commentary and Metadata.R"), local = TRUE)$value
   
   }# End of Server
 

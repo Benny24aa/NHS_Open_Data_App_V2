@@ -1,4 +1,4 @@
-Commentary <- tabPanel(title = "Commentary", 
+Commentary <- tabPanel(title = "Metadata and Commentary", 
                        
                        
                        sidebarLayout(
@@ -11,13 +11,45 @@ Commentary <- tabPanel(title = "Commentary",
                                    
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer_Mortality_Incidence_Section"',
-                                     p(h3("27/04/2025")),
-                                     h4("Cancer Mortality and Incidence Commentary "),
+                                     condition= 'input.com_select == "Cancer_Mortality_Section"',
+                                     
+                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
+                                     h4("This dataset provides detailed statistics on cancer mortality across Scotland, enabling health professionals and policymakers to:"),
                                      tags$ul(
-                                       tags$li(""),
-                                       tags$li(""),
-                                       tags$li(""))
+                                       tags$li("Monitor trends in cancer-related deaths over time."),
+                                       tags$li("Identify disparities in cancer mortality rates across different health boards."),
+                                       tags$li("Assess the effectiveness of public health interventions and cancer control programs."),
+                                       tags$li("Support research and planning for cancer services and resource allocation.")),
+                                     
+                                     p(h3("Additional Information", style = "color:  #336699 ; font-weight: 600")),
+                                     tags$ul(
+                                       tags$li("Time Frame of Data and Timeliness: Data is presented annually, with updates reflecting the most recent complete year of data."),
+                                       tags$li("Data Frequency: Annual"),
+                                       tags$li("Disclosure: The dataset adheres to the Public Health Scotland Statistical Disclosure Protocol to ensure confidentiality and data protection."),
+                                       tags$li("Official Statistics Designation: National Statistics"),
+                                       tags$li("Relevance and Key Uses of the Statistics: The dataset is crucial for understanding cancer mortality patterns, guiding public health strategies, and informing cancer research and policy development.")),
+                                     
+                                     
+                                     p(h3("Dataset Overview", style = "color:  #336699 ; font-weight: 600")),
+                                     tags$ul(
+                                       tags$li("Cancer Mortality – Mortality by Health Board"),
+                                       tags$li("Resource ID: 57f0983f-864e-4dbd-b3dc-ea8f16de83a4"),
+                                       tags$li("Last Modified: 3 months ago"),
+                                       tags$li("Created: February 12, 2019"),
+                                       tags$li("Metadata Last Updated: February 12, 2019"),
+                                       tags$li("License: UK Open Government License (OGL)"),
+                                       tags$li("Data Last Updated: February 25, 2025")),
+                                     
+                                     
+                                     p(h3("Dataset Dictionary", style = "color:  #336699 ; font-weight: 600")),
+                                     h4("The dataset includes the following columns:"),
+                                     fluidRow(
+                                       column(12,
+                                              dataTableOutput('cancer_mortality_metadata_table')
+                                       )
+                                     ) 
+                                
+                                     
                                    ), #end of conditional panel
                                    
                                    conditionalPanel(
