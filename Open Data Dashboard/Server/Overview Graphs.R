@@ -265,3 +265,5 @@ output$cancer_waiting_list_overview_62_days_treatmenthb_compare <- renderPlotly(
            yaxis = list(title = "Number of Patients Referred and Treated by a Healthboard in 62 days"))
   
 })
+
+
