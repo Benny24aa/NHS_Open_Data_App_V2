@@ -145,12 +145,11 @@ h4("Soon"),
 uiOutput("Cancer_ScatterPlot_Text"),
   fluidRow(
     column(3, plotlyOutput("hb_cancer_outlier", width = "400%", height = "600px"))),
-  h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
+uiOutput("Cancer_boxplot_Text"),
    fluidRow(
   column(3, selectInput("BoxPlot_Input_Cancer", label = "Select Data Type",
                         choices = unique(GraphTypeOptionsStatsCancer$Graph_Types_Stats_Cancer,
                                          multiple = TRUE)))),
-  
   fluidRow(
     column(3, plotlyOutput("hb_cancer_outlier_box", width = "400%", height = "600px")))
   
