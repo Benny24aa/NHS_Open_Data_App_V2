@@ -142,7 +142,7 @@ h4("Soon"),
   column(3, selectInput("Cancer_Gender_Input", label = "Select Gender",
                         choices = unique(Cancer_Genders$Sex,
                                          multiple = TRUE)))),
-  h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
+uiOutput("Cancer_ScatterPlot_Text"),
   fluidRow(
     column(3, plotlyOutput("hb_cancer_outlier", width = "400%", height = "600px"))),
   h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
