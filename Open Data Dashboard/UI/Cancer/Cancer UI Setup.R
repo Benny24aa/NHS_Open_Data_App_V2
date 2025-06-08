@@ -60,10 +60,11 @@ The cancer sites reported on include: bladder, bone and connective tissue, brain
                                        column(3, selectInput("Cancer_Type_Input", label = "Select the cancer type you wish to explore",
                                                              choices = unique(cancer_types$CancerSite,
                                                                               multiple = TRUE)))),
-                                     h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
+                                    
+                                      uiOutput("Cancer_Overview"),
                                      fluidRow(
                                        column(3, plotlyOutput("scotland_info_graph_server", width = "400%", height = "600px"))),
-                                     h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
+                                     uiOutput("Cancer_Sex_Overview"),
                                      fluidRow(
                                        column(3, plotlyOutput("scotland_gender_graph_server", width = "400%", height = "600px")))
                                      
