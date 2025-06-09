@@ -28,6 +28,8 @@ Cancer_UI_Setup <- tabPanel(title = "Mortality and Incidence",  icon = icon("dis
 The cancer sites reported on include: bladder, bone and connective tissue, brain and central nervous system, breast colorectal, female genital organs, head and neck, hodgkin lymphoma, kidney, leukaemias, liver, lung and mesothelioma, male genital organs, multiple myeloma, non-hodgkin lymphoma, oesophageal, pancreatic, skin, stomach."),
                                               
                                               h4(tags$b("Open Source Code Information" , style = "color:  #336699 ; font-weight: 600")),
+                                              p("This GitHub repository contains the complete source code for an interactive web dashboard designed to visualize cancer incidence and mortality statistics across Healthboard."),
+                                              
                                               p("If you wish to view the github for this dashboard please head to the following ", tags$a(href="https://github.com/Benny24aa/Scotland-Cancer-RShiny-Dashboard", icon("github"),
                                                                                                                                           "", target="_blank"), ), 
                                               h4(tags$b(" Disclosure and Data Security Statement", style = "color:  #336699 ; font-weight: 600")),
@@ -60,10 +62,11 @@ The cancer sites reported on include: bladder, bone and connective tissue, brain
                                        column(3, selectInput("Cancer_Type_Input", label = "Select the cancer type you wish to explore",
                                                              choices = unique(cancer_types$CancerSite,
                                                                               multiple = TRUE)))),
-                                     h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
+                                    
+                                      uiOutput("Cancer_Overview"),
                                      fluidRow(
                                        column(3, plotlyOutput("scotland_info_graph_server", width = "400%", height = "600px"))),
-                                     h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
+                                     uiOutput("Cancer_Sex_Overview"),
                                      fluidRow(
                                        column(3, plotlyOutput("scotland_gender_graph_server", width = "400%", height = "600px")))
                                      
@@ -125,7 +128,9 @@ conditionalPanel(
 fluidRow(
   column(6,
          h2("Health Board Statistics", style = "color:  #336699 ; font-weight: 600"))),
-h4("Soon"),
+h4("This dashboard provides a comparative overview of key cancer statistics across Health Boards. It features two interactive visualizations which are a Scatter Plot which displays individual Health Boards as data points, allowing comparison of specific cancer indicators (e.g., incidence, and mortality) by Healthboard. This helps identify outliers or trends across boards.
+The other visual is a Box Plot, which summarises the distribution of the same indicators, highlighting medians, quartiles, and any statistical outliers. This gives a clearer view of overall variation and equity in health outcomes.
+Use the dropdown filters to customize the view by cancer type, data type (e.g., crude rate, age-standardized rate), and demographic grouping (sex)."),
 
   
   fluidRow(
@@ -141,15 +146,14 @@ h4("Soon"),
   column(3, selectInput("Cancer_Gender_Input", label = "Select Gender",
                         choices = unique(Cancer_Genders$Sex,
                                          multiple = TRUE)))),
-  h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
+uiOutput("Cancer_ScatterPlot_Text"),
   fluidRow(
     column(3, plotlyOutput("hb_cancer_outlier", width = "400%", height = "600px"))),
-  h3("Decided Soon", style = "color:  #336699 ; font-weight: 600"),
+uiOutput("Cancer_boxplot_Text"),
    fluidRow(
   column(3, selectInput("BoxPlot_Input_Cancer", label = "Select Data Type",
                         choices = unique(GraphTypeOptionsStatsCancer$Graph_Types_Stats_Cancer,
                                          multiple = TRUE)))),
-  
   fluidRow(
     column(3, plotlyOutput("hb_cancer_outlier_box", width = "400%", height = "600px")))
   

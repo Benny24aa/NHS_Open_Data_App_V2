@@ -27,6 +27,7 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                                        
                                                        
                                                        h4(tags$b("Open Source Code Information" , style = "color:  #336699 ; font-weight: 600")),
+                                                       p("This GitHub repository hosts the full source code for an interactive dashboard that visualizes Cancer Waiting Times (CWT) statistics in Scotland, as reported by NHS Scotland and Public Health Scotland."),
                                                        p("If you wish to view the github for this dashboard please head to the following ", tags$a(href="https://github.com/Benny24aa/Scotland-Cancer-RShiny-Dashboard", icon("github"),
                                                                                                                                                    "", target="_blank"), ), 
                                                     
@@ -40,7 +41,7 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                               
                                               fluidRow(
                                                 column(6,
-                                                       h2("Health Board Overview", style = "color:  #336699 ; font-weight: 600"))),
+                                                       h2("31 Days Waiting Time Standard Overview", style = "color:  #336699 ; font-weight: 600"))),
                                               
                                               fluidRow(
                                                 
@@ -76,7 +77,7 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                               
                                               fluidRow(
                                                 column(6,
-                                                       h2("Health Board Overview", style = "color:  #336699 ; font-weight: 600"))),
+                                                       h2("62 Days Waiting Time Standard Overview", style = "color:  #336699 ; font-weight: 600"))),
                                               
                                               fluidRow(
                                                 
