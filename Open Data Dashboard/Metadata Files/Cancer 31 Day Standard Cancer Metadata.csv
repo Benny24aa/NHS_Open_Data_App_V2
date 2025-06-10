@@ -1,0 +1,11 @@
+Column,Type,Label,Description
+Quarter,text,Calendar Year Quarter data pertains to,
+HB,text,Health board of receipt of referral,Health board labels
+HBT,text,Health Board of first treatment,
+HBTQF,text,Health Board of first treatment statistical qualifiers,Qualifier information
+CancerType,text,Cancer Type recorded,
+CancerTypeQF,text,Cancer Type recorded statistical qualifiers,Qualifier information
+NumberOfEligibleReferrals31DayStandard,numeric,"All referrals (urgent and non-urgent) submitted from all sources (regardless of route of referral), excluding patients who had a clinically complex pathway, who died before treatment or refused treatment.",
+NumberOfEligibleReferrals31DayStandardQF,text,Qualifier for the number of Eligible Referrals in the 31 Day Standard,Qualifier information
+NumberOfEligibleReferralsTreatedWithin31Days,numeric,"All referrals (urgent and non-urgent) submitted from all sources (regardless of route of referral), excluding patients who had a clinically complex pathway, who died before treatment or refused treatment, that started their first treatment within 31 days of their decision to treat.",
+NumberOfEligibleReferralsTreatedWithin31DaysQF,text,Qualifier for the number of Eligible Referrals Treated within the 31 Day Standard,Qualifier information
