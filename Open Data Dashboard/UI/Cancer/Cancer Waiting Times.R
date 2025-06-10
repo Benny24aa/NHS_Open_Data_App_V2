@@ -42,6 +42,9 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                               fluidRow(
                                                 column(6,
                                                        h2("31 Days Waiting Time Standard Overview", style = "color:  #336699 ; font-weight: 600"))),
+                                              h4("This section provides a summary of NHS Scotland’s performance on cancer waiting times across geographic Health Board areas. It offers key insights into how quickly patients begin treatment following a cancer diagnosis, highlighting regional variation in meeting national waiting time standards. This supports policy planning, performance monitoring, and service improvement efforts across the cancer care pathway.
+
+The page includes the ability to filter for different indicators relating to 31-Day Standard for Cancer Waiting Times. Use the filters below to update all visualizations on this page according to cancer type, Health Board, and time period. "),
                                               
                                               fluidRow(
                                                 
@@ -66,7 +69,7 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                               
                                               fluidRow(
                                                 column(3, plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb", width = "400%", height = "600px"))),
-
+                                          uiOutput("Text_31_Days_Eligible_Referals_Treated_Compare"),
                                               fluidRow(
                                                 column(3, plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb_compare", width = "400%", height = "600px"))
                                               )
@@ -78,7 +81,9 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                               fluidRow(
                                                 column(6,
                                                        h2("62 Days Waiting Time Standard Overview", style = "color:  #336699 ; font-weight: 600"))),
-                                              
+                                              h4("This section provides a summary of NHS Scotland’s performance on cancer waiting times across geographic Health Board areas. It offers key insights into how quickly patients begin treatment following a cancer diagnosis, highlighting regional variation in meeting national waiting time standards. This supports policy planning, performance monitoring, and service improvement efforts across the cancer care pathway.
+
+The page includes the ability to filter for different indicators relating to 62-Day Standard for Cancer Waiting Times. Use the filters below to update all visualizations on this page according to cancer type, Health Board, and time period. "),
                                               fluidRow(
                                                 
                                                 column(3, selectInput("hb_name_waiting_times", label = "Select Healthboard",
@@ -103,6 +108,7 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                               fluidRow(
                                                 column(3, plotlyOutput("cancer_waiting_list_overview_62_days_treatmenthb", width = "400%", height = "600px"))),
                                               
+                                              uiOutput("Text_62_Days_Eligible_Referals_Treated_Compare"),
                                               fluidRow(
                                                 column(3, plotlyOutput("cancer_waiting_list_overview_62_days_treatmenthb_compare", width = "400%", height = "600px")))
                                               
