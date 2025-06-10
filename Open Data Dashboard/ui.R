@@ -1,4 +1,8 @@
 #################################
+library(shinyjs)
+
+useShinyjs()
+
 source("UI/Information UI.R")
 source("UI/Reference File Download.R")
 source("UI/Commentary Files/Roadmap.R")
