@@ -90,3 +90,112 @@ output$Cancer_boxplot_Text <- renderText({
     "<br>"
   ))
 })
+
+output$Text_31_Days_Eligible_Referals <- renderText({
+  
+ cancer_label <- if (input$Cancer_Type_Input_Waiting_Times_Select == "All Cancer Types") {
+    "All"
+  } else if (input$Cancer_Type_Input_Waiting_Times_Select == "Head & Neck") {
+    "Head and Neck"
+  } else {
+    input$Cancer_Type_Input_Waiting_Times_Select
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Eligible Referals Submitted from All Sources for Cancer Treatment in", input$hb_name_waiting_times, "for", cancer_label, "Cancer", "</div>"),
+    "<br>"
+  ))
+})
+
+output$Text_62_Days_Eligible_Referals <- renderText({
+  
+  cancer_label <- if (input$Cancer_Type_Input_Waiting_Times_Select_62 == "All Cancer Types") {
+    "All"
+  } else if (input$Cancer_Type_Input_Waiting_Times_Select_62 == "Head & Neck") {
+    "Head and Neck"
+  } else {
+    input$Cancer_Type_Input_Waiting_Times_Select_62
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Urgent Referrals Submitted from Sources for Cancer Treatment in", input$hb_name_waiting_times_62, "for", cancer_label, "Cancer", "</div>"),
+    "<br>"
+  ))
+})
+
+
+
+output$Text_31_Days_Eligible_Referals_Treated <- renderText({
+  
+  cancer_label <- if (input$Cancer_Type_Input_Waiting_Times_Select == "All Cancer Types") {
+    "All"
+  } else if (input$Cancer_Type_Input_Waiting_Times_Select == "Head & Neck") {
+    "Head and Neck"
+  } else {
+    input$Cancer_Type_Input_Waiting_Times_Select
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Eligible Referals Submitted from All Sources for Cancer Treatment that started their first treatment within 31 days of their decision to treat in", input$hb_name_waiting_times, "for", cancer_label, "Cancer broken down by Healthboard of Treatment", "in", input$Cancer_Quarter_Waiting_Times, "</div>"),
+    "<br>"
+  ))
+})
+
+
+output$Text_62_Days_Eligible_Referals_Treated <- renderText({
+  
+  cancer_label <- if (input$Cancer_Type_Input_Waiting_Times_Select_62 == "All Cancer Types") {
+    "All"
+  } else if (input$Cancer_Type_Input_Waiting_Times_Select_62 == "Head & Neck") {
+    "Head and Neck"
+  } else {
+    input$Cancer_Type_Input_Waiting_Times_Select_62
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Urgents Referals Submitted from Sources for Cancer Treatment that started their first treatment within 62 days of their decision to treat in", input$hb_name_waiting_times, "for", cancer_label, "Cancer broken down by Healthboard of Treatment", "in", input$Cancer_Quarter_Waiting_Times_62, "</div>"),
+    "<br>"
+  ))
+
+})
+
+output$Text_31_Days_Eligible_Referals_Treated_Compare <- renderText({
+  
+  cancer_label <- if (input$Cancer_Type_Input_Waiting_Times_Select == "All Cancer Types") {
+    "All"
+  } else if (input$Cancer_Type_Input_Waiting_Times_Select == "Head & Neck") {
+    "Head and Neck"
+  } else {
+    input$Cancer_Type_Input_Waiting_Times_Select
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Eligible Referals Submitted from All Sources for Cancer Treatment that started their first treatment within 31 days of their decision to treat in", input$hb_name_waiting_times, "for", cancer_label, "Cancer broken down by Healthboard of Treatment", "</div>"),
+    "<br>"
+  ))
+})
+
+
+
+output$Text_62_Days_Eligible_Referals_Treated_Compare <- renderText({
+  
+  cancer_label <- if (input$Cancer_Type_Input_Waiting_Times_Select_62 == "All Cancer Types") {
+    "All"
+  } else if (input$Cancer_Type_Input_Waiting_Times_Select_62 == "Head & Neck") {
+    "Head and Neck"
+  } else {
+    input$Cancer_Type_Input_Waiting_Times_Select_62
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Urgents Referals Submitted from Sources for Cancer Treatment that started their first treatment within 62 days of their decision to treat in", input$hb_name_waiting_times, "for", cancer_label, "Cancer broken down by Healthboard of Treatment", "</div>"),
+    "<br>"
+  ))
+  
+})
