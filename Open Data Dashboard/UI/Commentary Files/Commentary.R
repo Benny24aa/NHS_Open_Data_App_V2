@@ -127,13 +127,13 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                        tags$li("Data Last Updated: 26 March 2025")),
                                      
                                      
-                                     # p(h3("Dataset Dictionary", style = "color:  #336699 ; font-weight: 600")),
-                                     # h4("The dataset includes the following columns:"),
-                                     # fluidRow(
-                                     #   column(12,
-                                     #          dataTableOutput('')
-                                     #   )
-                                     # ) 
+                                     p(h3("Dataset Dictionary", style = "color:  #336699 ; font-weight: 600")),
+                                     h4("The dataset includes the following columns:"),
+                                     fluidRow(
+                                       column(12,
+                                              dataTableOutput('cancer_31day_metadata_table')
+                                       )
+                                     )
                                    ), # end of conditional panel
                                    
                                    conditionalPanel(
@@ -165,14 +165,15 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                        tags$li("Data Last Updated: 26 March 2025")),
                                      
                                      
-                                     # p(h3("Dataset Dictionary", style = "color:  #336699 ; font-weight: 600")),
-                                     # h4("The dataset includes the following columns:"),
-                                     # fluidRow(
-                                     #   column(12,
-                                     #          dataTableOutput('')
-                                     #   )
-                                     # ) 
+                                     p(h3("Dataset Dictionary", style = "color:  #336699 ; font-weight: 600")),
+                                     h4("The dataset includes the following columns:"),
+                                     fluidRow(
+                                       column(12,
+                                              dataTableOutput('cancer_62day_metadata_table')
+                                       )
+                                     )
                                    ) # end of conditional panel
                                    
                                    
                          ))) #End of TabPanel
+
