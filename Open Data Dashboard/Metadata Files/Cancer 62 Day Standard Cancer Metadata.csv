@@ -1,0 +1,11 @@
+Column,Type,Label,Description
+Quarter,text,Calendar Year Quarter data pertains to,
+HB,text,Health board of receipt of referral,Health board labels
+HBQF,text,"Qualifier for the health board of receipt of referral, denotes Scotland totals",Qualifier information
+HBT,text,Health Board of first treatment,"""Health board labels Special health board labels"""
+CancerType,text,Cancer Type recorded,
+CancerTypeQF,text,Cancer Type recorded statistical qualifiers,Qualifier information
+NumberOfEligibleReferrals62DayStandard,numeric,"Urgent referral submitted with a suspicion of cancer by a GP or GDP, or direct referral to hospital (self, GP, or NHS 24 referral to A&E or other), or referral from a National Cancer Screening Programme, excluding patients who had a clinically complex pathway, who died before treatment or refused treatment.",
+NumberOfEligibleReferrals62DayStandardQF,text,Qualifier for the number of Eligible Referrals in the 62 Day standard,Qualifier information
+NumberOfEligibleReferralsTreatedWithin62Days,numeric,"Urgent referral submitted with a suspicion of cancer by a GP or GDP, or direct referral to hospital (self, GP, or NHS 24 referral to A&E or other), or referral from a National Cancer Screening Programme, excluding patients who had a clinically complex pathway, who died before treatment or refused treatment, that started their first treatment within 61 days of receipt of referral.",
+NumberOfEligibleReferralsTreatedWithin62DaysQF,text,Qualifier for the number of Eligible Referrals Treated within 62 Day standard,Qualifier information
