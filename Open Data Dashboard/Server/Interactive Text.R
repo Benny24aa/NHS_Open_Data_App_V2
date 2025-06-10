@@ -90,3 +90,24 @@ output$Cancer_boxplot_Text <- renderText({
     "<br>"
   ))
 })
+
+output$Text_31_Days_Eligible_Referals <- renderText({
+  
+ cancer_label <- if (input$Cancer_Type_Input_Waiting_Times_Select == "All Cancer Types") {
+    "All"
+  } else if (input$Cancer_Type_Input_Waiting_Times_Select == "Head & Neck") {
+    "Head and Neck"
+  } else {
+    input$Cancer_Type_Input_Waiting_Times_Select
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Eligible Referals Submitted from All Sources for Cancer Treatment in", input$hb_name_waiting_times, "for", cancer_label, "Cancer", "</div>"),
+    "<br>"
+  ))
+})
+
+
+
+# tooltip_1 <- c(paste0("Health Board: ", input$hb_name_waiting_times, "<br>", "Quarter: ", Cancer_Waiting_Times_31_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals 31 Day Standard : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferrals31DayStandard))
