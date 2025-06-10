@@ -120,7 +120,7 @@ output$Text_62_Days_Eligible_Referals <- renderText({
   
   HTML(paste0(
     "<br>",  # Adds space above the text
-    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Eligible Referals Submitted from All Sources for Cancer Treatment in", input$hb_name_waiting_times_62, "for", cancer_label, "Cancer", "</div>"),
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Urgent Referrals Submitted from Sources for Cancer Treatment in", input$hb_name_waiting_times_62, "for", cancer_label, "Cancer", "</div>"),
     "<br>"
   ))
 })
@@ -143,6 +143,26 @@ output$Text_31_Days_Eligible_Referals_Treated <- renderText({
     "<br>"
   ))
 })
+
+
+output$Text_62_Days_Eligible_Referals_Treated <- renderText({
+  
+  cancer_label <- if (input$Cancer_Type_Input_Waiting_Times_Select_62 == "All Cancer Types") {
+    "All"
+  } else if (input$Cancer_Type_Input_Waiting_Times_Select_62 == "Head & Neck") {
+    "Head and Neck"
+  } else {
+    input$Cancer_Type_Input_Waiting_Times_Select_62
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>","Number of Urgents Referals Submitted from Sources for Cancer Treatment that started their first treatment within 62 days of their decision to treat in", input$hb_name_waiting_times, "for", cancer_label, "Cancer broken down by Healthboard of Treatment", "in", input$Cancer_Quarter_Waiting_Times_62, "</div>"),
+    "<br>"
+  ))
+
+})
+
 
 
 # tooltip_1 <- c(paste0("Health Board: ", Cancer_Waiting_Times_31_days_T$Health_Board_Patient_Treatment, "<br>", "Quarter: ", input$Cancer_Quarter_Waiting_Times, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals Treated Within 31Days : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferralsTreatedWithin31Days))
