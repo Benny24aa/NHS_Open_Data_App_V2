@@ -89,7 +89,7 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                                                       choices = unique(Cancer_Waiting_Times_62_days_T$CancerType,
                                                                                        multiple = TRUE)))),
                                               
-                                              
+                                              uiOutput("Text_62_Days_Eligible_Referals"),
                                               fluidRow(
                                                 column(3, plotlyOutput("cancer_waiting_list_overview_62_days", width = "400%", height = "600px"))),
                                               
