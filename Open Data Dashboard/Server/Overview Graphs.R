@@ -214,16 +214,19 @@ output$cancer_waiting_list_overview_62_days <- renderPlotly({
   
   Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
     group_by(Health_Board_Patient, CancerType, Quarter) %>% 
-    summarise(NumberOfEligibleReferrals62DayStandard = sum(NumberOfEligibleReferrals62DayStandard), .groups = 'drop') 
+    summarise(NumberOfEligibleReferrals62DayStandard = sum(NumberOfEligibleReferrals62DayStandard), .groups = 'drop') %>% 
+    filter(Health_Board_Patient %in% input$hb_name_waiting_times)
   
+  
+  tooltip_1 <- c(paste0("Health Board: ", input$hb_name_waiting_times, "<br>", "Quarter: ", Cancer_Waiting_Times_62_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select_62, "<br>", "Number Of Eligible Referrals 62 Day Standard : ", Cancer_Waiting_Times_62_days_T$NumberOfEligibleReferrals62DayStandard))
   
   
   Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
-    filter(Health_Board_Patient %in% input$hb_name_waiting_times) %>% 
     plot_ly(x = ~ Quarter,
             y = ~ NumberOfEligibleReferrals62DayStandard,
             type = 'scatter',
             mode = 'lines',
+            text= tooltip_1,
             hoverinfo="text") %>% 
     layout(xaxis = list(title = "Quarter"),
            yaxis = list(title = "Referrals 62 Day Standard"))
