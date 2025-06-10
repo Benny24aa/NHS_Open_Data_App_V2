@@ -161,15 +161,18 @@ output$cancer_waiting_list_overview_31_days_treatmenthb <- renderPlotly({
   Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
    select(-Percent_31_Days) %>%  ### Will only consider patients from initial Health Board before treatment for this graph
   filter(Quarter == input$Cancer_Quarter_Waiting_Times) %>% 
-    filter(Health_Board_Patient %in% input$hb_name_waiting_times) 
+    filter(Health_Board_Patient %in% input$hb_name_waiting_times)  %>% 
+    filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select)
 
+  tooltip_1 <- c(paste0("Health Board: ", Cancer_Waiting_Times_31_days_T$Health_Board_Patient_Treatment, "<br>", "Quarter: ", input$Cancer_Quarter_Waiting_Times, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals Treated Within 31Days : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferralsTreatedWithin31Days))
+  
   
   Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
-    filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select) %>% 
     plot_ly(x = ~ Health_Board_Patient_Treatment,
             y = ~ NumberOfEligibleReferralsTreatedWithin31Days,
             color = ~ Health_Board_Patient_Treatment,
             type = 'bar',
+            text = tooltip_1,
             hoverinfo="text") %>% 
     layout(xaxis = list(title = "Quarter"),
            yaxis = list(title = "Number of Patients Referred and Treated by a Healthboard in 31 days"))
