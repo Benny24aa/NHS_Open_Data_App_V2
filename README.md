@@ -41,4 +41,8 @@ This project is licensed under the MIT License.
 *  UI files are split into different folders based on their category
 *  Global files are split into different folders based on their category
 
+```bash
+RShiny -R
+```
+
 
