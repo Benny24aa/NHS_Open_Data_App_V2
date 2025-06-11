@@ -23,15 +23,31 @@ Upon launching the app, users are presented with a dashboard containing various 
 * Data Visualization: Interactive charts and graphs.
 * Data Export: Option to download datasets.
 
-# Contributing
+# Deploying or Using Dashboard
 
-Contributions are welcome! Please fork the repository, create a new branch, and submit a pull request with your proposed changes.
+1. Clone the repository
+```bash
+git clone https://github.com/Benny24aa/NHS_Open_Data_App_V2.git
+cd NHS_Open_Data_App_V2
+```
+2. Open the R Project
+If you’re using RStudio:
+```bash
+open NHS_Open_Data_App_V2.Rproj  # macOS
+# or use RStudio to open the .Rproj file on Windows/Linux
+```
+3. Run the Shiny App
+Start R in the project directory and run:
+```bash
+Rscript -e "shiny::runApp('Open Data Dashboard')"
+```
+4. Install Required Packages (if needed)
+Make sure you have the required R packages installed:
+```bash
+install.packages(c("shiny", "dplyr", "ggplot2", "plotly", "DT"))
+```
 
-# License
-
-This project is licensed under the MIT License.
-
-### App code layout
+# App code layout
 
 * The Shiny App contains an Main UI, Server and Global File which sources in mulitple smaller files where necessary
 * `www` contains static images as well as additional css and javascript code
@@ -41,8 +57,13 @@ This project is licensed under the MIT License.
 *  UI files are split into different folders based on their category
 *  Global files are split into different folders based on their category
 
-```bash
-RShiny -R
-```
+# Contributing
+
+Contributions are welcome! Please fork the repository, create a new branch, and submit a pull request with your proposed changes.
+
+# License
+
+This project is licensed under the MIT License.
+
 
 
