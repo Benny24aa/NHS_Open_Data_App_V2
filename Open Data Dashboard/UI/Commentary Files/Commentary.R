@@ -7,11 +7,21 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                                         choices = com_list, status = "primary",
                                                         direction = "vertical", justified = T)),
                          mainPanel(width = 9,
+              
+  
                                    
+                                   radioButtons("metadata_commentary_switch", 
+                                                label = "View:", 
+                                                choices = c("Metadata", "Commentary"), 
+                                                selected = "Metadata", 
+                                                inline = TRUE,
+                                                width = '100%'),  # Full width, can adjust as needed
                                    
                                    
                                    conditionalPanel(
                                      condition= 'input.com_select == "Cancer_Mortality_Section"',
+                                     
+                                     
                                      
                                      p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
                                      h4("This dataset provides detailed statistics on cancer mortality across Scotland, enabling health professionals and policymakers to:"),
