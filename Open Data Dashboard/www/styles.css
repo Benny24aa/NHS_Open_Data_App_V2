@@ -115,3 +115,10 @@
   color: #336699;
 }
 
+#dynamic_title_metadata_commentary {
+  margin-bottom: 0 !important;
+}
+
+#dynamic_title_metadata_commentary + p h3 {
+  margin-top: 0 !important;
+}
