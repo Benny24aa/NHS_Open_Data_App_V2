@@ -31,26 +31,14 @@ function(input, output) {
     source(file.path("Server/Overview Graphs.R"), local = TRUE)$value
     source(file.path("Server/Commentary and Metadata.R"), local = TRUE)$value
     source(file.path("Server/Interactive Text.R"), local = TRUE)$value
+    source(file.path("Server/Feedback.R"), local = TRUE)$value
+    source(file.path("Server/Report a Bug.R"), local = TRUE)$value
+   
     
     
-    ##### Feedback and report bug buttons
-    
-    observeEvent(input$submit_feedback, {
-      showModal(modalDialog(
-        title = "Thank You!",
-        "Your feedback has been submitted.",
-        easyClose = TRUE
-      ))
-    })
-    
-    observeEvent(input$submit_bug, {
-      showModal(modalDialog(
-        title = "Thank You!",
-        "Your bug report has been submitted.",
-        easyClose = TRUE
-      ))
-    })
   
+    
+ 
 
   }# End of Server
 
