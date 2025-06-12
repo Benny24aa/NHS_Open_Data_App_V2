@@ -10,6 +10,8 @@ source("UI/Commentary Files/Using Dashboard.R")
 source("UI/Commentary Files/Commentary.R")
 source("UI/Cancer/Cancer UI Setup.R")
 source("UI/Cancer/Cancer Waiting Times.R")
+source("UI/feedback.R")
+source("UI/report a bug.R")
 
 #################################
 navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
@@ -26,7 +28,11 @@ navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
            navbarMenu("Cancer", icon = icon("disease"), Cancer_UI_Setup, Cancer_Waiting_List),
            navbarMenu("Diagnostics Waiting Times", icon = icon("microscope")),
            navbarMenu("A&E Waiting Times", icon = icon("hospital")),
-           navbarMenu("Download Data",icon = icon("table"), reference_file_download)
+           navbarMenu("Download Data",icon = icon("table"), reference_file_download),
+           Feedback,
+           Report_Bug
+          
+           
 
            
            
