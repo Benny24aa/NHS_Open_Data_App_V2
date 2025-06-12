@@ -63,6 +63,51 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                 
                                      
                                    ), #end of conditional panel
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 conditionalPanel(
+                                   condition = 'input.com_select == "Cancer_Mortality_Section" && input.metadata_commentary_switch == "Commentary"',
+                                   
+                                   
+                                   p(h3("Commentary", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
+                                   h4(""),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li("")),
+                                   
+                    
+                                   p(h3("Future Developments", style = "color:  #336699 ; font-weight: 600")),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""))
+                                   
+                                   
+                                 
+                                   
+                                   
+                                 ), #end of conditional panel
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
                                    
                                    
                                    
@@ -107,7 +152,34 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                      
                                    ), #end of conditional panel
                                    
+                                 conditionalPanel(
+                                   condition = 'input.com_select == "Cancer_Incidence_Section" && input.metadata_commentary_switch == "Commentary"',
                                    
+                                   
+                                   p(h3("Commentary", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
+                                   h4(""),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li("")),
+                                   
+                                   
+                                   p(h3("Future Developments", style = "color:  #336699 ; font-weight: 600")),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""))
+                                   
+                                   
+                                   
+                                   
+                                   
+                                 ), #end of conditional panel
+                                 
                                    
                                    
                                    
@@ -148,6 +220,39 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                        )
                                      )
                                    ), # end of conditional panel
+                                 
+                                 
+                                 
+                                 conditionalPanel(
+                                   condition = 'input.com_select == "Cancer_Waiting_List_31_Day_Section"  && input.metadata_commentary_switch == "Commentary"',
+                                   
+                                   
+                                   p(h3("Commentary", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
+                                   h4(""),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li("")),
+                                   
+                                   
+                                   p(h3("Future Developments", style = "color:  #336699 ; font-weight: 600")),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""))
+                                   
+                                   
+                                   
+                                   
+                                   
+                                 ), #end of conditional panel
+                                 
+                                 
+                  
                                    
                                    conditionalPanel(
                                      condition= 'input.com_select == "Cancer_Waiting_List_62_Day_Section" && input.metadata_commentary_switch == "Metadata"',
@@ -185,7 +290,35 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                               dataTableOutput('cancer_62day_metadata_table')
                                        )
                                      )
-                                   ) # end of conditional panel
+                                   ), # end of conditional panel
+                                 
+                                 conditionalPanel(
+                                   condition = 'input.com_select == "Cancer_Waiting_List_62_Day_Section"  && input.metadata_commentary_switch == "Commentary"',
+                                   
+                                   
+                                   p(h3("Commentary", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
+                                   h4(""),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li("")),
+                                   
+                                   
+                                   p(h3("Future Developments", style = "color:  #336699 ; font-weight: 600")),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""))
+                                   
+                                   
+                                   
+                                   
+                                   
+                                 ) #end of conditional panel
                                    
                                    
                          ))) #End of TabPanel
