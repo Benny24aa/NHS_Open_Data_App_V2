@@ -1,5 +1,6 @@
 Commentary <- tabPanel(title = "Metadata and Commentary", 
                        
+                      
                        
                        sidebarLayout(
                          sidebarPanel(width = 3,
@@ -7,23 +8,24 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                                         choices = com_list, status = "primary",
                                                         direction = "vertical", justified = T)),
                          mainPanel(width = 9,
-              
-  
                                    
-                                   radioButtons("metadata_commentary_switch", 
-                                                label = "View:", 
-                                                choices = c("Metadata", "Commentary"), 
-                                                selected = "Metadata", 
-                                                inline = TRUE,
-                                                width = '100%'),  # Full width, can adjust as needed
+                             
+                                   
+                                 fluidRow(column(6, uiOutput("dynamic_title_metadata_commentary")),
+                                          column(6,  radioButtons("metadata_commentary_switch", 
+                                                                  label = "", 
+                                                                  choices = c("Metadata", "Commentary"), 
+                                                                  selected = "Metadata", 
+                                                                  inline = TRUE,
+                                                                  width = '100%'),  # Full width, can adjust as needed )
+                                            )),
+                                  
                                    
                                    
                                    conditionalPanel(
                                      condition= 'input.com_select == "Cancer_Mortality_Section"',
-                                     
-                                     
-                                     
-                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
+          
+                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
                                      h4("This dataset provides detailed statistics on cancer mortality across Scotland, enabling health professionals and policymakers to:"),
                                      tags$ul(
                                        tags$li("Monitor trends in cancer-related deaths over time."),
