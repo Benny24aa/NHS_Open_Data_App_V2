@@ -29,8 +29,8 @@ navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
            navbarMenu("Diagnostics Waiting Times", icon = icon("microscope")),
            navbarMenu("A&E Waiting Times", icon = icon("hospital")),
            navbarMenu("Download Data",icon = icon("table"), reference_file_download),
-           Feedback,
-           Report_Bug
+           navbarMenu("Contact and Feedback", icon = icon("envelope"),Feedback,Report_Bug )
+        
           
            
 
