@@ -23,7 +23,8 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                    
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer_Mortality_Section"',
+                                     condition = 'input.com_select == "Cancer_Mortality_Section" && input.metadata_commentary_switch == "Metadata"',
+                                     
           
                                      p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
                                      h4("This dataset provides detailed statistics on cancer mortality across Scotland, enabling health professionals and policymakers to:"),
@@ -66,7 +67,7 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                    
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer_Incidence_Section"',
+                                     condition = 'input.com_select == "Cancer_Incidence_Section" && input.metadata_commentary_switch == "Metadata"', 
                                      
                                      p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
                                      h4("This dataset provides detailed statistics on new cancer registrations across Scotland, enabling health professionals and policymakers to:"),
@@ -111,7 +112,7 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                    
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer_Waiting_List_31_Day_Section"',
+                                     condition= 'input.com_select == "Cancer_Waiting_List_31_Day_Section" && input.metadata_commentary_switch == "Metadata"',
                                      p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
                                      h4("This dataset provides detailed statistics on cancer treatment waiting times across Scotland, specifically focused on the national 31-Day Standard. It is designed to help:"),
                                      tags$ul(
@@ -149,7 +150,7 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                    ), # end of conditional panel
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer_Waiting_List_62_Day_Section"',
+                                     condition= 'input.com_select == "Cancer_Waiting_List_62_Day_Section" && input.metadata_commentary_switch == "Metadata"',
                                      p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
                                      h4("This dataset provides detailed statistics on cancer treatment waiting times across Scotland, specifically focused on the national 62-Day Standard. It is designed to help:"),
                                      tags$ul(
