@@ -57,13 +57,14 @@
 
 
 
+
 /* INFO BUTTONS */
 
 /* Change the buttons to light blue background with dark blue font - must go above the radio button styling otherwise it is overridden */
 .btn:not(.dropdown-toggle):not(.btn-primary):not(.bs-select-all):not(.bs-deselect-all) {
   margin: 0;
   font-weight: bold;
-  background-color: #E6F2FB;
+  background-color:  white;
   color: #0078D4;
   border-color: #B3D7F2;
   
@@ -73,7 +74,7 @@
 /* FILTERS */
 
 /* this adds light purple background behind the title of the data type selectors */
-.form-group {
+.form-group:not(#metadata_commentary_switch) {
   margin-bottom: 5px;
   background-color: #ECEBF3;
   border-radius: 10px;
@@ -87,3 +88,30 @@
     padding:5px 5px 0 5px ;
     border-radius: 10px;
   } 
+  
+/* Custom radio button style for metadata_commentary_switch only */
+#metadata_commentary_switch .radio {
+  display: inline-block;
+  margin-right: 15px;
+}
+
+#metadata_commentary_switch .radio label {
+  background-color: white;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-right: 5px;
+}
+
+#metadata_commentary_switch .radio input[type='radio'] {
+  display: none;
+}
+
+#metadata_commentary_switch .radio input[type='radio']:checked + label {
+  background-color: #e6f0ff;
+  border-color: #336699;
+  color: #336699;
+}
+
