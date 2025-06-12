@@ -29,7 +29,11 @@ navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
            navbarMenu("Diagnostics Waiting Times", icon = icon("microscope")),
            navbarMenu("A&E Waiting Times", icon = icon("hospital")),
            navbarMenu("Download Data",icon = icon("table"), reference_file_download),
+<<<<<<< HEAD
            navbarMenu("Contact and Feedback", icon = icon("envelope"),Feedback,Report_Bug )
+=======
+           navbarMenu("Contact us", icon = icon("envelope"),Feedback,Report_Bug )
+>>>>>>> 14ce1686df0442f800cfb2d7806470f383719a46
         
           
            
