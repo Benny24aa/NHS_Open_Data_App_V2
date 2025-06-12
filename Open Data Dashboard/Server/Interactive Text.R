@@ -199,3 +199,11 @@ output$Text_62_Days_Eligible_Referals_Treated_Compare <- renderText({
   ))
   
 })
+
+output$dynamic_title_metadata_commentary <- renderUI({
+  view <- switch(input$metadata_commentary_switch,
+                 "Metadata" = "Metadata Information",
+                 "Commentary" = "Commentary and Future Developments ")
+
+  div(style = 'color: #336699; font-size: 30px; font-weight: bold; margin-bottom: 5px;', view)
+})

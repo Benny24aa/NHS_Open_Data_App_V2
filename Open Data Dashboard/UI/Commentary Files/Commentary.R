@@ -1,5 +1,6 @@
 Commentary <- tabPanel(title = "Metadata and Commentary", 
                        
+                      
                        
                        sidebarLayout(
                          sidebarPanel(width = 3,
@@ -8,12 +9,24 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                                         direction = "vertical", justified = T)),
                          mainPanel(width = 9,
                                    
+                             
+                                   
+                                 fluidRow(column(6, uiOutput("dynamic_title_metadata_commentary")),
+                                          column(6,  radioButtons("metadata_commentary_switch", 
+                                                                  label = "View", 
+                                                                  choices = c("Metadata", "Commentary"), 
+                                                                  selected = "Metadata", 
+                                                                  inline = TRUE,
+                                                                  width = '100%'),  # Full width, can adjust as needed )
+                                            )),
+                                  
                                    
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer_Mortality_Section"',
+                                     condition = 'input.com_select == "Cancer_Mortality_Section" && input.metadata_commentary_switch == "Metadata"',
                                      
-                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
+          
+                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
                                      h4("This dataset provides detailed statistics on cancer mortality across Scotland, enabling health professionals and policymakers to:"),
                                      tags$ul(
                                        tags$li("Monitor trends in cancer-related deaths over time."),
@@ -50,13 +63,58 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                 
                                      
                                    ), #end of conditional panel
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 conditionalPanel(
+                                   condition = 'input.com_select == "Cancer_Mortality_Section" && input.metadata_commentary_switch == "Commentary"',
+                                   
+                                   
+                                   p(h3("Commentary", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
+                                   h4(""),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li("")),
+                                   
+                    
+                                   p(h3("Future Developments", style = "color:  #336699 ; font-weight: 600")),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""))
+                                   
+                                   
+                                 
+                                   
+                                   
+                                 ), #end of conditional panel
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
                                    
                                    
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer_Incidence_Section"',
+                                     condition = 'input.com_select == "Cancer_Incidence_Section" && input.metadata_commentary_switch == "Metadata"', 
                                      
-                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
+                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
                                      h4("This dataset provides detailed statistics on new cancer registrations across Scotland, enabling health professionals and policymakers to:"),
                                      tags$ul(
                                        tags$li("Monitor trends in cancer over time."),
@@ -94,13 +152,40 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                      
                                    ), #end of conditional panel
                                    
+                                 conditionalPanel(
+                                   condition = 'input.com_select == "Cancer_Incidence_Section" && input.metadata_commentary_switch == "Commentary"',
                                    
+                                   
+                                   p(h3("Commentary", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
+                                   h4(""),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li("")),
+                                   
+                                   
+                                   p(h3("Future Developments", style = "color:  #336699 ; font-weight: 600")),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""))
+                                   
+                                   
+                                   
+                                   
+                                   
+                                 ), #end of conditional panel
+                                 
                                    
                                    
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer_Waiting_List_31_Day_Section"',
-                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
+                                     condition= 'input.com_select == "Cancer_Waiting_List_31_Day_Section" && input.metadata_commentary_switch == "Metadata"',
+                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
                                      h4("This dataset provides detailed statistics on cancer treatment waiting times across Scotland, specifically focused on the national 31-Day Standard. It is designed to help:"),
                                      tags$ul(
                                        tags$li("Monitor how quickly patients begin cancer treatment after a decision to treat has been made."),
@@ -135,10 +220,43 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                        )
                                      )
                                    ), # end of conditional panel
+                                 
+                                 
+                                 
+                                 conditionalPanel(
+                                   condition = 'input.com_select == "Cancer_Waiting_List_31_Day_Section"  && input.metadata_commentary_switch == "Commentary"',
+                                   
+                                   
+                                   p(h3("Commentary", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
+                                   h4(""),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li("")),
+                                   
+                                   
+                                   p(h3("Future Developments", style = "color:  #336699 ; font-weight: 600")),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""))
+                                   
+                                   
+                                   
+                                   
+                                   
+                                 ), #end of conditional panel
+                                 
+                                 
+                  
                                    
                                    conditionalPanel(
-                                     condition= 'input.com_select == "Cancer_Waiting_List_62_Day_Section"',
-                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600")),
+                                     condition= 'input.com_select == "Cancer_Waiting_List_62_Day_Section" && input.metadata_commentary_switch == "Metadata"',
+                                     p(h3("Dataset Purpose", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
                                      h4("This dataset provides detailed statistics on cancer treatment waiting times across Scotland, specifically focused on the national 62-Day Standard. It is designed to help:"),
                                      tags$ul(
                                        tags$li("Monitor how quickly patients begin cancer treatment after a decision to treat has been made."),
@@ -172,7 +290,35 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                               dataTableOutput('cancer_62day_metadata_table')
                                        )
                                      )
-                                   ) # end of conditional panel
+                                   ), # end of conditional panel
+                                 
+                                 conditionalPanel(
+                                   condition = 'input.com_select == "Cancer_Waiting_List_62_Day_Section"  && input.metadata_commentary_switch == "Commentary"',
+                                   
+                                   
+                                   p(h3("Commentary", style = "color:  #336699 ; font-weight: 600; margin-top: 0;")),
+                                   h4(""),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li("")),
+                                   
+                                   
+                                   p(h3("Future Developments", style = "color:  #336699 ; font-weight: 600")),
+                                   tags$ul(
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""),
+                                     tags$li(""))
+                                   
+                                   
+                                   
+                                   
+                                   
+                                 ) #end of conditional panel
                                    
                                    
                          ))) #End of TabPanel
