@@ -30,6 +30,9 @@ navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
            navbarMenu("A&E Waiting Times", icon = icon("hospital")),
            navbarMenu("Download Data",icon = icon("table"), reference_file_download),
            navbarMenu("Contact and Feedback", icon = icon("envelope"),Feedback,Report_Bug )
+
+   
+
         
           
            
