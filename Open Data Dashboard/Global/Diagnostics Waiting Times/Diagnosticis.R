@@ -80,13 +80,6 @@ diagnostics_waiting_times_endoscopy_per_100k<- diagnostics_waiting_times_endosco
   select(-AllAges)%>% 
   filter(!is.na(Rate))
 
-# Scotland data added and filter for total admissions from day 0
-diagnostics_all_total_scotland <- diagnostics_waiting_times %>%
-  filter(WaitingTime == "0-7 days") %>%
-  select(-HBName, -DiagnosticTestType, -DiagnosticTestDescription, -WaitingTime) %>%
-  filter(!is.na(NumberOnList)) %>%
-  group_by(MonthEnding) %>%
-  summarise(Total_On_Waiting_List = sum(NumberOnList), .groups = 'drop')
 
 
 rm(diagnostics_waiting_times_endoscopy, diagnostics_waiting_times_imaging) # No longer needed
