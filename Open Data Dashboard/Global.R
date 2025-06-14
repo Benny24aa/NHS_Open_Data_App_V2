@@ -3,6 +3,12 @@ library(zoo)
 library(leaflet)
 library(sf)
 library(shinyjs)
+library(rsconnect)
+library(curl)
+library(httr)
+library(openssl)
+
+options(httr_config = httr::config(ssl_verifypeer = FALSE))
 ##### Sourcing Reference Files 
 source("Global/Geo File.R")
 
