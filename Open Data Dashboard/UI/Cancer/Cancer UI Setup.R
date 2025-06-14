@@ -96,8 +96,23 @@ column(3, selectInput("graphtype_input_compare", label = "Select statistical gra
 
 column(3, selectInput("Cancer_Type_Input_compare", label = "Select the cancer type you wish to explore",
                       choices = unique(cancer_types$CancerSite,
-                                       multiple = TRUE)))
+                                       multiple = TRUE))),
 
+
+column(3,
+       pickerInput(
+         inputId = "Healthboard_Input_compare",
+         label = "Select Health Boards",
+         choices = unique(HB_List$HBName),
+         selected = head(unique(HB_List$HBName), 3), 
+         multiple = TRUE,
+         options = list(
+           `actions-box` = TRUE,
+           `live-search` = TRUE,
+           `selected-text-format` = "count > 3"
+         )
+       )
+)
 
 
 ),
