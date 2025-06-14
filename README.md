@@ -1,6 +1,6 @@
 # NHS Scotland Open Data Application
 
-* This is an application that I have built in my personal time. The R shiny app will be available to the public soon.
+* This is an application that I have built in my personal time. The R shiny app is [NHS Open Data Application](https://benny24aa.shinyapps.io/NHSOpenDataDashboard/) 
 * The data underlying the app can be found on the [PHS open data website (external link)](https://www.opendata.nhs.scot/)
 
 # Features
