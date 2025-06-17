@@ -98,17 +98,7 @@ Commentary <- tabPanel(title = "Metadata and Commentary",
                                  
                                  
                                  
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                   
+                        
                                    
                                    
                                    conditionalPanel(
