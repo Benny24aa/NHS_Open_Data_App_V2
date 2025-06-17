@@ -202,8 +202,18 @@ output$Text_62_Days_Eligible_Referals_Treated_Compare <- renderText({
 
 output$dynamic_title_metadata_commentary <- renderUI({
   view <- switch(input$metadata_commentary_switch,
-                 "Metadata" = "Metadata Information",
-                 "Commentary" = "Commentary and Future Developments ")
+                 "Metadata" = "Metadata ",
+                 "Commentary" = "Commentary ")
+  
+  data_label <- switch(input$com_select,
+                       "Cancer_Mortality_Section" = "- Cancer Mortality",
+                       "Cancer_Incidence_Section" = "- Cancer Incidence",
+                       "Cancer_Waiting_List_31_Day_Section"= "- Cancer 31 Day Standard",
+                       "Cancer_Waiting_List_62_Day_Section"= "- Cancer 62 Day Standard"
+                       )
+  
+  full_title <- paste0(view, data_label)
+  
 
-  div(style = 'color: #336699; font-size: 30px; font-weight: bold; margin-bottom: 5px;', view)
+  div(style = 'color: #336699; font-size: 30px; font-weight: bold; margin-bottom: 5px;', full_title)
 })
