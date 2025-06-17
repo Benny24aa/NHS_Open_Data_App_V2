@@ -35,7 +35,7 @@ observeEvent(input$submit_feedback, {
 
 observeEvent(input$gdpr_modal,
              showModal(modalDialog( # creates a modal: a pop-up box that contains text information
-               title = "New content added and future updates",
+               title = "Feedback and Report Bug GDPR Information",
                h4("Giving Feedback and Reporting Bugs - GDPR Information"),
                h5("We value your feedback and are committed to protecting your privacy. By submitting this form, you agree to the collection and use of your data for the sole purpose of reviewing and responding to your feedback about the NHS Open Data Application."),
                h4("What we collect"),
