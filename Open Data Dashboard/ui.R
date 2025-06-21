@@ -35,8 +35,8 @@ navbarPage(id = "maintabid",
            information,
            navbarMenu("Dashboard Information",icon = icon("info"), DashboardUse, Roadmap, Commentary),
            navbarMenu("Cancer", icon = icon("disease"), Cancer_UI_Setup, Cancer_Waiting_List),
-           navbarMenu("Diagnostics Waiting Times", icon = icon("microscope")),
-           navbarMenu("A&E Waiting Times", icon = icon("hospital")),
+           Diagnsotics_UI,
+           navbarMenu("A&E Waiting Times", icon = icon("hospital"), ),
            reference_file_download,
            navbarMenu("Contact and Feedback", icon = icon("envelope"),Feedback,Report_Bug )
            ##### more soon
