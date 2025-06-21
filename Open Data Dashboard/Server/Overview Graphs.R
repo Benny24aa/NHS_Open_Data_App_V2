@@ -142,6 +142,11 @@ output$cancer_waiting_list_overview_31_days <- renderPlotly({
     filter(Health_Board_Patient %in% input$hb_name_waiting_times)
 
   
+  
+  Cancer_Waiting_Times_31_days_T$Quarter <- factor(Cancer_Waiting_Times_31_days_T$Quarter, 
+                                                   levels = sort(unique(Cancer_Waiting_Times_31_days_T$Quarter)), 
+                                                   ordered = TRUE)
+  
   tooltip_1 <- c(paste0("Health Board: ", input$hb_name_waiting_times, "<br>", "Quarter: ", Cancer_Waiting_Times_31_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals 31 Day Standard : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferrals31DayStandard))
   
   unique_quarters <- sort(unique(Cancer_Waiting_Times_31_days_T$Quarter))
@@ -157,6 +162,7 @@ output$cancer_waiting_list_overview_31_days <- renderPlotly({
             hoverinfo = "text") %>%
     layout(
       xaxis = list(title = "Quarter",
+                   tickmode = "array",
                    tickvals = tickvals,
                    ticktext = tickvals),
       yaxis = list(title = "Referrals 31 Day Standard")
@@ -200,6 +206,12 @@ output$cancer_waiting_list_overview_31_days_treatmenthb_compare <- renderPlotly(
     filter(Health_Board_Patient %in% input$hb_name_waiting_times) %>% 
     filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select)
   
+  
+  Cancer_Waiting_Times_31_days_T$Quarter <- factor(Cancer_Waiting_Times_31_days_T$Quarter, 
+                                                   levels = sort(unique(Cancer_Waiting_Times_31_days_T$Quarter)), 
+                                                   ordered = TRUE)
+  
+  
   tooltip_1 <- c(paste0("Health Board: ", Cancer_Waiting_Times_31_days_T$Health_Board_Patient_Treatment, "<br>", "Quarter: ", Cancer_Waiting_Times_31_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals Treated Within 31 Days : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferralsTreatedWithin31Days))
   
   unique_quarters <- sort(unique(Cancer_Waiting_Times_31_days_T$Quarter))
@@ -215,6 +227,7 @@ output$cancer_waiting_list_overview_31_days_treatmenthb_compare <- renderPlotly(
             hoverinfo="text") %>%
     layout(
       xaxis = list(title = "Quarter",
+                   tickmode = "array",
                    tickvals = tickvals,
                    ticktext = tickvals),
       yaxis = list(title = "Referrals 31 Day Standard")
@@ -243,6 +256,11 @@ output$cancer_waiting_list_overview_62_days <- renderPlotly({
     summarise(NumberOfEligibleReferrals62DayStandard = sum(NumberOfEligibleReferrals62DayStandard), .groups = 'drop') %>% 
     filter(Health_Board_Patient %in% input$hb_name_waiting_times)
   
+  Cancer_Waiting_Times_62_days_T$Quarter <- factor(Cancer_Waiting_Times_62_days_T$Quarter, 
+                                                   levels = sort(unique(Cancer_Waiting_Times_62_days_T$Quarter)), 
+                                                   ordered = TRUE)
+  
+  
   
   tooltip_1 <- c(paste0("Health Board: ", input$hb_name_waiting_times, "<br>", "Quarter: ", Cancer_Waiting_Times_62_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select_62, "<br>", "Number Of Eligible Referrals 62 Day Standard : ", Cancer_Waiting_Times_62_days_T$NumberOfEligibleReferrals62DayStandard))
   
@@ -258,6 +276,7 @@ output$cancer_waiting_list_overview_62_days <- renderPlotly({
             hoverinfo="text") %>%
     layout(
       xaxis = list(title = "Quarter",
+                   tickmode = "array",
                    tickvals = tickvals,
                    ticktext = tickvals),
       yaxis = list(title = "Referrals 62 Day Standard")
@@ -298,6 +317,9 @@ output$cancer_waiting_list_overview_62_days_treatmenthb_compare <- renderPlotly(
     filter(Health_Board_Patient %in% input$hb_name_waiting_times)  %>% 
     filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select_62)
   
+  Cancer_Waiting_Times_62_days_T$Quarter <- factor(Cancer_Waiting_Times_62_days_T$Quarter, 
+                                                   levels = sort(unique(Cancer_Waiting_Times_62_days_T$Quarter)), 
+                                                   ordered = TRUE)
   
   tooltip_1 <- c(paste0("Health Board: ", Cancer_Waiting_Times_62_days_T$Health_Board_Patient_Treatment, "<br>", "Quarter: ", Cancer_Waiting_Times_62_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select_62, "<br>", "Number Of Eligible Referrals Treated Within 62 Days : ", Cancer_Waiting_Times_62_days_T$NumberOfEligibleReferralsTreatedWithin62Days))
 
@@ -314,6 +336,7 @@ output$cancer_waiting_list_overview_62_days_treatmenthb_compare <- renderPlotly(
             hoverinfo="text") %>%
     layout(
       xaxis = list(title = "Quarter",
+                   tickmode = "array",
                    tickvals = tickvals,
                    ticktext = tickvals),
       yaxis = list(title = "Referrals 62 Day Standard")
