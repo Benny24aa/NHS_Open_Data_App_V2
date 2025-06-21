@@ -144,17 +144,25 @@ output$cancer_waiting_list_overview_31_days <- renderPlotly({
   
   tooltip_1 <- c(paste0("Health Board: ", input$hb_name_waiting_times, "<br>", "Quarter: ", Cancer_Waiting_Times_31_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals 31 Day Standard : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferrals31DayStandard))
   
-    
+  unique_quarters <- sort(unique(Cancer_Waiting_Times_31_days_T$Quarter))
+  tickvals <- unique_quarters[seq(1, length(unique_quarters), by = 8)]  # show every 2nd quarter
   
-  Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
-    plot_ly(x = ~ Quarter,
-            y = ~ NumberOfEligibleReferrals31DayStandard,
+  # Plot
+  Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>%
+    plot_ly(x = ~Quarter,
+            y = ~NumberOfEligibleReferrals31DayStandard,
             type = 'scatter',
             mode = 'lines',
             text = tooltip_1,
-            hoverinfo="text") %>% 
-    layout(xaxis = list(title = "Quarter"),
-           yaxis = list(title = "Referrals 31 Day Standard"))
+            hoverinfo = "text") %>%
+    layout(
+      xaxis = list(title = "Quarter",
+                   tickvals = tickvals,
+                   ticktext = tickvals),
+      yaxis = list(title = "Referrals 31 Day Standard")
+    )
+  
+
     
     })
 
