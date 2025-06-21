@@ -5,7 +5,9 @@ data_download_table <- reactive({
                          "Council_Lookup" = Council_Lookup,
                          "Hospital_Lookup" = Hospital_Lookup,
                          "Interminate_Zone_Lookup" = Interminate_Zone_Lookup,
-                         "Data_Zone_Lookup" = Data_Zone_Lookup)
+                         "Data_Zone_Lookup" = Data_Zone_Lookup,
+                          "HB_Pop_Estimates" = HB_Pop_Estimates)
+  
   
 })
 
