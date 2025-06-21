@@ -142,19 +142,33 @@ output$cancer_waiting_list_overview_31_days <- renderPlotly({
     filter(Health_Board_Patient %in% input$hb_name_waiting_times)
 
   
+  
+  Cancer_Waiting_Times_31_days_T$Quarter <- factor(Cancer_Waiting_Times_31_days_T$Quarter, 
+                                                   levels = sort(unique(Cancer_Waiting_Times_31_days_T$Quarter)), 
+                                                   ordered = TRUE)
+  
   tooltip_1 <- c(paste0("Health Board: ", input$hb_name_waiting_times, "<br>", "Quarter: ", Cancer_Waiting_Times_31_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals 31 Day Standard : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferrals31DayStandard))
   
-    
+  unique_quarters <- sort(unique(Cancer_Waiting_Times_31_days_T$Quarter))
+  tickvals <- unique_quarters[seq(1, length(unique_quarters), by = 8)]  # show every 8th quarter
   
-  Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
-    plot_ly(x = ~ Quarter,
-            y = ~ NumberOfEligibleReferrals31DayStandard,
+  # Plot
+  Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>%
+    plot_ly(x = ~Quarter,
+            y = ~NumberOfEligibleReferrals31DayStandard,
             type = 'scatter',
             mode = 'lines',
             text = tooltip_1,
-            hoverinfo="text") %>% 
-    layout(xaxis = list(title = "Quarter"),
-           yaxis = list(title = "Referrals 31 Day Standard"))
+            hoverinfo = "text") %>%
+    layout(
+      xaxis = list(title = "Quarter",
+                   tickmode = "array",
+                   tickvals = tickvals,
+                   ticktext = tickvals),
+      yaxis = list(title = "Referrals 31 Day Standard")
+    )
+  
+
     
     })
 
@@ -180,32 +194,65 @@ output$cancer_waiting_list_overview_31_days_treatmenthb <- renderPlotly({
     layout(xaxis = list(title = "Quarter"),
            yaxis = list(title = "Number of Patients Referred and Treated by a Healthboard in 31 days"))
   
+  
+  
 })
 
 
 output$cancer_waiting_list_overview_31_days_treatmenthb_compare <- renderPlotly({
   
+  # Step 1: Filter and prepare the data
   Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
-    select(-Percent_31_Days) %>%  ### Will only consider patients from initial Health Board before treatment for this graph
-    filter(Health_Board_Patient %in% input$hb_name_waiting_times) %>% 
-    filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select)
+    select(-Percent_31_Days) %>%  
+    filter(Health_Board_Patient %in% input$hb_name_waiting_times,
+           CancerType == input$Cancer_Type_Input_Waiting_Times_Select)
   
-  tooltip_1 <- c(paste0("Health Board: ", Cancer_Waiting_Times_31_days_T$Health_Board_Patient_Treatment, "<br>", "Quarter: ", Cancer_Waiting_Times_31_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals Treated Within 31 Days : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferralsTreatedWithin31Days))
+  # Step 2: Order Quarter and create QuarterIndex (numeric)
+  Cancer_Waiting_Times_31_days_T$Quarter <- factor(
+    Cancer_Waiting_Times_31_days_T$Quarter,
+    levels = sort(unique(Cancer_Waiting_Times_31_days_T$Quarter)),
+    ordered = TRUE
+  )
   
+  Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>%
+    mutate(QuarterIndex = as.numeric(Quarter))
   
-  Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
-    plot_ly(x = ~ Quarter,
-            y = ~ NumberOfEligibleReferralsTreatedWithin31Days,
-            color = ~ Health_Board_Patient_Treatment,
-            type = 'scatter',
-            mode = 'lines',
-            text = tooltip_1,
-            hoverinfo="text") %>% 
-    layout(xaxis = list(title = "Quarter"),
-           yaxis = list(title = "Number of Patients Referred and Treated by a Healthboard in 31 days"))
+  # Step 3: Tooltip
+  tooltip_1 <- paste0(
+    "Health Board: ", Cancer_Waiting_Times_31_days_T$Health_Board_Patient_Treatment,
+    "<br>Quarter: ", Cancer_Waiting_Times_31_days_T$Quarter,
+    "<br>Cancer Type: ", Cancer_Waiting_Times_31_days_T$CancerType,
+    "<br>Number Of Eligible Referrals Treated Within 31 Days: ",
+    Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferralsTreatedWithin31Days
+  )
+  
+  # Step 4: Control tick labels (every 8th quarter)
+  all_quarters <- levels(Cancer_Waiting_Times_31_days_T$Quarter)
+  tick_positions <- seq(1, length(all_quarters), by = 8)
+  tick_labels <- all_quarters[tick_positions]
+  
+  # Step 5: Plot using QuarterIndex
+  plot_ly(
+    data = Cancer_Waiting_Times_31_days_T,
+    x = ~QuarterIndex,
+    y = ~NumberOfEligibleReferralsTreatedWithin31Days,
+    color = ~Health_Board_Patient_Treatment,
+    type = 'scatter',
+    mode = 'lines',
+    text = tooltip_1,
+    hoverinfo = "text"
+  ) %>%
+    layout(
+      xaxis = list(
+        title = "Quarter",
+        tickmode = "array",
+        tickvals = tick_positions,
+        ticktext = tick_labels
+      ),
+      yaxis = list(title = "Referrals 31 Day Standard")
+    )
   
 })
-
 
 
 
@@ -226,9 +273,16 @@ output$cancer_waiting_list_overview_62_days <- renderPlotly({
     summarise(NumberOfEligibleReferrals62DayStandard = sum(NumberOfEligibleReferrals62DayStandard), .groups = 'drop') %>% 
     filter(Health_Board_Patient %in% input$hb_name_waiting_times)
   
+  Cancer_Waiting_Times_62_days_T$Quarter <- factor(Cancer_Waiting_Times_62_days_T$Quarter, 
+                                                   levels = sort(unique(Cancer_Waiting_Times_62_days_T$Quarter)), 
+                                                   ordered = TRUE)
+  
+  
   
   tooltip_1 <- c(paste0("Health Board: ", input$hb_name_waiting_times, "<br>", "Quarter: ", Cancer_Waiting_Times_62_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select_62, "<br>", "Number Of Eligible Referrals 62 Day Standard : ", Cancer_Waiting_Times_62_days_T$NumberOfEligibleReferrals62DayStandard))
   
+  unique_quarters <- sort(unique(Cancer_Waiting_Times_62_days_T$Quarter))
+  tickvals <- unique_quarters[seq(1, length(unique_quarters), by = 8)]  # show every 8th quarter
   
   Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
     plot_ly(x = ~ Quarter,
@@ -236,9 +290,15 @@ output$cancer_waiting_list_overview_62_days <- renderPlotly({
             type = 'scatter',
             mode = 'lines',
             text= tooltip_1,
-            hoverinfo="text") %>% 
-    layout(xaxis = list(title = "Quarter"),
-           yaxis = list(title = "Referrals 62 Day Standard"))
+            hoverinfo="text") %>%
+    layout(
+      xaxis = list(title = "Quarter",
+                   tickmode = "array",
+                   tickvals = tickvals,
+                   ticktext = tickvals),
+      yaxis = list(title = "Referrals 62 Day Standard")
+    )
+  
   
 })
 
@@ -274,20 +334,45 @@ output$cancer_waiting_list_overview_62_days_treatmenthb_compare <- renderPlotly(
     filter(Health_Board_Patient %in% input$hb_name_waiting_times)  %>% 
     filter(CancerType == input$Cancer_Type_Input_Waiting_Times_Select_62)
   
+  # Step 2: Order Quarter and create QuarterIndex (numeric)
+  Cancer_Waiting_Times_62_days_T$Quarter <- factor(
+    Cancer_Waiting_Times_62_days_T$Quarter,
+    levels = sort(unique(Cancer_Waiting_Times_62_days_T$Quarter)),
+    ordered = TRUE
+  )
   
+  Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>%
+    mutate(QuarterIndex = as.numeric(Quarter))
+  
+  # Step 3: Tooltip
   tooltip_1 <- c(paste0("Health Board: ", Cancer_Waiting_Times_62_days_T$Health_Board_Patient_Treatment, "<br>", "Quarter: ", Cancer_Waiting_Times_62_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select_62, "<br>", "Number Of Eligible Referrals Treated Within 62 Days : ", Cancer_Waiting_Times_62_days_T$NumberOfEligibleReferralsTreatedWithin62Days))
+
+  # Step 4: Control tick labels (every 8th quarter)
+  all_quarters <- levels(Cancer_Waiting_Times_62_days_T$Quarter)
+  tick_positions <- seq(1, length(all_quarters), by = 8)
+  tick_labels <- all_quarters[tick_positions]
   
+  # Step 5: Plot using QuarterIndex
+  plot_ly(
+    data = Cancer_Waiting_Times_62_days_T,
+    x = ~QuarterIndex,
+    y = ~NumberOfEligibleReferralsTreatedWithin62Days,
+    color = ~Health_Board_Patient_Treatment,
+    type = 'scatter',
+    mode = 'lines',
+    text = tooltip_1,
+    hoverinfo = "text"
+  ) %>%
+    layout(
+      xaxis = list(
+        title = "Quarter",
+        tickmode = "array",
+        tickvals = tick_positions,
+        ticktext = tick_labels
+      ),
+      yaxis = list(title = "Referrals 62 Day Standard")
+    )
   
-  Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
-    plot_ly(x = ~ Quarter,
-            y = ~ NumberOfEligibleReferralsTreatedWithin62Days,
-            color = ~ Health_Board_Patient_Treatment,
-            type = 'scatter',
-            mode = 'lines',
-            text= tooltip_1,
-            hoverinfo="text") %>% 
-    layout(xaxis = list(title = "Quarter"),
-           yaxis = list(title = "Number of Patients Referred and Treated by a Healthboard in 62 days"))
   
 })
 
