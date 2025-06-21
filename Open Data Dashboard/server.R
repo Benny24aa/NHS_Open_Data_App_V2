@@ -1,4 +1,4 @@
-function(input, output) {
+function(input, output, session) {
 
     filter_hb_main <- reactive({
       
