@@ -145,7 +145,7 @@ output$cancer_waiting_list_overview_31_days <- renderPlotly({
   tooltip_1 <- c(paste0("Health Board: ", input$hb_name_waiting_times, "<br>", "Quarter: ", Cancer_Waiting_Times_31_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals 31 Day Standard : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferrals31DayStandard))
   
   unique_quarters <- sort(unique(Cancer_Waiting_Times_31_days_T$Quarter))
-  tickvals <- unique_quarters[seq(1, length(unique_quarters), by = 8)]  # show every 2nd quarter
+  tickvals <- unique_quarters[seq(1, length(unique_quarters), by = 8)]  # show every 8th quarter
   
   # Plot
   Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>%
@@ -188,6 +188,8 @@ output$cancer_waiting_list_overview_31_days_treatmenthb <- renderPlotly({
     layout(xaxis = list(title = "Quarter"),
            yaxis = list(title = "Number of Patients Referred and Treated by a Healthboard in 31 days"))
   
+  
+  
 })
 
 
@@ -200,6 +202,8 @@ output$cancer_waiting_list_overview_31_days_treatmenthb_compare <- renderPlotly(
   
   tooltip_1 <- c(paste0("Health Board: ", Cancer_Waiting_Times_31_days_T$Health_Board_Patient_Treatment, "<br>", "Quarter: ", Cancer_Waiting_Times_31_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select, "<br>", "Number Of Eligible Referrals Treated Within 31 Days : ", Cancer_Waiting_Times_31_days_T$NumberOfEligibleReferralsTreatedWithin31Days))
   
+  unique_quarters <- sort(unique(Cancer_Waiting_Times_31_days_T$Quarter))
+  tickvals <- unique_quarters[seq(1, length(unique_quarters), by = 8)]  # show every 8th quarter
   
   Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days_T %>% 
     plot_ly(x = ~ Quarter,
@@ -208,9 +212,14 @@ output$cancer_waiting_list_overview_31_days_treatmenthb_compare <- renderPlotly(
             type = 'scatter',
             mode = 'lines',
             text = tooltip_1,
-            hoverinfo="text") %>% 
-    layout(xaxis = list(title = "Quarter"),
-           yaxis = list(title = "Number of Patients Referred and Treated by a Healthboard in 31 days"))
+            hoverinfo="text") %>%
+    layout(
+      xaxis = list(title = "Quarter",
+                   tickvals = tickvals,
+                   ticktext = tickvals),
+      yaxis = list(title = "Referrals 31 Day Standard")
+    )
+  
   
 })
 
@@ -237,6 +246,8 @@ output$cancer_waiting_list_overview_62_days <- renderPlotly({
   
   tooltip_1 <- c(paste0("Health Board: ", input$hb_name_waiting_times, "<br>", "Quarter: ", Cancer_Waiting_Times_62_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select_62, "<br>", "Number Of Eligible Referrals 62 Day Standard : ", Cancer_Waiting_Times_62_days_T$NumberOfEligibleReferrals62DayStandard))
   
+  unique_quarters <- sort(unique(Cancer_Waiting_Times_62_days_T$Quarter))
+  tickvals <- unique_quarters[seq(1, length(unique_quarters), by = 8)]  # show every 8th quarter
   
   Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
     plot_ly(x = ~ Quarter,
@@ -244,9 +255,14 @@ output$cancer_waiting_list_overview_62_days <- renderPlotly({
             type = 'scatter',
             mode = 'lines',
             text= tooltip_1,
-            hoverinfo="text") %>% 
-    layout(xaxis = list(title = "Quarter"),
-           yaxis = list(title = "Referrals 62 Day Standard"))
+            hoverinfo="text") %>%
+    layout(
+      xaxis = list(title = "Quarter",
+                   tickvals = tickvals,
+                   ticktext = tickvals),
+      yaxis = list(title = "Referrals 62 Day Standard")
+    )
+  
   
 })
 
@@ -284,7 +300,9 @@ output$cancer_waiting_list_overview_62_days_treatmenthb_compare <- renderPlotly(
   
   
   tooltip_1 <- c(paste0("Health Board: ", Cancer_Waiting_Times_62_days_T$Health_Board_Patient_Treatment, "<br>", "Quarter: ", Cancer_Waiting_Times_62_days_T$Quarter, "<br>", "Cancer Type: ", input$Cancer_Type_Input_Waiting_Times_Select_62, "<br>", "Number Of Eligible Referrals Treated Within 62 Days : ", Cancer_Waiting_Times_62_days_T$NumberOfEligibleReferralsTreatedWithin62Days))
-  
+
+  unique_quarters <- sort(unique(Cancer_Waiting_Times_62_days_T$Quarter))
+  tickvals <- unique_quarters[seq(1, length(unique_quarters), by = 8)]  # show every 8th quarter
   
   Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days_T %>% 
     plot_ly(x = ~ Quarter,
@@ -293,9 +311,14 @@ output$cancer_waiting_list_overview_62_days_treatmenthb_compare <- renderPlotly(
             type = 'scatter',
             mode = 'lines',
             text= tooltip_1,
-            hoverinfo="text") %>% 
-    layout(xaxis = list(title = "Quarter"),
-           yaxis = list(title = "Number of Patients Referred and Treated by a Healthboard in 62 days"))
+            hoverinfo="text") %>%
+    layout(
+      xaxis = list(title = "Quarter",
+                   tickvals = tickvals,
+                   ticktext = tickvals),
+      yaxis = list(title = "Referrals 62 Day Standard")
+    )
+  
   
 })
 
