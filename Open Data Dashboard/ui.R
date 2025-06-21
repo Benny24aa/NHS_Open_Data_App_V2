@@ -1,4 +1,5 @@
 #################################
+
 library(shinyjs)
 
 useShinyjs()
@@ -14,7 +15,8 @@ source("UI/feedback.R")
 source("UI/report a bug.R")
 
 #################################
-navbarPage(title = div(tags$a(img(src="", width=120, alt = ""),
+navbarPage(id = "maintabid",
+            title = div(tags$a(img(src="", width=120, alt = ""),
                               href= "",
                               target = "_blank"),
                        style = "position: relative; top: -10px;"),
