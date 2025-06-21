@@ -33,7 +33,7 @@ function(input, output, session) {
     source(file.path("Server/Interactive Text.R"), local = TRUE)$value
     source(file.path("Server/Feedback.R"), local = TRUE)$value
     source(file.path("Server/Report a Bug.R"), local = TRUE)$value
-   
+    source(file.path("Server/Download Diagnostics Data.R"), local = TRUE)$value
     
     
   

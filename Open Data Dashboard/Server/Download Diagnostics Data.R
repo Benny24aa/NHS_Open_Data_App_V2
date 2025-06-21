@@ -1,6 +1,6 @@
 data_download_table_diagnostics <- reactive({
   
-  table_data_cancer <- switch(input$diagnostics_download_select,
+  table_data_diagnostics <- switch(input$diagnostics_download_select,
                               "diagnostics_waiting_times" = diagnostics_waiting_times,
                               "diagnostics_final_dataset_rates" = diagnostics_final_dataset_rates)
   
