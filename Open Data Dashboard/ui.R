@@ -4,16 +4,23 @@ library(shinyjs)
 
 useShinyjs()
 
+##### Dashboard Information UI's
 source("UI/Information UI.R")
 source("UI/Reference File Download.R")
 source("UI/Commentary Files/Roadmap.R")
 source("UI/Commentary Files/Using Dashboard.R")
 source("UI/Commentary Files/Commentary.R")
-source("UI/Cancer/Cancer UI Setup.R")
-source("UI/Cancer/Cancer Waiting Times.R")
+
+# Engagement with users UI
 source("UI/feedback.R")
 source("UI/report a bug.R")
 
+# Cancer UI's
+source("UI/Cancer/Cancer UI Setup.R")
+source("UI/Cancer/Cancer Waiting Times.R")
+
+# Diagnostics UI
+source("UI/Diagnostics/Diagnostics UI.R")
 #################################
 navbarPage(id = "maintabid",
             title = div(tags$a(img(src="", width=120, alt = ""),
