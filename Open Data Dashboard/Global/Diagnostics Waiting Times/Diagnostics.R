@@ -82,3 +82,6 @@ diagnostics_waiting_times_endoscopy_per_100k<- diagnostics_waiting_times_endosco
 
 
 rm(diagnostics_waiting_times_endoscopy, diagnostics_waiting_times_imaging) # No longer needed
+
+diagnostics_final_dataset_rates <- bind_rows(diagnostics_waiting_times_endoscopy_per_100k,diagnostics_waiting_times_imaging_100k_rate)
+
