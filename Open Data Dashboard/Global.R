@@ -30,7 +30,7 @@ cancer_dashboards <- c("Landing Page" = "Cancer_Landing_Page", "Overview" = "Can
 
 cancer_waiting_times <- c("Landing Page" = "Cancer_Waiting_Time_Page", "31 Days Standard" = "31_Days_Standards", "62 Days Standard" = "62_Days_Standard", "Download Data" = "Cancer_Waiting_Times_Download")
 
-diagnostics_dashboard_list <- c("Landing Page" = "Diagnostics_Landing Page", "Overview" = "Diagnostics_Healthboard_Overview", "Comparison" = "Diagnostics_Healthboard_Comparison", "Download Data" = "Diagnostics_Download_Data")
+diagnostics_dashboard_list <- c("Landing Page" = "Diagnostics_Landing_Page", "Overview" = "Diagnostics_Healthboard_Overview", "Comparison" = "Diagnostics_Healthboard_Comparison", "Download Data" = "Diagnostics_Download_Data")
 
 ### Commentary and Metadata data files
 
