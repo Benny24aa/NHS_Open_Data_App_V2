@@ -4,8 +4,29 @@ HB_Pop_Estimates <- get_resource(res_id = "27a72cc8-d6d8-430c-8b4f-3109a9ceadb1"
 HB_Pop_Estimates <- HB_Pop_Estimates %>% 
   select(Year, HB, Sex, AllAges) 
 
+# Check if 2023 data is available
+if (2023 %in% HB_Pop_Estimates$Year) {
+  
+  # Identify missing years
+  missing_years <- setdiff(c(2024, 2025), unique(HB_Pop_Estimates$Year))
+  
+  # If any missing, duplicate 2023 data for those years
+  if (length(missing_years) > 0) {
+    data_2023 <- HB_Pop_Estimates %>% filter(Year == 2023)
+    
+    # Create duplicates for each missing year
+    data_copies <- lapply(missing_years, function(y) {
+      data_2023 %>% mutate(Year = y)
+    }) %>% bind_rows()
+    
+    # Append to the main data frame
+    HB_Pop_Estimates <- bind_rows(HB_Pop_Estimates, data_copies)
+  }
+}
+
 HB_Lookup_Diagnostics <- HB_Lookup %>% 
   select(-GeoType)
+
 
   HB_Pop_Estimates <- full_join(HB_Pop_Estimates, HB_Lookup_Diagnostics, by = "HB") %>% 
     filter(!is.na(HBName))
