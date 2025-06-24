@@ -51,8 +51,32 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                           )#End of Fluid Row
                                           
                                           
-                                        )#end of conditional panel
+                                        ),#end of conditional panel
+                                        
+                                        conditionalPanel(
+                                          condition= 'input.diagnostics_dashboard_select == "Diagnostics_Healthboard_Overview"',
+                                          
+                                          fluidRow(
+                                            column(6,
+                                                   h2("Health Board Overview", style = "color:  #336699 ; font-weight: 600"))),
+                                          h4(""),
+                                          
+                                          
+                                          fluidRow(
+                                            
+                                            column(3, selectInput("hb_name_diagnostics", label = "Select Healthboard",
+                                                                  choices = unique(HB_List$HBName,
+                                                                                   multiple = FALSE))))
+                                            
+                                          
+                                         
+                                          
+                                          
+                                          
                                         
                                         
                                         
+                                        
+                              )# end of conditional panel
+                              
                               )))

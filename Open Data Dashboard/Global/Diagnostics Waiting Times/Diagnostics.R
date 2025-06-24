@@ -37,7 +37,6 @@ diagnostics_waiting_times_imaging <- diagnostics_waiting_times %>%
 
 ### making changes to data to use 2023 population estimate for rates
 diagnostics_waiting_times_imaging_100k_rate <- diagnostics_waiting_times_imaging %>%
-  filter(MonthEnding > '2020-01-01') %>%
 mutate(Year = MonthEnding)
 
 
@@ -52,8 +51,8 @@ diagnostics_waiting_times_imaging_100k_rate <- diagnostics_waiting_times_imaging
   select(-HB, -Year) %>%
   mutate(Rate = NumberOnList/AllAges) %>%
   mutate(Rate = Rate * 100000) %>%
-  select(-AllAges) %>% 
-  filter(!is.na(Rate))
+  select(-AllAges) 
+
 
 
 ### Endoscopy Dataset
@@ -63,7 +62,6 @@ diagnostics_waiting_times_endoscopy <- diagnostics_waiting_times %>%
 
 ### making changes to data to use 2023 population estimate for rates
 diagnostics_waiting_times_endoscopy_per_100k <- diagnostics_waiting_times_endoscopy %>%
-  filter(MonthEnding > '2020-01-01') %>%
   mutate(Year = MonthEnding) 
 
 diagnostics_waiting_times_endoscopy_per_100k$Year <- substr(diagnostics_waiting_times_endoscopy_per_100k$Year, 1, 4)# Keeps 1st to 4th number in string which is the year
@@ -77,11 +75,14 @@ diagnostics_waiting_times_endoscopy_per_100k<- diagnostics_waiting_times_endosco
   select(-HB, -Year) %>%
   mutate(Rate = NumberOnList/AllAges) %>%
   mutate(Rate = Rate * 100000) %>%
-  select(-AllAges)%>% 
-  filter(!is.na(Rate))
+  select(-AllAges)
 
 
 rm(diagnostics_waiting_times_endoscopy, diagnostics_waiting_times_imaging) # No longer needed
 
 diagnostics_final_dataset_rates <- bind_rows(diagnostics_waiting_times_endoscopy_per_100k,diagnostics_waiting_times_imaging_100k_rate)
+
+diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>% 
+  filter(!is.na(MonthEnding)) %>% 
+  filter(!is.na(NumberOnList))
 
