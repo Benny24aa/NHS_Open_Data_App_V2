@@ -107,3 +107,4 @@ diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>%
   filter(!is.na(MonthEnding)) %>% 
   filter(!is.na(NumberOnList))
 
+rm(diagnostics_waiting_times, diagnostics_waiting_times_endoscopy_per_100k, diagnostics_waiting_times_imaging_100k_rate)
