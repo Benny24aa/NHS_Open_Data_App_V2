@@ -35,7 +35,11 @@ Diagnsotics_UI <- tabPanel(title = "Diagnostics Waiting Times",  icon = icon("mi
                                             column(12,
                                                    
                                                    h4(tags$b("Background Information", style = "color:  #336699 ; font-weight: 600" )),
-                                                   p("Coming soon"),
+                                                   p("This dashboard presents monthly data on how long patients in Scotland have been waiting for eight key diagnostic tests, such as MRI, CT scans, and endoscopies. The data is reported by NHS Boards and shows the number of patients still waiting, grouped by waiting time bands (from under 1 week to over 52 weeks).
+
+Use this dashboard to explore waiting times by health board, test type, and how they compare to national standards. Data is sourced from Public Health Scotland and updated regularly.
+
+"),
                                                    
                                                    h4(tags$b("Open Source Code Information" , style = "color:  #336699 ; font-weight: 600")),
                                                    p("This GitHub repository contains the complete source code for an interactive web dashboard designed to visualize diagnostics statistics across Healthboard."),
