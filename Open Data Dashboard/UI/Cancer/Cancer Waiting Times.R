@@ -28,7 +28,7 @@ Cancer_Waiting_List <- tabPanel(title = "Cancer Waiting Times",  icon = icon("mi
                                                        
                                                        h4(tags$b("Open Source Code Information" , style = "color:  #336699 ; font-weight: 600")),
                                                        p("This GitHub repository hosts the full source code for an interactive dashboard that visualizes Cancer Waiting Times (CWT) statistics in Scotland, as reported by NHS Scotland and Public Health Scotland."),
-                                                       p("If you wish to view the github for this dashboard please head to the following ", tags$a(href="https://github.com/Benny24aa/Scotland-Cancer-RShiny-Dashboard", icon("github"),
+                                                       p("If you wish to view the github for this dashboard please head to the following ", tags$a(href="https://github.com/Benny24aa/NHS_Open_Data_App_V2", icon("github"),
                                                                                                                                                    "", target="_blank"), ), 
                                                     
                                                        h4(tags$b(" Disclosure and Data Security Statement", style = "color:  #336699 ; font-weight: 600")),
