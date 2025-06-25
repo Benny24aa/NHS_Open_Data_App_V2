@@ -66,7 +66,11 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                             
                                             column(3, selectInput("hb_name_diagnostics", label = "Select Healthboard",
                                                                   choices = unique(HB_List$HBName,
-                                                                                   multiple = FALSE))))
+                                                                                   multiple = FALSE)))
+                                            
+                                            
+                                            
+                                            )
                                             
                                           
                                          
