@@ -76,10 +76,11 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                                                   choices = unique(diagnostics_test_type_list$DiagnosticTestType,
                                                                                    multiple = FALSE))),
                                             column(3, uiOutput("diagnostics_description_filter"))
+),
                                             
                                             
                                             
-                                            ),
+                                     
                                           
                                           fluidRow(
                                             column(3, plotlyOutput("diagnostics_overview_graph", width = "400%", height = "600px")))

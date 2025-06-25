@@ -104,7 +104,8 @@ diagnostics_final_dataset_rates <- bind_rows(diagnostics_waiting_times_endoscopy
 diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>% 
   filter(!is.na(MonthEnding)) %>% 
   filter(!is.na(NumberOnList)) %>% 
-  select(-Sex)
+  select(-Sex) %>% 
+  rename(CrudeRate = Rate)
 
 rm(diagnostics_waiting_times, diagnostics_waiting_times_endoscopy_per_100k, diagnostics_waiting_times_imaging_100k_rate)
 
@@ -121,11 +122,6 @@ diagnostics_waiting_time_filter_list <- diagnostics_final_dataset_rates %>%
   select(WaitingTime) %>% 
   filter(WaitingTime != "Total Number Waiting")
 
-# diagnostics_waiting_time_filter_list_total <- diagnostics_waiting_time_filter_list %>% 
-#   mutate(WaitingTime = "Total Number Waiting") %>% 
-#   unique()
-# 
-# diagnostics_waiting_time_filter_list <- bind_rows(diagnostics_waiting_time_filter_list_total, diagnostics_waiting_time_filter_list)
 
 diagnostics_test_type_list <- diagnostics_final_dataset_rates %>% 
   select(DiagnosticTestType) %>% 
@@ -134,3 +130,6 @@ diagnostics_test_type_list <- diagnostics_final_dataset_rates %>%
 diagnostic_description_list <- diagnostics_final_dataset_rates %>% 
   select(DiagnosticTestType, DiagnosticTestDescription) %>% 
   unique()
+
+# Graph_Types_Diagnostics <- c("NumberOnList", "CrudeRate")
+# Graph_Types_Diagnostics <- data.frame(Graph_Types_Diagnostics)
