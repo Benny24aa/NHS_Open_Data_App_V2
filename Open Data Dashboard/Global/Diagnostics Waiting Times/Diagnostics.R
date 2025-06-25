@@ -134,4 +134,3 @@ diagnostic_description_list <- diagnostics_final_dataset_rates %>%
 # Graph_Types_Diagnostics <- c("NumberOnList", "CrudeRate")
 # Graph_Types_Diagnostics <- data.frame(Graph_Types_Diagnostics)
 
-#test
