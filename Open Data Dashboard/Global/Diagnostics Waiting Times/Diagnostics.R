@@ -127,3 +127,6 @@ diagnostics_waiting_time_filter_list_total <- diagnostics_waiting_time_filter_li
 
 diagnostics_waiting_time_filter_list <- bind_rows(diagnostics_waiting_time_filter_list_total, diagnostics_waiting_time_filter_list)
 
+diagnostics_test_type_list <- diagnostics_final_dataset_rates %>% 
+  select(DiagnosticTestType) %>% 
+  unique()

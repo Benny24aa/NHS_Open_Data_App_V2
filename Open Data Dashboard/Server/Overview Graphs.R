@@ -386,7 +386,8 @@ output$diagnostics_overview_graph <- renderPlotly({
   
   diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>% 
     filter(HBName %in% input$hb_name_diagnostics) %>% 
-    filter(WaitingTime %in% input$diagnostics_waiting_times_input)
+    filter(WaitingTime %in% input$diagnostics_waiting_times_input) %>% 
+    filter(DiagnosticTestType %in% input$diagnostics_test_type_input)
   
   
 })

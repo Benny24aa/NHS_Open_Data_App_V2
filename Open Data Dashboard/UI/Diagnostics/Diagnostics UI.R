@@ -70,6 +70,10 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                             
                                             column(3, selectInput("diagnostics_waiting_times_input", label = "Select Waiting Time Period",
                                                                   choices = unique(diagnostics_waiting_time_filter_list$WaitingTime,
+                                                                                   multiple = FALSE))),
+                                            
+                                            column(3, selectInput("diagnostics_test_type_input", label = "Select Diagnostic Type",
+                                                                  choices = unique(diagnostics_test_type_list$DiagnosticTestType,
                                                                                    multiple = FALSE)))
                                             
                                             
