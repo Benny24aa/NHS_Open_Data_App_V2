@@ -380,6 +380,14 @@ output$cancer_waiting_list_overview_62_days_treatmenthb_compare <- renderPlotly(
 ################## Diagnostics Graphs ##########################
 ################################################################
 
+output$diagnostics_description_filter <- renderUI({
+  
+  diagnostics_description_list <- diagnostic_description_list %>% 
+    filter(DiagnosticTestType %in% input$diagnostics_test_type_input) %>% 
+    pull(DiagnosticTestDescription)
+  selectInput(inputId = "diagnostics_description_type", label = "Select a Diagnostics Breakdown", choices = diagnostics_description_list)
+})
+
 
 
 output$diagnostics_overview_graph <- renderPlotly({
@@ -387,7 +395,8 @@ output$diagnostics_overview_graph <- renderPlotly({
   diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>% 
     filter(HBName %in% input$hb_name_diagnostics) %>% 
     filter(WaitingTime %in% input$diagnostics_waiting_times_input) %>% 
-    filter(DiagnosticTestType %in% input$diagnostics_test_type_input)
+    filter(DiagnosticTestType %in% input$diagnostics_test_type_input) %>% 
+    filter(DiagnosticTestDescription %in% input$diagnostics_description_filter)
   
   
 })

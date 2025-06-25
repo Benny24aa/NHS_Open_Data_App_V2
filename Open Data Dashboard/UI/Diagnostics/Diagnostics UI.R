@@ -74,7 +74,8 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                             
                                             column(3, selectInput("diagnostics_test_type_input", label = "Select Diagnostic Type",
                                                                   choices = unique(diagnostics_test_type_list$DiagnosticTestType,
-                                                                                   multiple = FALSE)))
+                                                                                   multiple = FALSE))),
+                                            column(3, uiOutput("diagnostics_description_filter"))
                                             
                                             
                                             
