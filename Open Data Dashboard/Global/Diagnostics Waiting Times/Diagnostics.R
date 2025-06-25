@@ -53,8 +53,7 @@ diagnostics_waiting_times <- full_join(HB_Lookup_Diagnostics, diagnostics_waitin
 ### Imaging Dataset
 
 diagnostics_waiting_times_imaging <- diagnostics_waiting_times %>%
-  filter(DiagnosticTestType == "Imaging")%>%
-  select(-DiagnosticTestType)
+  filter(DiagnosticTestType == "Imaging")
 
 ### making changes to data to use 2023 population estimate for rates
 diagnostics_waiting_times_imaging_100k_rate <- diagnostics_waiting_times_imaging %>%
@@ -78,8 +77,7 @@ diagnostics_waiting_times_imaging_100k_rate <- diagnostics_waiting_times_imaging
 
 ### Endoscopy Dataset
 diagnostics_waiting_times_endoscopy <- diagnostics_waiting_times %>%
-  filter(DiagnosticTestType == "Endoscopy") %>%
-  select(-DiagnosticTestType)
+  filter(DiagnosticTestType == "Endoscopy")
 
 ### making changes to data to use 2023 population estimate for rates
 diagnostics_waiting_times_endoscopy_per_100k <- diagnostics_waiting_times_endoscopy %>%
@@ -105,6 +103,27 @@ diagnostics_final_dataset_rates <- bind_rows(diagnostics_waiting_times_endoscopy
 
 diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>% 
   filter(!is.na(MonthEnding)) %>% 
-  filter(!is.na(NumberOnList))
+  filter(!is.na(NumberOnList)) %>% 
+  select(-Sex)
 
 rm(diagnostics_waiting_times, diagnostics_waiting_times_endoscopy_per_100k, diagnostics_waiting_times_imaging_100k_rate)
+
+
+##### Preparing lists for filters 
+
+diagnostics_waiting_time_filter_list <- diagnostics_final_dataset_rates %>% 
+  select(WaitingTime) %>% 
+  unique() %>%
+  mutate(
+    StartDay = as.numeric(str_extract(WaitingTime, "^\\d+"))
+  ) %>%
+  arrange(StartDay) %>%
+  select(WaitingTime) %>% 
+  filter(WaitingTime != "Total Number Waiting")
+
+diagnostics_waiting_time_filter_list_total <- diagnostics_waiting_time_filter_list %>% 
+  mutate(WaitingTime = "Total Number Waiting") %>% 
+  unique()
+
+diagnostics_waiting_time_filter_list <- bind_rows(diagnostics_waiting_time_filter_list_total, diagnostics_waiting_time_filter_list)
+
