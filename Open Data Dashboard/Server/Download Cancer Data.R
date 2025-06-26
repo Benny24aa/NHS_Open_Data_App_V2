@@ -75,7 +75,14 @@ output$download_table_csv_waiting_list <- downloadHandler(
     paste(input$cancer_waiting_list_download_select, "_data.csv", sep = "")
   },
   content = function(file) {
-    # This downloads only the data the user has selected using the table filters
-    write_csv(data_download_table_cancer_waiting_list()[input[["download_data_cancer_waiting_list_table_filtered_rows_all"]], ], file) 
-  } 
+    selected_rows <- input$data_download_cancer_waiting_list_table_filtered_rows_all
+    
+    if (is.null(selected_rows)) {
+      # No filters were applied → download the full dataset
+      write_csv(data_download_table_cancer_waiting_list(), file)
+    } else {
+      # User filtered table → download only filtered rows
+      write_csv(data_download_table_cancer_waiting_list()[selected_rows, ], file)
+    }
+  }
 )
