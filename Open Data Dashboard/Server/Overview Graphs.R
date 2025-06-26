@@ -395,18 +395,49 @@ output$diagnostics_overview_graph <- renderPlotly({
   diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>% 
     filter(HBName %in% input$hb_name_diagnostics) %>% 
     filter(WaitingTime %in% input$diagnostics_waiting_times_input) %>% 
-  filter(DiagnosticTestType %in% input$diagnostics_test_type_input) %>% 
-  filter(DiagnosticTestDescription %in% input$diagnostics_description_type)
+    filter(DiagnosticTestType %in% input$diagnostics_test_type_input) %>% 
+    filter(DiagnosticTestDescription %in% input$diagnostics_description_type)
+  
+  # Calculate average only if needed
+  if (input$show_average_line && nrow(diagnostics_final_dataset_rates) > 0) {
+    avg_value <- mean(diagnostics_final_dataset_rates$NumberOnList, na.rm = TRUE)
+    
+    avg_line_shape <- list(
+      type = "line",
+      x0 = min(diagnostics_final_dataset_rates$MonthEnding),
+      x1 = max(diagnostics_final_dataset_rates$MonthEnding),
+      y0 = avg_value,
+      y1 = avg_value,
+      line = list(dash = 'dash', color = 'red'),
+      xref = "x",
+      yref = "y"
+    )
+    
+    avg_annotation <- list(
+      x = max(diagnostics_final_dataset_rates$MonthEnding),
+      y = avg_value,
+      text = paste0("Avg: ", round(avg_value)),
+      showarrow = FALSE,
+      xanchor = "left",
+      yanchor = "bottom",
+      font = list(color = "red")
+    )
+  } else {
+    avg_line_shape <- NULL
+    avg_annotation <- NULL
+  }
   
   plot_ly(
-    data =  diagnostics_final_dataset_rates,
+    data = diagnostics_final_dataset_rates,
     x = ~MonthEnding,
     y = ~NumberOnList,
     color = ~DiagnosticTestType,
     type = 'scatter',
     mode = 'lines',
-    # text = tooltip_1,
     hoverinfo = "text"
-  )
-  
+  ) %>%
+    layout(
+      shapes = avg_line_shape,
+      annotations = avg_annotation
+    )
 })

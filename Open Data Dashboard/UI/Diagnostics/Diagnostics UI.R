@@ -76,7 +76,14 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                                                   choices = unique(diagnostics_test_type_list$DiagnosticTestType,
                                                                                    multiple = FALSE))),
                                             column(3, uiOutput("diagnostics_description_filter"))
-),
+), ### End of fluidRow
+
+
+fluidRow(column(3,checkboxInput("show_average_line", "Show Average Line", value = TRUE))
+         
+         
+         
+         ), #end of fluid row,
                                             
                                             
                                             
