@@ -40,7 +40,7 @@ output$download_table_csv <- downloadHandler(
       data_to_write <- data_to_write[selected_rows, ]
     }
     
-    # Optional: Clean column names for the download
+
     colnames(data_to_write) <- gsub("_", " ", colnames(data_to_write))
     
     write_csv(data_to_write, file)

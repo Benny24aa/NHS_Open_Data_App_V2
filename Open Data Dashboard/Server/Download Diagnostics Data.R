@@ -24,14 +24,23 @@ output$data_download_diagnostics_table_filtered <- DT::renderDataTable({
   
 })
 
-# Download Data 
 output$download_table_diagnostics_csv <- downloadHandler(
   filename = function() {
     paste(input$diagnostics_download_select, "_data.csv", sep = "")
   },
   content = function(file) {
-    # This downloads only the data the user has selected using the table filters
-    write_csv(data_download_table_diagnostics()[input[["data_download_diagnostics_table_filtered"]], ], file) 
-  } 
+    selected_rows <- input$data_download_diagnostics_table_filtered_rows_all
+    
+    data_to_write <- data_download_table_diagnostics()
+    
+    # Use filtered rows if available
+    if (!is.null(selected_rows)) {
+      data_to_write <- data_to_write[selected_rows, ]
+    }
+    
+    # Clean Names
+    colnames(data_to_write) <- gsub("_", " ", colnames(data_to_write))
+    
+    write_csv(data_to_write, file)
+  }
 )
-
