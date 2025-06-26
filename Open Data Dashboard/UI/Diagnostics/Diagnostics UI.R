@@ -79,7 +79,9 @@ Use this dashboard to explore waiting times by health board, test type, and how 
 ), ### End of fluidRow
 
 
-fluidRow(column(3,checkboxInput("show_average_line", "Show Average Line", value = TRUE))
+fluidRow(column(3,radioButtons("line_option_diagnostics", label = NULL, choices = c("None", "Show Average Line", "Show Median Line", "Show Both"), selected = "None",
+  inline = TRUE
+))
          
          
          

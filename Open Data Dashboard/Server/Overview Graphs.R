@@ -389,7 +389,6 @@ output$diagnostics_description_filter <- renderUI({
 })
 
 
-
 output$diagnostics_overview_graph <- renderPlotly({
   
   diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>% 
@@ -398,33 +397,68 @@ output$diagnostics_overview_graph <- renderPlotly({
     filter(DiagnosticTestType %in% input$diagnostics_test_type_input) %>% 
     filter(DiagnosticTestDescription %in% input$diagnostics_description_type)
   
-  # Calculate average only if needed
-  if (input$show_average_line && nrow(diagnostics_final_dataset_rates) > 0) {
+  shapes_list <- list()
+  annotations_list <- list()
+  
+  if (nrow(diagnostics_final_dataset_rates) > 0) {
+    # Compute average and median
     avg_value <- mean(diagnostics_final_dataset_rates$NumberOnList, na.rm = TRUE)
+    median_value <- median(diagnostics_final_dataset_rates$NumberOnList, na.rm = TRUE)
     
-    avg_line_shape <- list(
-      type = "line",
-      x0 = min(diagnostics_final_dataset_rates$MonthEnding),
-      x1 = max(diagnostics_final_dataset_rates$MonthEnding),
-      y0 = avg_value,
-      y1 = avg_value,
-      line = list(dash = 'dash', color = 'red'),
-      xref = "x",
-      yref = "y"
-    )
+    # Add lines/annotations based on radio selection
+    if (input$line_option_diagnostics %in% c("Show Average Line", "Show Both")) {
+      shapes_list <- c(shapes_list, list(
+        list(
+          type = "line",
+          x0 = min(diagnostics_final_dataset_rates$MonthEnding),
+          x1 = max(diagnostics_final_dataset_rates$MonthEnding),
+          y0 = avg_value,
+          y1 = avg_value,
+          line = list(dash = 'dash', color = 'red'),
+          xref = "x",
+          yref = "y"
+        )
+      ))
+      
+      annotations_list <- c(annotations_list, list(
+        list(
+          x = max(diagnostics_final_dataset_rates$MonthEnding),
+          y = avg_value,
+          text = paste0("Avg: ", round(avg_value)),
+          showarrow = FALSE,
+          xanchor = "left",
+          yanchor = "bottom",
+          font = list(color = "red")
+        )
+      ))
+    }
     
-    avg_annotation <- list(
-      x = max(diagnostics_final_dataset_rates$MonthEnding),
-      y = avg_value,
-      text = paste0("Avg: ", round(avg_value)),
-      showarrow = FALSE,
-      xanchor = "left",
-      yanchor = "bottom",
-      font = list(color = "red")
-    )
-  } else {
-    avg_line_shape <- NULL
-    avg_annotation <- NULL
+    if (input$line_option_diagnostics %in% c("Show Median Line", "Show Both")) {
+      shapes_list <- c(shapes_list, list(
+        list(
+          type = "line",
+          x0 = min(diagnostics_final_dataset_rates$MonthEnding),
+          x1 = max(diagnostics_final_dataset_rates$MonthEnding),
+          y0 = median_value,
+          y1 = median_value,
+          line = list(dash = 'dot', color = 'blue'),
+          xref = "x",
+          yref = "y"
+        )
+      ))
+      
+      annotations_list <- c(annotations_list, list(
+        list(
+          x = max(diagnostics_final_dataset_rates$MonthEnding),
+          y = median_value,
+          text = paste0("Median: ", round(median_value)),
+          showarrow = FALSE,
+          xanchor = "left",
+          yanchor = "top",
+          font = list(color = "blue")
+        )
+      ))
+    }
   }
   
   plot_ly(
@@ -437,7 +471,7 @@ output$diagnostics_overview_graph <- renderPlotly({
     hoverinfo = "text"
   ) %>%
     layout(
-      shapes = avg_line_shape,
-      annotations = avg_annotation
+      shapes = shapes_list,
+      annotations = annotations_list
     )
 })
