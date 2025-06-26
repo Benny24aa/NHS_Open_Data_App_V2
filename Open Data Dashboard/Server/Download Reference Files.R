@@ -30,7 +30,7 @@ output$data_download_table_filtered <- DT::renderDataTable({
 })
 
 # Download Data 
-output$download_table_csv <- downloadHandler(
+output$download_table_csv_reference <- downloadHandler(
   filename = function() {
     paste(input$download_select, "_data.csv", sep = "")
   },

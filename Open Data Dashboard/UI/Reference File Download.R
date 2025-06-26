@@ -5,5 +5,5 @@ reference_file_download <- tabPanel(title = "Reference Files and Population Esti
                                                 choices = reference_file_download_list)),
                           mainPanel(width = 12,
                                     DT::dataTableOutput("data_download_table_filtered")),
-                          column(6, downloadButton('download_table_csv', 'Download data')),
+                          column(6, downloadButton('download_table_csv_reference', 'Download data')),
 ) 
