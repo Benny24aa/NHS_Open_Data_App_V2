@@ -86,7 +86,7 @@ br(), # Adds space above the text
                                             column(9, plotlyOutput("diagnostics_overview_graph", height = "600px")),
                                             column(3,radioButtons("line_option_diagnostics", label = "Choose Analytics", choices = c("None", "Show Average Line", "Show Median Line", "Show Both"), selected = "None"
                                             ),
-                                            checkboxInput("show_run_chart_rules", "Show Run Chart Rules", value = TRUE))
+                                            checkboxInput("show_run_chart_rules", "Show Run Chart Rules", value = FALSE))
                                             
                                             
                                             ) #end of fluid row
