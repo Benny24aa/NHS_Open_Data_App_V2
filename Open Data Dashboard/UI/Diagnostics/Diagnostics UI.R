@@ -82,16 +82,24 @@ Use this dashboard to explore waiting times by health board, test type, and how 
 br(), # Adds space above the text
                                      
                                           
-                                          fluidRow(
-                                            column(9, plotlyOutput("diagnostics_overview_graph", height = "600px")),
-                                            column(3,radioButtons("line_option_diagnostics", label = "Choose Analytics", choices = c("None", "Show Average Line", "Show Median Line", "Show Both"), selected = "None"
-                                            ),
-                                            checkboxInput("show_run_chart_rules", "Show Run Chart Rules", value = FALSE))
-                                            
-                                            
-                                            ) #end of fluid row
-                                          
-                                         
+fluidRow(
+  column(11, plotlyOutput("diagnostics_overview_graph", height = "600px")),
+  column(1,
+         radioButtons(
+           "line_option_diagnostics", 
+           label = "Choose Analytics", 
+           choices = c("None", "Show Average Line", "Show Median Line", "Show Both"), 
+           selected = "None",
+           width = "100%"
+         ),
+         checkboxInput(
+           "show_run_chart_rules", 
+           "Show Run Chart Rules", 
+           value = FALSE,
+           width = "100%"
+         )
+  )
+) # end of fluidRow
                                           
                                          
                                           
