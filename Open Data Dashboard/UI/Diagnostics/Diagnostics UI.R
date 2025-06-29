@@ -83,6 +83,7 @@ br(), # Adds space above the text
                                      
                                           
 fluidRow(
+  uiOutput("diagnostics_overview_graph_text"),
   column(11, plotlyOutput("diagnostics_overview_graph", height = "600px")),
   column(1,
          radioButtons(
