@@ -388,90 +388,158 @@ output$diagnostics_description_filter <- renderUI({
   selectInput(inputId = "diagnostics_description_type", label = "Select a Diagnostics Breakdown", choices = diagnostics_description_list)
 })
 
-
 output$diagnostics_overview_graph <- renderPlotly({
   
-  diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>% 
-    filter(HBName %in% input$hb_name_diagnostics) %>% 
-    filter(WaitingTime %in% input$diagnostics_waiting_times_input) %>% 
-    filter(DiagnosticTestType %in% input$diagnostics_test_type_input) %>% 
-    filter(DiagnosticTestDescription %in% input$diagnostics_description_type)
+  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates %>% 
+    filter(HBName %in% input$hb_name_diagnostics,
+           WaitingTime %in% input$diagnostics_waiting_times_input,
+           DiagnosticTestType %in% input$diagnostics_test_type_input,
+           DiagnosticTestDescription %in% input$diagnostics_description_type)
+  
+  
+  # Ensure MonthEnding is Date
+  if (!inherits(diagnostics_final_dataset_rates_filtered$MonthEnding, "Date")) {
+    diagnostics_final_dataset_rates_filtered$MonthEnding <- as.Date(diagnostics_final_dataset_rates_filtered$MonthEnding)
+  }
+  
+  diagnostics_final_dataset_rates_graph <- diagnostics_final_dataset_rates_filtered[order(diagnostics_final_dataset_rates_filtered$MonthEnding), ]
+  
+  #### Calculate Mean and Median for both run chart and normal chart
+  avg_value <- mean(diagnostics_final_dataset_rates_graph$NumberOnList, na.rm = TRUE)
+  median_value <- median(diagnostics_final_dataset_rates_graph$NumberOnList, na.rm = TRUE)
+  
+  diagnostics_final_dataset_rates_graph$diagnostics_run_chart_rules <- ""
+  
+  ### Run Chart Rules
+  if (!is.null(input$show_run_chart_rules) && isTRUE(input$show_run_chart_rules)) {
+    diagnostics_final_dataset_rates_graph$above_median <- ifelse(diagnostics_final_dataset_rates_graph$NumberOnList > median_value, 1, 0)
+    run_lengths <- rle(diagnostics_final_dataset_rates_graph$above_median)
+    run_flag <- rep(run_lengths$lengths >= 6, run_lengths$lengths)
+    diagnostics_final_dataset_rates_graph$shift_flag <- run_flag
+    
+    diagnostics_final_dataset_rates_graph$trend_flag <- FALSE
+    for (i in seq_len(nrow(diagnostics_final_dataset_rates_graph) - 4)) {
+      window <- diagnostics_final_dataset_rates_graph$NumberOnList[i:(i + 4)]
+      if (all(diff(window) > 0) || all(diff(window) < 0)) {
+        diagnostics_final_dataset_rates_graph$trend_flag[i:(i + 4)] <- TRUE
+      }
+    }
+    
+    diagnostics_final_dataset_rates_graph$diagnostics_run_chart_rules[diagnostics_final_dataset_rates_graph$shift_flag] <- "Shift"
+    diagnostics_final_dataset_rates_graph$diagnostics_run_chart_rules[diagnostics_final_dataset_rates_graph$trend_flag] <- "Trend"
+  }
+  
+  diagnostics_final_dataset_rates_graph$tooltip <- paste0(
+    "Health Board: ", diagnostics_final_dataset_rates_graph$HBName, "<br>",
+    "Waiting Time Category: ", diagnostics_final_dataset_rates_graph$WaitingTime, "<br>",
+    "Diagnostic Description: ", diagnostics_final_dataset_rates_graph$DiagnosticTestDescription, "<br>",
+    "Diagnostic Type: ", diagnostics_final_dataset_rates_graph$DiagnosticTestType, "<br>",
+    "Month: ", diagnostics_final_dataset_rates_graph$MonthEnding, "<br>",
+    "Number on List: ", diagnostics_final_dataset_rates_graph$NumberOnList, "<br>",
+    "Crude Rate: ", round(diagnostics_final_dataset_rates_graph$CrudeRate, 4),
+    if (!is.null(input$show_run_chart_rules) && isTRUE(input$show_run_chart_rules)) {
+      paste0("<br>Statistical Pattern: ", ifelse(diagnostics_final_dataset_rates_graph$diagnostics_run_chart_rules == "", "None", diagnostics_final_dataset_rates_graph$diagnostics_run_chart_rules))
+    } else {
+      ""
+    }
+  )
   
   shapes_list <- list()
   annotations_list <- list()
   
-  if (nrow(diagnostics_final_dataset_rates) > 0) {
-    # Compute average and median
-    avg_value <- mean(diagnostics_final_dataset_rates$NumberOnList, na.rm = TRUE)
-    median_value <- median(diagnostics_final_dataset_rates$NumberOnList, na.rm = TRUE)
+  if (!is.null(input$line_option_diagnostics) && input$line_option_diagnostics %in% c("Show Average Line", "Show Both")) {
+    shapes_list <- c(shapes_list, list(
+      list(
+        type = "line",
+        x0 = min(diagnostics_final_dataset_rates_graph$MonthEnding),
+        x1 = max(diagnostics_final_dataset_rates_graph$MonthEnding),
+        y0 = avg_value,
+        y1 = avg_value,
+        line = list(dash = 'dash', color = 'red'),
+        xref = "x",
+        yref = "y"
+      )
+    ))
     
-    # Add lines/annotations based on radio selection
-    if (input$line_option_diagnostics %in% c("Show Average Line", "Show Both")) {
-      shapes_list <- c(shapes_list, list(
-        list(
-          type = "line",
-          x0 = min(diagnostics_final_dataset_rates$MonthEnding),
-          x1 = max(diagnostics_final_dataset_rates$MonthEnding),
-          y0 = avg_value,
-          y1 = avg_value,
-          line = list(dash = 'dash', color = 'red'),
-          xref = "x",
-          yref = "y"
+    annotations_list <- c(annotations_list, list(
+      list(
+        x = max(diagnostics_final_dataset_rates_graph$MonthEnding),
+        y = avg_value,
+        text = paste0("Avg: ", round(avg_value)),
+        showarrow = FALSE,
+        xanchor = "left",
+        yanchor = "bottom",
+        font = list(color = "red")
+      )
+    ))
+  }
+  
+  if (!is.null(input$line_option_diagnostics) && input$line_option_diagnostics %in% c("Show Median Line", "Show Both")) {
+    shapes_list <- c(shapes_list, list(
+      list(
+        type = "line",
+        x0 = min(diagnostics_final_dataset_rates_graph$MonthEnding),
+        x1 = max(diagnostics_final_dataset_rates_graph$MonthEnding),
+        y0 = median_value,
+        y1 = median_value,
+        line = list(dash = 'dot', color = 'blue'),
+        xref = "x",
+        yref = "y"
+      )
+    ))
+    
+    annotations_list <- c(annotations_list, list(
+      list(
+        x = max(diagnostics_final_dataset_rates_graph$MonthEnding),
+        y = median_value,
+        text = paste0("Median: ", round(median_value)),
+        showarrow = FALSE,
+        xanchor = "left",
+        yanchor = "top",
+        font = list(color = "blue")
+      )
+    ))
+  }
+  
+  plot <- plot_ly(diagnostics_final_dataset_rates_graph,
+                  x = ~MonthEnding,
+                  y = ~NumberOnList,
+                  type = 'scatter',
+                  mode = 'lines+markers',
+                  color = ~DiagnosticTestType,
+                  text = ~tooltip,
+                  hoverinfo = "text",
+                  name = 'Number on List'
+  )
+  
+  # Add special cause markers only if run chart is enabled and data exists
+  if (!is.null(input$show_run_chart_rules) && isTRUE(input$show_run_chart_rules)) {
+    if (any(diagnostics_final_dataset_rates_graph$diagnostics_run_chart_rules == "Trend")) {
+      plot <- plot %>%
+        add_trace(
+          data = diagnostics_final_dataset_rates_graph[diagnostics_final_dataset_rates_graph$diagnostics_run_chart_rules == "Trend", ],
+          x = ~MonthEnding,
+          y = ~NumberOnList,
+          type = 'scatter',
+          mode = 'markers',
+          marker = list(color = 'red', size = 10, symbol = 'circle'),
+          name = 'Statistical Pattern: Trend'
         )
-      ))
-      
-      annotations_list <- c(annotations_list, list(
-        list(
-          x = max(diagnostics_final_dataset_rates$MonthEnding),
-          y = avg_value,
-          text = paste0("Avg: ", round(avg_value)),
-          showarrow = FALSE,
-          xanchor = "left",
-          yanchor = "bottom",
-          font = list(color = "red")
-        )
-      ))
     }
     
-    if (input$line_option_diagnostics %in% c("Show Median Line", "Show Both")) {
-      shapes_list <- c(shapes_list, list(
-        list(
-          type = "line",
-          x0 = min(diagnostics_final_dataset_rates$MonthEnding),
-          x1 = max(diagnostics_final_dataset_rates$MonthEnding),
-          y0 = median_value,
-          y1 = median_value,
-          line = list(dash = 'dot', color = 'blue'),
-          xref = "x",
-          yref = "y"
+    if (any(diagnostics_final_dataset_rates_graph$diagnostics_run_chart_rules == "Shift")) {
+      plot <- plot %>%
+        add_trace(
+          data = diagnostics_final_dataset_rates_graph[diagnostics_final_dataset_rates_graph$diagnostics_run_chart_rules == "Shift", ],
+          x = ~MonthEnding,
+          y = ~NumberOnList,
+          type = 'scatter',
+          mode = 'markers',
+          marker = list(color = 'blue', size = 10, symbol = 'circle'),
+          name = 'Statistical Pattern: Shift'
         )
-      ))
-      
-      annotations_list <- c(annotations_list, list(
-        list(
-          x = max(diagnostics_final_dataset_rates$MonthEnding),
-          y = median_value,
-          text = paste0("Median: ", round(median_value)),
-          showarrow = FALSE,
-          xanchor = "left",
-          yanchor = "top",
-          font = list(color = "blue")
-        )
-      ))
     }
   }
   
-  plot_ly(
-    data = diagnostics_final_dataset_rates,
-    x = ~MonthEnding,
-    y = ~NumberOnList,
-    color = ~DiagnosticTestType,
-    type = 'scatter',
-    mode = 'lines',
-    hoverinfo = "text"
-  ) %>%
-    layout(
-      shapes = shapes_list,
-      annotations = annotations_list
-    )
+  plot %>% layout(shapes = shapes_list, annotations = annotations_list)
 })
