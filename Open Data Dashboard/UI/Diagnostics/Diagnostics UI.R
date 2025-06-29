@@ -78,21 +78,18 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                             column(3, uiOutput("diagnostics_description_filter"))
 ), ### End of fluidRow
 
-
-fluidRow(column(3,radioButtons("line_option_diagnostics", label = NULL, choices = c("None", "Show Average Line", "Show Median Line", "Show Both"), selected = "None",
-  inline = TRUE
-))
-         
-         
-         
-         ), #end of fluid row,
                                             
-                                            
-                                            
+br(), # Adds space above the text
                                      
                                           
                                           fluidRow(
-                                            column(3, plotlyOutput("diagnostics_overview_graph", width = "400%", height = "600px")))
+                                            column(9, plotlyOutput("diagnostics_overview_graph", height = "600px")),
+                                            column(3,radioButtons("line_option_diagnostics", label = "Choose Analytics", choices = c("None", "Show Average Line", "Show Median Line", "Show Both"), selected = "None"
+                                            ),
+                                            checkboxInput("show_run_chart_rules", "Show Run Chart Rules", value = TRUE))
+                                            
+                                            
+                                            ) #end of fluid row
                                           
                                          
                                           
