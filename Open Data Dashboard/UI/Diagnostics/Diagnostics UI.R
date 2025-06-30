@@ -59,8 +59,9 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                           fluidRow(
                                             column(6,
                                                    h2("Health Board Overview", style = "color:  #336699 ; font-weight: 600"))),
-                                          h4(""),
-                                          
+                                          h4("This section provides an overview of diagnostic waiting times for your selected NHS Health Board.
+Use the filters to choose a health board, waiting time band, and diagnostic test type. The interactive graph below shows how many patients are waiting for each type of test and how this has changed over time. You can also add trend lines or run chart rules to better understand performance patterns."),
+                                          h4("The run chart rules applied in this dashboard help identify patterns that may indicate meaningful changes in diagnostic waiting times. The shift rule is triggered when six or more consecutive data points fall either entirely above or entirely below the median line, suggesting a sustained change in the system rather than random fluctuation. The trend rule highlights periods where five or more consecutive points are either increasing or decreasing, indicating a consistent upward or downward movement over time. These rules are used to detect possible non-random variation and are marked visually on the chart to support interpretation of performance trends."), 
                                           
                                           fluidRow(
                                             
@@ -78,10 +79,8 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                             column(3, uiOutput("diagnostics_description_filter"))
 ), ### End of fluidRow
 
-                                            
-br(), # Adds space above the text
-                                     
-uiOutput("diagnostics_overview_graph_text"),                                       
+                                          
+uiOutput("diagnostics_overview_graph_text"),   
 fluidRow(
   column(11, plotlyOutput("diagnostics_overview_graph", height = "600px")),
   column(1,
