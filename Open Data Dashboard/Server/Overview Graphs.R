@@ -543,3 +543,37 @@ output$diagnostics_overview_graph <- renderPlotly({
   
   plot %>% layout(shapes = shapes_list, annotations = annotations_list)
 })
+
+
+output$diagnostics_overview_graph_percent_change <- renderPlotly({
+  
+  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates %>% 
+    filter(HBName %in% input$hb_name_diagnostics,
+           WaitingTime %in% input$diagnostics_waiting_times_input,
+           DiagnosticTestType %in% input$diagnostics_test_type_input,
+           DiagnosticTestDescription %in% input$diagnostics_description_type)
+  
+
+  diagnostics_final_dataset_rates_filtered$MonthEnding <- as.Date(diagnostics_final_dataset_rates_filtered$MonthEnding)
+  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates_filtered %>% 
+    arrange(MonthEnding)
+  
+  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates_filtered %>%
+    mutate(
+      PercentChange = (NumberOnList - lag(NumberOnList)) / lag(NumberOnList) * 100
+    )
+  
+  plot_ly(
+    diagnostics_final_dataset_rates_filtered,
+    x = ~MonthEnding,
+    y = ~PercentChange,
+    type = 'scatter',
+    mode = 'lines+markers',
+    name = 'Percent Change'
+  ) %>%
+    layout(
+      yaxis = list(title = "Percent Change in Number on List"),
+      xaxis = list(title = "Month")
+    )
+  
+})
