@@ -81,9 +81,8 @@ Use this dashboard to explore waiting times by health board, test type, and how 
                                             
 br(), # Adds space above the text
                                      
-                                          
+uiOutput("diagnostics_overview_graph_text"),                                       
 fluidRow(
-  uiOutput("diagnostics_overview_graph_text"),
   column(11, plotlyOutput("diagnostics_overview_graph", height = "600px")),
   column(1,
          radioButtons(
