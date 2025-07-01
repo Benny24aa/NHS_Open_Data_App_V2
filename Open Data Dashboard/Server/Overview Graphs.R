@@ -434,7 +434,7 @@ output$diagnostics_overview_graph <- renderPlotly({
     "Waiting Time Category: ", diagnostics_final_dataset_rates_graph$WaitingTime, "<br>",
     "Diagnostic Description: ", diagnostics_final_dataset_rates_graph$DiagnosticTestDescription, "<br>",
     "Diagnostic Type: ", diagnostics_final_dataset_rates_graph$DiagnosticTestType, "<br>",
-    "Month: ", diagnostics_final_dataset_rates_graph$MonthEnding, "<br>",
+    "Month: ", format(diagnostics_final_dataset_rates_graph$MonthEnding, "%b %Y"), "<br>",
     "Number on List: ", diagnostics_final_dataset_rates_graph$NumberOnList, "<br>",
     "Crude Rate: ", round(diagnostics_final_dataset_rates_graph$CrudeRate, 4),
     if (!is.null(input$show_run_chart_rules) && isTRUE(input$show_run_chart_rules)) {
@@ -561,6 +561,20 @@ output$diagnostics_overview_graph_percent_change <- renderPlotly({
     ) %>%
     filter(!is.na(PercentChange))  # remove rows with NA
   
+  # Create custom tooltip text
+  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates_filtered %>%
+    mutate(
+      TooltipText = paste0(
+        "Health Board: ", HBName, "<br>",
+        "Diagnostic Description: ", DiagnosticTestDescription, "<br>",
+        "Diagnostic Type: ", DiagnosticTestType, "<br>",
+        "Waiting Time Catergory: ", WaitingTime, "<br>",
+        "Number on List: ", NumberOnList, "<br>",
+        "Percent Change: ", round(PercentChange, 1), "%", "<br>",
+        "Month: ", format(MonthEnding, "%b %Y"), "<br>"
+      )
+    )
+  
   chart_type <- input$diagnostics_chart_type
   
   if (chart_type == "line") {
@@ -570,12 +584,16 @@ output$diagnostics_overview_graph_percent_change <- renderPlotly({
       y = ~PercentChange,
       type = 'scatter',
       mode = 'lines+markers',
+      text = ~TooltipText,
+      textposition = "none", 
+      hoverinfo = 'text',
       name = 'Percent Change'
     )
   } else {
-    # Create a color vector that aligns exactly with each PercentChange value
     bar_data <- diagnostics_final_dataset_rates_filtered %>%
-      mutate(BarColor = ifelse(PercentChange > 0, "red", "green"))
+      mutate(
+        BarColor = ifelse(PercentChange > 0, "red", "green")
+      )
     
     plot <- plot_ly(
       data = bar_data,
@@ -583,6 +601,9 @@ output$diagnostics_overview_graph_percent_change <- renderPlotly({
       y = ~PercentChange,
       type = 'bar',
       marker = list(color = bar_data$BarColor),
+      text = ~TooltipText,
+      textposition = "none", 
+      hoverinfo = 'text',
       name = 'Percent Change'
     )
   }

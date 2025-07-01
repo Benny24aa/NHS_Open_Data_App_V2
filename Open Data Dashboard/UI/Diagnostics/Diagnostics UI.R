@@ -100,14 +100,19 @@ fluidRow(
   )
 ), # end of fluidRow
 
-selectInput(
-  inputId = "diagnostics_chart_type",
-  label = "Select Chart Type:",
-  choices = c("Bar" = "bar", "Line" = "line"),
-  selected = "bar"
-),
-
-fluidRow(column(12, plotlyOutput("diagnostics_overview_graph_percent_change", height = "600px")))
+fluidRow(
+  column(11, plotlyOutput("diagnostics_overview_graph_percent_change", height = "600px")),
+                column(1, selectInput(
+                  inputId = "diagnostics_chart_type",
+                  label = "Select Chart Type:",
+                  choices = c("Bar" = "bar", "Line" = "line"),
+                  selected = "bar",
+                  width = "100%"
+                )
+                
+                )
+  
+  ) ## end of fluid row
                                           
                                          
                                           
