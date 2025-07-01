@@ -104,7 +104,7 @@ selectInput(
   inputId = "diagnostics_chart_type",
   label = "Select Chart Type:",
   choices = c("Line" = "line", "Bar" = "bar"),
-  selected = "line"
+  selected = "bar"
 ),
 
 fluidRow(column(12, plotlyOutput("diagnostics_overview_graph_percent_change", height = "600px")))
