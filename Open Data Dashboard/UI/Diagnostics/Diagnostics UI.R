@@ -103,7 +103,7 @@ fluidRow(
 selectInput(
   inputId = "diagnostics_chart_type",
   label = "Select Chart Type:",
-  choices = c("Line" = "line", "Bar" = "bar"),
+  choices = c("Bar" = "bar", "Line" = "line"),
   selected = "bar"
 ),
 
