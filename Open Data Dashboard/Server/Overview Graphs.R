@@ -554,11 +554,12 @@ output$diagnostics_overview_graph_percent_change <- renderPlotly({
            DiagnosticTestDescription %in% input$diagnostics_description_type)
   
   diagnostics_final_dataset_rates_filtered$MonthEnding <- as.Date(diagnostics_final_dataset_rates_filtered$MonthEnding)
-  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates_filtered %>% 
+  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates_filtered %>%
     arrange(MonthEnding) %>%
     mutate(
       PercentChange = (NumberOnList - lag(NumberOnList)) / lag(NumberOnList) * 100
-    )
+    ) %>%
+    filter(!is.na(PercentChange))  # remove rows with NA
   
   chart_type <- input$diagnostics_chart_type
   
@@ -572,11 +573,16 @@ output$diagnostics_overview_graph_percent_change <- renderPlotly({
       name = 'Percent Change'
     )
   } else {
+    # Create a color vector that aligns exactly with each PercentChange value
+    bar_data <- diagnostics_final_dataset_rates_filtered %>%
+      mutate(BarColor = ifelse(PercentChange > 0, "red", "green"))
+    
     plot <- plot_ly(
-      diagnostics_final_dataset_rates_filtered,
+      data = bar_data,
       x = ~MonthEnding,
       y = ~PercentChange,
       type = 'bar',
+      marker = list(color = bar_data$BarColor),
       name = 'Percent Change'
     )
   }
