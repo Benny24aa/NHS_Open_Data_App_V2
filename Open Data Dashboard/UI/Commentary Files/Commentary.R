@@ -1,4 +1,4 @@
-Commentary <- tabPanel(title = "Metadata and Commentary", icon = icon("info"), value = "comment",
+Commentary <- tabPanel(title = "Metadata and Commentary", value = "comment",
                        
                       
                        
