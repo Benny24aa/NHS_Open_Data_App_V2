@@ -540,8 +540,13 @@ output$diagnostics_overview_graph <- renderPlotly({
         )
     }
   }
-  
-  plot %>% layout(shapes = shapes_list, annotations = annotations_list)
+  plot %>%
+    layout(
+      shapes = shapes_list,
+      annotations = annotations_list,
+      xaxis = list(title = "Month"),
+      yaxis = list(title = "Number on List")
+    )
 })
 
 
@@ -559,25 +564,24 @@ output$diagnostics_overview_graph_percent_change <- renderPlotly({
     mutate(
       PercentChange = (NumberOnList - lag(NumberOnList)) / lag(NumberOnList) * 100
     ) %>%
-    filter(!is.na(PercentChange))  # remove rows with NA
+    filter(!is.na(PercentChange))  # remove NA rows
   
-  # Create custom tooltip text
   diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates_filtered %>%
     mutate(
       TooltipText = paste0(
-        "Health Board: ", HBName, "<br>",
-        "Diagnostic Description: ", DiagnosticTestDescription, "<br>",
-        "Diagnostic Type: ", DiagnosticTestType, "<br>",
-        "Waiting Time Catergory: ", WaitingTime, "<br>",
+        "Month: ", format(MonthEnding, "%b %Y"), "<br>",
+        "HB: ", HBName, "<br>",
+        "Test: ", DiagnosticTestDescription, "<br>",
+        "Waiting Time: ", WaitingTime, "<br>",
         "Number on List: ", NumberOnList, "<br>",
-        "Percent Change: ", round(PercentChange, 1), "%", "<br>",
-        "Month: ", format(MonthEnding, "%b %Y"), "<br>"
+        "Percent Change: ", round(PercentChange, 1), "%"
       )
     )
   
   chart_type <- input$diagnostics_chart_type
   
   if (chart_type == "line") {
+    # Line chart
     plot <- plot_ly(
       diagnostics_final_dataset_rates_filtered,
       x = ~MonthEnding,
@@ -585,27 +589,40 @@ output$diagnostics_overview_graph_percent_change <- renderPlotly({
       type = 'scatter',
       mode = 'lines+markers',
       text = ~TooltipText,
-      textposition = "none", 
       hoverinfo = 'text',
       name = 'Percent Change'
     )
   } else {
-    bar_data <- diagnostics_final_dataset_rates_filtered %>%
-      mutate(
-        BarColor = ifelse(PercentChange > 0, "red", "green")
-      )
+    # Bar chart with two traces: increase (red), decrease (green)
+    increase_data <- diagnostics_final_dataset_rates_filtered %>%
+      filter(PercentChange > 0)
     
-    plot <- plot_ly(
-      data = bar_data,
-      x = ~MonthEnding,
-      y = ~PercentChange,
-      type = 'bar',
-      marker = list(color = bar_data$BarColor),
-      text = ~TooltipText,
-      textposition = "none", 
-      hoverinfo = 'text',
-      name = 'Percent Change'
-    )
+    decrease_data <- diagnostics_final_dataset_rates_filtered %>%
+      filter(PercentChange <= 0)
+    
+    plot <- plot_ly() %>%
+      add_trace(
+        data = increase_data,
+        x = ~MonthEnding,
+        y = ~PercentChange,
+        type = 'bar',
+        name = 'Increase',
+        marker = list(color = 'red'),
+        text = ~TooltipText,
+        textposition = "none",
+        hoverinfo = 'text'
+      ) %>%
+      add_trace(
+        data = decrease_data,
+        x = ~MonthEnding,
+        y = ~PercentChange,
+        type = 'bar',
+        name = 'Decrease',
+        marker = list(color = 'green'),
+        text = ~TooltipText,
+        textposition = "none",
+        hoverinfo = 'text'
+      )
   }
   
   plot %>%

@@ -262,7 +262,7 @@ output$diagnostics_overview_graph_percent_change_text <- renderText({
   
   HTML(paste0(
     "<br>",  # Adds space above the text
-    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>", bar_chart_label, "showing the percentage change of the number of people waiting", input$diagnostics_waiting_times_input, "for a", diagnostics_label, "in", input$hb_name_diagnostics, "</div>"),
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>", bar_chart_label, "showing the percentage change in the number of people waiting", input$diagnostics_waiting_times_input, "for a", diagnostics_label, "in", input$hb_name_diagnostics, "</div>"),
     "<br>"
   ))
   
