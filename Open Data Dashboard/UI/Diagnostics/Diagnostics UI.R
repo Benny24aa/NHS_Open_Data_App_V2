@@ -98,7 +98,16 @@ fluidRow(
            width = "100%"
          )
   )
-) # end of fluidRow
+), # end of fluidRow
+
+selectInput(
+  inputId = "diagnostics_chart_type",
+  label = "Select Chart Type:",
+  choices = c("Line" = "line", "Bar" = "bar"),
+  selected = "line"
+),
+
+fluidRow(column(12, plotlyOutput("diagnostics_overview_graph_percent_change", height = "600px")))
                                           
                                          
                                           
