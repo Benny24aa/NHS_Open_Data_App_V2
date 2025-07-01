@@ -100,6 +100,7 @@ fluidRow(
   )
 ), # end of fluidRow
 
+uiOutput("diagnostics_overview_graph_percent_change_text"),
 fluidRow(
   column(11, plotlyOutput("diagnostics_overview_graph_percent_change", height = "600px")),
                 column(1, selectInput(

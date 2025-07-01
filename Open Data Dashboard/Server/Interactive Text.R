@@ -244,6 +244,30 @@ output$diagnostics_overview_graph_text <- renderText({
   
 })
 
+output$diagnostics_overview_graph_percent_change_text <- renderText({
+ bar_chart_label <- if (input$diagnostics_chart_type == "bar") {
+    "Bar Chart"
+  } else {
+    "Line Chart"
+  }
+  
+  
+  diagnostics_label <- if (input$diagnostics_description_type == "All Imaging") {
+    "Diagnostic Imaging Procedure"
+  } else if (input$diagnostics_description_type == "All Endoscopy") {
+    "Endoscopy"
+  } else {
+    input$diagnostics_description_type
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>", bar_chart_label, "showing the percentage change of the number of people waiting", input$diagnostics_waiting_times_input, "for a", diagnostics_label, "in", input$hb_name_diagnostics, "</div>"),
+    "<br>"
+  ))
+  
+})
+
 
 # diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates %>% 
 #   filter(HBName %in% input$hb_name_diagnostics,
