@@ -217,3 +217,60 @@ output$dynamic_title_metadata_commentary <- renderUI({
 
   div(style = 'color: #336699; font-size: 30px; font-weight: bold; margin-bottom: 5px;', full_title)
 })
+
+
+
+output$diagnostics_overview_graph_text <- renderText({
+  run_chart_label <- if (input$show_run_chart_rules) {
+    "Run Chart"
+  } else {
+    "Chart"
+  }
+  
+  
+  diagnostics_label <- if (input$diagnostics_description_type == "All Imaging") {
+    "Diagnostic Imaging Procedure"
+  } else if (input$diagnostics_description_type == "All Endoscopy") {
+    "Endoscopy"
+  } else {
+    input$diagnostics_description_type
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>", run_chart_label, "showing the number of people waiting", input$diagnostics_waiting_times_input, "for a", diagnostics_label, "in", input$hb_name_diagnostics, "</div>"),
+    "<br>"
+  ))
+  
+})
+
+output$diagnostics_overview_graph_percent_change_text <- renderText({
+ bar_chart_label <- if (input$diagnostics_chart_type == "bar") {
+    "Bar Chart"
+  } else {
+    "Line Chart"
+  }
+  
+  
+  diagnostics_label <- if (input$diagnostics_description_type == "All Imaging") {
+    "Diagnostic Imaging Procedure"
+  } else if (input$diagnostics_description_type == "All Endoscopy") {
+    "Endoscopy"
+  } else {
+    input$diagnostics_description_type
+  }
+  
+  HTML(paste0(
+    "<br>",  # Adds space above the text
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>", bar_chart_label, "showing the percentage change in the number of people waiting", input$diagnostics_waiting_times_input, "for a", diagnostics_label, "in", input$hb_name_diagnostics, "</div>"),
+    "<br>"
+  ))
+  
+})
+
+
+# diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates %>% 
+#   filter(HBName %in% input$hb_name_diagnostics,
+#          WaitingTime %in% input$diagnostics_waiting_times_input,
+#          DiagnosticTestType %in% input$diagnostics_test_type_input,
+#          DiagnosticTestDescription %in% input$diagnostics_description_type)

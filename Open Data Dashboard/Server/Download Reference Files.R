@@ -29,13 +29,24 @@ output$data_download_table_filtered <- DT::renderDataTable({
   
 })
 
-# Download Data 
-output$download_table_csv <- downloadHandler(
+output$download_table_csv_reference <- downloadHandler(
   filename = function() {
     paste(input$download_select, "_data.csv", sep = "")
   },
   content = function(file) {
-    # This downloads only the data the user has selected using the table filters
-    write_csv(data_download_table()[input[["download_data_table_filtered_rows_all"]], ], file) 
-  } 
+    selected_rows <- input$data_download_table_filtered_rows_all
+    
+    # Get the dataset
+    data_to_write <- data_download_table()
+    
+    # Use only selected rows if available
+    if (!is.null(selected_rows)) {
+      data_to_write <- data_to_write[selected_rows, ]
+    }
+
+    colnames(data_to_write) <- gsub("_", " ", colnames(data_to_write))
+    
+    # Write the data
+    write_csv(data_to_write, file)
+  }
 )

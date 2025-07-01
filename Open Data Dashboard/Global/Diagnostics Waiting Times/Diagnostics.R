@@ -4,8 +4,29 @@ HB_Pop_Estimates <- get_resource(res_id = "27a72cc8-d6d8-430c-8b4f-3109a9ceadb1"
 HB_Pop_Estimates <- HB_Pop_Estimates %>% 
   select(Year, HB, Sex, AllAges) 
 
+# Check if 2023 data is available
+if (2023 %in% HB_Pop_Estimates$Year) {
+  
+  # Identify missing years
+  missing_years <- setdiff(c(2024, 2025), unique(HB_Pop_Estimates$Year))
+  
+  # If any missing, duplicate 2023 data for those years
+  if (length(missing_years) > 0) {
+    data_2023 <- HB_Pop_Estimates %>% filter(Year == 2023)
+    
+    # Create duplicates for each missing year
+    data_copies <- lapply(missing_years, function(y) {
+      data_2023 %>% mutate(Year = y)
+    }) %>% bind_rows()
+    
+    # Append to the main data frame
+    HB_Pop_Estimates <- bind_rows(HB_Pop_Estimates, data_copies)
+  }
+}
+
 HB_Lookup_Diagnostics <- HB_Lookup %>% 
   select(-GeoType)
+
 
   HB_Pop_Estimates <- full_join(HB_Pop_Estimates, HB_Lookup_Diagnostics, by = "HB") %>% 
     filter(!is.na(HBName))
@@ -32,12 +53,10 @@ diagnostics_waiting_times <- full_join(HB_Lookup_Diagnostics, diagnostics_waitin
 ### Imaging Dataset
 
 diagnostics_waiting_times_imaging <- diagnostics_waiting_times %>%
-  filter(DiagnosticTestType == "Imaging")%>%
-  select(-DiagnosticTestType)
+  filter(DiagnosticTestType == "Imaging")
 
 ### making changes to data to use 2023 population estimate for rates
 diagnostics_waiting_times_imaging_100k_rate <- diagnostics_waiting_times_imaging %>%
-  filter(MonthEnding > '2020-01-01') %>%
 mutate(Year = MonthEnding)
 
 
@@ -52,18 +71,16 @@ diagnostics_waiting_times_imaging_100k_rate <- diagnostics_waiting_times_imaging
   select(-HB, -Year) %>%
   mutate(Rate = NumberOnList/AllAges) %>%
   mutate(Rate = Rate * 100000) %>%
-  select(-AllAges) %>% 
-  filter(!is.na(Rate))
+  select(-AllAges) 
+
 
 
 ### Endoscopy Dataset
 diagnostics_waiting_times_endoscopy <- diagnostics_waiting_times %>%
-  filter(DiagnosticTestType == "Endoscopy") %>%
-  select(-DiagnosticTestType)
+  filter(DiagnosticTestType == "Endoscopy")
 
 ### making changes to data to use 2023 population estimate for rates
 diagnostics_waiting_times_endoscopy_per_100k <- diagnostics_waiting_times_endoscopy %>%
-  filter(MonthEnding > '2020-01-01') %>%
   mutate(Year = MonthEnding) 
 
 diagnostics_waiting_times_endoscopy_per_100k$Year <- substr(diagnostics_waiting_times_endoscopy_per_100k$Year, 1, 4)# Keeps 1st to 4th number in string which is the year
@@ -77,11 +94,43 @@ diagnostics_waiting_times_endoscopy_per_100k<- diagnostics_waiting_times_endosco
   select(-HB, -Year) %>%
   mutate(Rate = NumberOnList/AllAges) %>%
   mutate(Rate = Rate * 100000) %>%
-  select(-AllAges)%>% 
-  filter(!is.na(Rate))
+  select(-AllAges)
 
 
 rm(diagnostics_waiting_times_endoscopy, diagnostics_waiting_times_imaging) # No longer needed
 
 diagnostics_final_dataset_rates <- bind_rows(diagnostics_waiting_times_endoscopy_per_100k,diagnostics_waiting_times_imaging_100k_rate)
+
+diagnostics_final_dataset_rates <- diagnostics_final_dataset_rates %>% 
+  filter(!is.na(MonthEnding)) %>% 
+  filter(!is.na(NumberOnList)) %>% 
+  select(-Sex) %>% 
+  rename(CrudeRate = Rate)
+
+rm(diagnostics_waiting_times, diagnostics_waiting_times_endoscopy_per_100k, diagnostics_waiting_times_imaging_100k_rate)
+
+
+##### Preparing lists for filters 
+
+diagnostics_waiting_time_filter_list <- diagnostics_final_dataset_rates %>% 
+  select(WaitingTime) %>% 
+  unique() %>%
+  mutate(
+    StartDay = as.numeric(str_extract(WaitingTime, "^\\d+"))
+  ) %>%
+  arrange(StartDay) %>%
+  select(WaitingTime) %>% 
+  filter(WaitingTime != "Total Number Waiting")
+
+
+diagnostics_test_type_list <- diagnostics_final_dataset_rates %>% 
+  select(DiagnosticTestType) %>% 
+  unique()
+
+diagnostic_description_list <- diagnostics_final_dataset_rates %>% 
+  select(DiagnosticTestType, DiagnosticTestDescription) %>% 
+  unique()
+
+# Graph_Types_Diagnostics <- c("NumberOnList", "CrudeRate")
+# Graph_Types_Diagnostics <- data.frame(Graph_Types_Diagnostics)
 
