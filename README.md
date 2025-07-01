@@ -3,7 +3,7 @@
 * This is an application that I have built in my personal time. The R shiny app is [NHS Open Data Application (Alpha Stage)](https://benny24aa.shinyapps.io/NHSOpenDataDashboard/) 
 * The data underlying the app can be found on the [PHS open data website (external link)](https://www.opendata.nhs.scot/)
 * Important Disclaimer: This RShiny open data application is an independent project and is not affiliated with, endorsed by, or representative of the National Health Service (NHS) or any of its associated organizations. The NHS is mentioned solely because the data used in this application originates from publicly available NHS open data sources.
-* 
+
 # Features
 
 * Interactive Dashboards: Explore various NHS datasets through dynamic charts and tables.
