@@ -15,12 +15,19 @@ source("UI/Commentary Files/Commentary.R")
 source("UI/feedback.R")
 source("UI/report a bug.R")
 
-# Cancer UI's
+##### Cancer UI's #####
+
+## Mortality and Incidence
 source("UI/Cancer/Cancer UI Setup.R")
 source("UI/Cancer/Cancer Waiting Times.R")
 source("UI/Cancer/Cancer UI Setup Sourcing Files/Landing Page.R")
 source("UI/Cancer/Cancer UI Setup Sourcing Files/Healthboard Overview.R")
-# Diagnostics UI
+source("UI/Cancer/Cancer UI Setup Sourcing Files/Cancer Download Page.R")
+source("UI/Cancer/Cancer UI Setup Sourcing Files/Cancer_Statistics.R")
+
+## Cancer Waiting Times 
+
+#### Diagnostics UI's ####
 source("UI/Diagnostics/Diagnostics UI.R")
 #################################
 navbarPage(id = "maintabid",
