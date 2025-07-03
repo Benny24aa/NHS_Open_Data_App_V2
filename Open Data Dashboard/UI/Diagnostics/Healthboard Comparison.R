@@ -6,6 +6,7 @@ Diagnostics_Comparison_Page <- conditionalPanel(
   fluidRow(
     column(6,
            h2("Health Board Comparison", style = "color:  #336699 ; font-weight: 600"))),
+<<<<<<< HEAD
   h4("Health Board Comparison for Diagnostics Data provides the user the ability to compare Health Boards by looking at Crude Rates for the number of people on the waiting list for a defined period of time. Please use the filters above the graph to aid you. "),
   
   
@@ -30,5 +31,8 @@ Diagnostics_Comparison_Page <- conditionalPanel(
   
   
   
+=======
+  h4("Health Board Comparison for Diagnostics Data provides the user the ability to compare Health Boards by looking at Crude Rates for the number of people on the waiting list for a defined period of time. Please use the filters above the graph to aid you. ")
+>>>>>>> 32ce0cf1d33d7d4db86697178a713a92a64e8a0d
   
 )
