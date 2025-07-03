@@ -11,6 +11,7 @@ Diagnostics_Comparison_Page <- conditionalPanel(
   
   
   fluidRow(
+    
     column(3,
            pickerInput(
              inputId = "Healthboard_Diagnostics_Input_compare",
@@ -22,10 +23,22 @@ Diagnostics_Comparison_Page <- conditionalPanel(
                `actions-box` = TRUE,
                `live-search` = TRUE,
                `selected-text-format` = "count > 3"
-             )))
+             ))),
     
+    column(3, selectInput("diagnostics_waiting_times_input_compare", label = "Select Waiting Time Period",
+                          choices = unique(diagnostics_waiting_time_filter_list$WaitingTime,
+                                           multiple = FALSE))),
     
-    ) #end of fluid row
+    column(3, selectInput("diagnostics_test_type_input_compare", label = "Select Diagnostic Type",
+                          choices = unique(diagnostics_test_type_list$DiagnosticTestType,
+                                           multiple = FALSE))),
+    column(3, uiOutput("diagnostics_description_filter_compare"))
+ 
+
+   
+    
+) ### End of fluidRow
+
   
   
   

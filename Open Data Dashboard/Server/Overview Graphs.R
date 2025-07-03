@@ -631,3 +631,11 @@ output$diagnostics_overview_graph_percent_change <- renderPlotly({
       xaxis = list(title = "Month")
     )
 })
+
+output$diagnostics_description_filter_compare <- renderUI({
+  
+  diagnostics_description_list <- diagnostic_description_list %>% 
+    filter(DiagnosticTestType %in% input$diagnostics_test_type_input_compare) %>% 
+    pull(DiagnosticTestDescription)
+  selectInput(inputId = "diagnostics_description_type_compare", label = "Select a Diagnostics Breakdown", choices = diagnostics_description_list)
+})
