@@ -639,3 +639,39 @@ output$diagnostics_description_filter_compare <- renderUI({
     pull(DiagnosticTestDescription)
   selectInput(inputId = "diagnostics_description_type_compare", label = "Select a Diagnostics Breakdown", choices = diagnostics_description_list)
 })
+
+
+
+output$hb_compare_diagnostics_graph <- renderPlotly({
+  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates %>% 
+    filter(HBName %in% input$Healthboard_Diagnostics_Input_compare,
+           WaitingTime %in% input$diagnostics_waiting_times_input_compare,
+           DiagnosticTestType %in% input$diagnostics_test_type_input_compare,
+           DiagnosticTestDescription %in% input$diagnostics_description_type_compare)
+  
+  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates_filtered %>%
+    mutate(
+      TooltipText = paste0(
+        "Month: ", format(MonthEnding, "%b %Y"), "<br>",
+        "Health Board: ", HBName, "<br>",
+        "Test: ", DiagnosticTestDescription, "<br>",
+        "Waiting Time: ", WaitingTime, "<br>",
+        "Number on List: ", NumberOnList, "<br>",
+        "Crude Rate: ", CrudeRate
+      )
+    )
+  
+  
+  
+  diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates_filtered %>% 
+    plot_ly(x = ~ MonthEnding,
+            y = ~get(input$graphtype_input_compare_diagnostics),
+            color = ~ HBName,
+            type = 'scatter',
+            mode = 'lines',
+            text = ~TooltipText,
+            hoverinfo="text" ) %>% 
+    layout(xaxis = list(title = "Month Ending"),
+           yaxis = list(title = input$graphtype_input_compare_diagnostics))
+  
+})

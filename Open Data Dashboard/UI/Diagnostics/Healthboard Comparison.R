@@ -12,7 +12,7 @@ Diagnostics_Comparison_Page <- conditionalPanel(
   
   fluidRow(
     
-    column(3,
+    column(2,
            pickerInput(
              inputId = "Healthboard_Diagnostics_Input_compare",
              label = "Select Health Boards",
@@ -25,16 +25,20 @@ Diagnostics_Comparison_Page <- conditionalPanel(
                `selected-text-format` = "count > 3"
              ))),
     
-    column(3, selectInput("diagnostics_waiting_times_input_compare", label = "Select Waiting Time Period",
+    column(2, selectInput("diagnostics_waiting_times_input_compare", label = "Select Waiting Time Period",
                           choices = unique(diagnostics_waiting_time_filter_list$WaitingTime,
                                            multiple = FALSE))),
     
-    column(3, selectInput("diagnostics_test_type_input_compare", label = "Select Diagnostic Type",
+    column(2, selectInput("diagnostics_test_type_input_compare", label = "Select Diagnostic Type",
                           choices = unique(diagnostics_test_type_list$DiagnosticTestType,
                                            multiple = FALSE))),
-    column(3, uiOutput("diagnostics_description_filter_compare"))
+    column(2, uiOutput("diagnostics_description_filter_compare")),
+    column(2, selectInput("graphtype_input_compare_diagnostics", label = "Select statistical graph type",
+                          choices = unique(Graph_Types_Diagnostics$Graph_Types_Diagnostics,
+                                           multiple = TRUE))),
  
-
+    fluidRow(
+      column(3, plotlyOutput("hb_compare_diagnostics_graph", width = "400%", height = "600px")))
    
     
 ) ### End of fluidRow
