@@ -19,6 +19,7 @@ source("UI/report a bug.R")
 source("UI/Cancer/Cancer UI Setup.R")
 source("UI/Cancer/Cancer Waiting Times.R")
 source("UI/Cancer/Cancer UI Setup Sourcing Files/Landing Page.R")
+source("UI/Cancer/Cancer UI Setup Sourcing Files/Healthboard Overview.R")
 # Diagnostics UI
 source("UI/Diagnostics/Diagnostics UI.R")
 #################################
