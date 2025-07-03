@@ -27,8 +27,17 @@ source("UI/Cancer/Cancer UI Setup Sourcing Files/Cancer_Statistics.R")
 
 ## Cancer Waiting Times 
 
+source("UI/Cancer/Cancer UI Waiting Times Sourcing Files/Landing Page.R")
+source("UI/Cancer/Cancer UI Waiting Times Sourcing Files/31 Days Overview.R")
+source("UI/Cancer/Cancer UI Waiting Times Sourcing Files/62 Days Overview.R")
+source("UI/Cancer/Cancer UI Waiting Times Sourcing Files/Download Page.R")
+
 #### Diagnostics UI's ####
 source("UI/Diagnostics/Diagnostics UI.R")
+source("UI/Diagnostics/Landing Page.R")
+source("UI/Diagnostics/Healthboard Overview.R")
+source("UI/Diagnostics/Download Page.R")
+
 #################################
 navbarPage(id = "maintabid",
             title = div(tags$a(img(src="", width=120, alt = ""),
