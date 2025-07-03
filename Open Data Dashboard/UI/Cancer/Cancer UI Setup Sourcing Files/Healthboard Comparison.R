@@ -5,7 +5,7 @@ Cancer_Compare <- conditionalPanel(
   fluidRow(
     column(6,
            h2("Health Board Comparison", style = "color:  #336699 ; font-weight: 600"))),
-  h4("Health Board Comparison for Cancer Incidence and Mortality Data provides the user the ability to compare Health Boards using different incidators such as EASR and Crude Rates. Please use the filters above the graph to aid you. Click on the legend on the side of the graph to keep or remove Health Boards at your leisure. "),
+  h4("Health Board Comparison for Cancer Incidence and Mortality Data provides the user the ability to compare Health Boards using different incidators such as EASR and Crude Rates. Please use the filters above the graph to aid you. "),
   
   
   fluidRow(

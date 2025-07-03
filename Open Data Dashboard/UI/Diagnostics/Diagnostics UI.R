@@ -1,6 +1,7 @@
 source("UI/Diagnostics/Landing Page.R")
 source("UI/Diagnostics/Healthboard Overview.R")
 source("UI/Diagnostics/Download Page.R")
+source("UI/Diagnostics/Healthboard Comparison.R")
 
 
 
@@ -17,6 +18,7 @@ Diagnsotics_UI <- tabPanel(title = "Diagnostics Waiting Times",  icon = icon("mi
                                         
                                         Diagnostics_Landing_Page,#end of conditional panel
                                         Diagnostics_Healthboard_Overview, # end of conditional panel
+                                        Diagnostics_Comparison_Page, # end of conditional panel
                                         Diagnostics_Download_Page #end of conditional panel
                                         
 
