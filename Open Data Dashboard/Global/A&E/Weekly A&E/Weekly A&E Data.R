@@ -22,3 +22,11 @@ WeeklyAE <- WeeklyAE %>%
   left_join(AE_Sites, by = "TreatmentLocationCode") %>%
   filter(CurrentDepartmentType == "Type 1") %>% ### Removing 2 historical Glasgow locations from the dataset as 20/30 rows of data in 2015 were classed as Type 3 (Minor Surgery) based on the reference files
   select(-c(CurrentDepartmentType, TreatmentLocationCode))
+
+Attendance_Category_AE_List <- WeeklyAE %>% 
+  select(AttendanceCategory) %>% 
+  unique()
+
+HB_Hospital_List <- WeeklyAE %>% 
+  select(HBName, TreatmentLocationName) %>% 
+  unique()

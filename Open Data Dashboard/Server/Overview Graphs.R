@@ -675,3 +675,13 @@ output$hb_compare_diagnostics_graph <- renderPlotly({
            yaxis = list(title = input$graphtype_input_compare_diagnostics))
   
 })
+
+
+
+output$accident_emergency_hospital_filter <- renderUI({
+  
+  HB_Hospital_List <- HB_Hospital_List %>% 
+    filter(HBName %in% input$hb_name_ae) %>% 
+    pull(TreatmentLocationName)
+  selectInput(inputId = "ae_weekly_hospital_input", label = "Select Hopsital", choices = HB_Hospital_List)
+})
