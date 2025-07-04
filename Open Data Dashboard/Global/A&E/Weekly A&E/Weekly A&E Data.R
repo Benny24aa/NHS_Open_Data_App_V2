@@ -1,39 +1,24 @@
-#### Calling in data from PHS website
+#### Load data from PHS Open Data
 WeeklyAE <- get_resource(res_id = "a5f7ca94-c810-41b5-a7c9-25c18d43e5a4")
 AE_Sites <- get_resource(res_id = "1a4e3f48-3d9b-4769-80e9-3ef6d27852fe")
 
-
-#### Converting to Date Format
-WeeklyAE$WeekEndingDate <- as.Date(
-  as.character(WeeklyAE$WeekEndingDate),
-  format = "%Y%m%d"
-)
-
-#### Removing useless columns 
-
-WeeklyAE <- WeeklyAE %>% 
-  select(-Country, -DepartmentType)
-
-#### Creating lookup for A&E data to perform join
-
-HB_Lookup_AE <- HB_Lookup %>% 
-  select(-GeoType) %>% 
+#### Prepare lookup table 
+HB_Lookup_AE <- HB_Lookup %>%
+  select(-GeoType) %>%
   rename(HBT = HB)
 
-#### Cleaning A&E Sites lookup File
+#### Process A&E Sites
+AE_Sites <- AE_Sites %>%
+  select(TreatmentLocationCode, TreatmentLocationName, CurrentDepartmentType)
 
-AE_Sites <- AE_Sites %>% 
-  select(TreatmentLocationName, TreatmentLocationCode, CurrentDepartmentType)
-
-#### Joining HBT code with HB Name to dataset
-WeeklyAE <- full_join(WeeklyAE, HB_Lookup_AE, by = "HBT") %>%
-  select(-HBT) %>% 
-  rename(TreatmentLocationCode = TreatmentLocation)
-
-#### Joining HBT code with HB Name to dataset
-WeeklyAE <- left_join(WeeklyAE, AE_Sites, by = "TreatmentLocationCode") 
-
-WeeklyAE <- WeeklyAE %>% 
-  filter(CurrentDepartmentType == "Type 1") ### Removes Type 3 minor injury rows (around 20/30 exist in 2015 for two glasgow locations)
-
-
+#### Clean and join WeeklyAE data
+WeeklyAE <- WeeklyAE %>%
+  mutate(
+    WeekEndingDate = ymd(WeekEndingDate)
+  ) %>%
+  select(-Country, -DepartmentType) %>%
+  full_join(HB_Lookup_AE, by = "HBT") %>%
+  rename(TreatmentLocationCode = TreatmentLocation) %>%
+  left_join(AE_Sites, by = "TreatmentLocationCode") %>%
+  filter(CurrentDepartmentType == "Type 1") %>% ### Removing 2 historical Glasgow locations from the dataset as 20/30 rows of data in 2015 were classed as Type 3 (Minor Surgery) based on the reference files
+  select(-c(CurrentDepartmentType, TreatmentLocationCode))
