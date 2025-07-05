@@ -702,7 +702,7 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-  # Validate there is data
+
   validate(
     need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
   )
@@ -724,19 +724,46 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
   
   historic_avg <- mean(WeeklyAE_Historic$NumberOfAttendancesEpisode, na.rm = TRUE)
   
+
+  WeeklyAE_Historic <- WeeklyAE_Historic %>%
+    mutate(WeekNum = lubridate::isoweek(WeekEndingDate))
   
-  plot_ly(
-    data = WeeklyAE_Filtered,
-    x = ~WeekEndingDate,
-    y = ~NumberOfAttendancesEpisode,
-    color = ~HBName,
-    type = 'scatter',
-    mode = 'lines',
-    hoverinfo = "text"
-  ) %>%
+  WeeklyAE_Filtered <- WeeklyAE_Filtered %>%
+    mutate(WeekNum = lubridate::isoweek(WeekEndingDate))
+  
+
+  HistoricWeeklyAvg <- WeeklyAE_Historic %>%
+    group_by(WeekNum) %>%
+    summarise(HistoricRollingAvg = mean(NumberOfAttendancesEpisode, na.rm = TRUE)) %>%
+    ungroup()
+
+  WeeklyAE_WithRolling <- WeeklyAE_Filtered %>%
+    left_join(HistoricWeeklyAvg, by = "WeekNum")
+  
+  # Plot
+  plot_ly() %>%
+    add_trace(
+      data = WeeklyAE_Filtered,
+      x = ~WeekEndingDate,
+      y = ~NumberOfAttendancesEpisode,
+      color = ~HBName,
+      type = 'scatter',
+      mode = 'lines',
+      name = 'Current Year(s)',
+      hoverinfo = "text"
+    ) %>%
+    add_trace(
+      data = WeeklyAE_WithRolling,
+      x = ~WeekEndingDate,
+      y = ~HistoricRollingAvg,
+      type = 'scatter',
+      mode = 'lines',
+      name = paste0("Historic Weekly Avg (", paste(historic_years, collapse = "-"), ")"),
+      line = list(dash = "dot", color = '#006400'),
+      hoverinfo = "text"
+    ) %>%
     layout(
       shapes = list(
-        # Current average dashed line (black)
         list(
           type = "line",
           x0 = min(WeeklyAE_Filtered$WeekEndingDate),
@@ -745,7 +772,6 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
           y1 = avg_attendance,
           line = list(color = "black", width = 2, dash = "dash")
         ),
-        # Historic average dashed line (gray)
         list(
           type = "line",
           x0 = min(WeeklyAE_Filtered$WeekEndingDate),
@@ -781,4 +807,3 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       )
     )
 })
-
