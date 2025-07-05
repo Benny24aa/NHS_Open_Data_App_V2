@@ -689,6 +689,10 @@ output$accident_emergency_hospital_filter <- renderUI({
 
 output$total_weekly_ae_attendance_graph <- renderPlotly({
   
+  req(input$hb_name_ae, input$attendance_category_ae_input, 
+      input$ae_weekly_hospital_input, input$ae_year_input)
+  
+  # Filter for selected years
   WeeklyAE_Filtered <- WeeklyAE %>%
     select(WeekEndingDate, AttendanceCategory, NumberOfAttendancesEpisode, HBName, TreatmentLocationName) %>%
     filter(
@@ -698,29 +702,28 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-  # Check for empty data
-  if (nrow(WeeklyAE_Filtered) == 0) {
-    return(
-      plot_ly() %>%
-        layout(
-          xaxis = list(visible = FALSE),
-          yaxis = list(visible = FALSE),
-          annotations = list(
-            list(
-              text = "No data available for selected filters",
-              x = 0.5,
-              y = 0.5,
-              xref = "paper",
-              yref = "paper",
-              showarrow = FALSE,
-              font = list(size = 16)
-            )
-          )
-        )
-    )
-  }
+  # Validate there is data
+  validate(
+    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
+  )
   
   avg_attendance <- mean(WeeklyAE_Filtered$NumberOfAttendancesEpisode, na.rm = TRUE)
+  
+
+  selected_years <- sort(as.numeric(input$ae_year_input))
+  min_selected_year <- min(selected_years)
+  historic_years <- (min_selected_year - 2):(min_selected_year - 1)
+  
+  WeeklyAE_Historic <- WeeklyAE %>%
+    filter(
+      HBName %in% input$hb_name_ae,
+      AttendanceCategory %in% input$attendance_category_ae_input,
+      TreatmentLocationName %in% input$ae_weekly_hospital_input,
+      lubridate::year(WeekEndingDate) %in% historic_years
+    )
+  
+  historic_avg <- mean(WeeklyAE_Historic$NumberOfAttendancesEpisode, na.rm = TRUE)
+  
   
   plot_ly(
     data = WeeklyAE_Filtered,
@@ -733,30 +736,47 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
   ) %>%
     layout(
       shapes = list(
+        # Current average dashed line (black)
         list(
           type = "line",
           x0 = min(WeeklyAE_Filtered$WeekEndingDate),
           x1 = max(WeeklyAE_Filtered$WeekEndingDate),
           y0 = avg_attendance,
           y1 = avg_attendance,
-          line = list(
-            color = "black",
-            width = 2,
-            dash = "dash"
-          )
+          line = list(color = "black", width = 2, dash = "dash")
+        ),
+        # Historic average dashed line (gray)
+        list(
+          type = "line",
+          x0 = min(WeeklyAE_Filtered$WeekEndingDate),
+          x1 = max(WeeklyAE_Filtered$WeekEndingDate),
+          y0 = historic_avg,
+          y1 = historic_avg,
+          line = list(color = "gray", width = 2, dash = "dot")
         )
       ),
       annotations = list(
         list(
           x = max(WeeklyAE_Filtered$WeekEndingDate),
           y = avg_attendance,
-          text = paste0("Average: ", round(avg_attendance, 0)),
+          text = paste0("Avg ", paste0(input$ae_year_input, collapse = ", "), ": ", round(avg_attendance, 0)),
           xref = "x",
           yref = "y",
           showarrow = FALSE,
           xanchor = "left",
           yanchor = "bottom",
           font = list(size = 12, color = "black")
+        ),
+        list(
+          x = max(WeeklyAE_Filtered$WeekEndingDate),
+          y = historic_avg,
+          text = paste0("Avg ", paste(historic_years, collapse = "-"), ": ", round(historic_avg, 0)),
+          xref = "x",
+          yref = "y",
+          showarrow = FALSE,
+          xanchor = "left",
+          yanchor = "top",
+          font = list(size = 12, color = "gray")
         )
       )
     )
