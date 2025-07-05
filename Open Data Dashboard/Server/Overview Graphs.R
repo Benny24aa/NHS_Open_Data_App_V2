@@ -702,18 +702,20 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-
+  # Validate there is data
   validate(
     need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
   )
   
+  # Current year(s) average
   avg_attendance <- mean(WeeklyAE_Filtered$NumberOfAttendancesEpisode, na.rm = TRUE)
   
-
+  # Get selected years and define 2-year historic window
   selected_years <- sort(as.numeric(input$ae_year_input))
   min_selected_year <- min(selected_years)
   historic_years <- (min_selected_year - 2):(min_selected_year - 1)
   
+  # Historic data
   WeeklyAE_Historic <- WeeklyAE %>%
     filter(
       HBName %in% input$hb_name_ae,
@@ -722,21 +724,23 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% historic_years
     )
   
+  # Historic overall average
   historic_avg <- mean(WeeklyAE_Historic$NumberOfAttendancesEpisode, na.rm = TRUE)
   
-
+  # Add week numbers
   WeeklyAE_Historic <- WeeklyAE_Historic %>%
     mutate(WeekNum = lubridate::isoweek(WeekEndingDate))
   
   WeeklyAE_Filtered <- WeeklyAE_Filtered %>%
     mutate(WeekNum = lubridate::isoweek(WeekEndingDate))
   
-
+  # Weekly average for historic years
   HistoricWeeklyAvg <- WeeklyAE_Historic %>%
     group_by(WeekNum) %>%
     summarise(HistoricRollingAvg = mean(NumberOfAttendancesEpisode, na.rm = TRUE)) %>%
     ungroup()
-
+  
+  # Merge historic rolling average onto filtered data
   WeeklyAE_WithRolling <- WeeklyAE_Filtered %>%
     left_join(HistoricWeeklyAvg, by = "WeekNum")
   
@@ -759,7 +763,7 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       type = 'scatter',
       mode = 'lines',
       name = paste0("Historic Weekly Avg (", paste(historic_years, collapse = "-"), ")"),
-      line = list(dash = "dot", color = '#006400'),
+      line = list(dash = "dot", color = '#006400'),  # dark green
       hoverinfo = "text"
     ) %>%
     layout(
@@ -804,6 +808,20 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
           yanchor = "top",
           font = list(size = 12, color = "gray")
         )
+      ),
+      legend = list(
+        orientation = "h",
+        x = 0,
+        y = 1.1,
+        xanchor = "left"
+      ),
+      xaxis = list(
+        title = "Month",
+        tickformat = "%b\n%Y",
+        type = "date"
+      ),
+      yaxis = list(
+        title = "Number of Attendances"
       )
     )
 })
