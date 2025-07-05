@@ -687,7 +687,6 @@ output$accident_emergency_hospital_filter <- renderUI({
   selectInput(inputId = "ae_weekly_hospital_input", label = "Select Hopsital", choices = HB_Hospital_List)
 })
 
-#### Total Weekly AE Attendance Graph (Episodes)
 output$total_weekly_ae_attendance_graph <- renderPlotly({
   
   WeeklyAE_Filtered <- WeeklyAE %>%
@@ -699,6 +698,30 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
+  # Check for empty data
+  if (nrow(WeeklyAE_Filtered) == 0) {
+    return(
+      plot_ly() %>%
+        layout(
+          xaxis = list(visible = FALSE),
+          yaxis = list(visible = FALSE),
+          annotations = list(
+            list(
+              text = "No data available for selected filters",
+              x = 0.5,
+              y = 0.5,
+              xref = "paper",
+              yref = "paper",
+              showarrow = FALSE,
+              font = list(size = 16)
+            )
+          )
+        )
+    )
+  }
+  
+  avg_attendance <- mean(WeeklyAE_Filtered$NumberOfAttendancesEpisode, na.rm = TRUE)
+  
   plot_ly(
     data = WeeklyAE_Filtered,
     x = ~WeekEndingDate,
@@ -707,7 +730,35 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
     type = 'scatter',
     mode = 'lines',
     hoverinfo = "text"
-  )
+  ) %>%
+    layout(
+      shapes = list(
+        list(
+          type = "line",
+          x0 = min(WeeklyAE_Filtered$WeekEndingDate),
+          x1 = max(WeeklyAE_Filtered$WeekEndingDate),
+          y0 = avg_attendance,
+          y1 = avg_attendance,
+          line = list(
+            color = "black",
+            width = 2,
+            dash = "dash"
+          )
+        )
+      ),
+      annotations = list(
+        list(
+          x = max(WeeklyAE_Filtered$WeekEndingDate),
+          y = avg_attendance,
+          text = paste0("Average: ", round(avg_attendance, 0)),
+          xref = "x",
+          yref = "y",
+          showarrow = FALSE,
+          xanchor = "left",
+          yanchor = "bottom",
+          font = list(size = 12, color = "black")
+        )
+      )
+    )
 })
-
 
