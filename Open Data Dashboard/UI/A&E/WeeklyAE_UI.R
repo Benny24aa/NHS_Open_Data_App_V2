@@ -53,14 +53,22 @@ WeeklyAEUI <- tabPanel(title = "Weekly Accident and Emergency Statistics",
                          column(6,
                                 h3("Percentage of the Number of People Seen Over 8 Hours", style = "color:  #336699 ; font-weight: 600"),
                                 plotlyOutput("total_weekly_ae_over_eight_hours_percentage_graph", height = "600px"))
+                       ),
+                       
+                       
+                       br(), 
+                       fluidRow(
+                         column(6,
+                                h3("Number of People Seen Over 12 Hours", style = "color:  #336699 ; font-weight: 600"),
+                                plotlyOutput("total_weekly_ae_over_twelve_hours_graph", height = "600px")),
+                         column(6,
+                                h3("Percentage of the Number of People Seen Over 12 Hours", style = "color:  #336699 ; font-weight: 600"),
+                                plotlyOutput("total_weekly_ae_over_twelve_hours_percentage_graph", height = "600px"))
                        )
-                       
-                       
-                       
                       
                        
                        
-                       
+        
                      
                        
                        
