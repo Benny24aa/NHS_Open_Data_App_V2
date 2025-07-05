@@ -18,14 +18,24 @@ WeeklyAEUI <- tabPanel(title = "Weekly Accident and Emergency Statistics",
                          column(3, selectInput("attendance_category_ae_input", label = "Select Diagnostic Type",
                                                choices = unique(Attendance_Category_AE_List$AttendanceCategory,
                                                                 multiple = FALSE))),
+                         column(3, selectInput(
+                           inputId = "ae_year_input",
+                           label = "Select Year",
+                           choices = sort(2015:2025, decreasing = TRUE), 
+                           selected = 2025,
+                           multiple = FALSE
+                         ))
                          
+                       ),
+                       
+                       fluidRow(
+                         column(6, plotlyOutput("total_weekly_ae_attendance_graph", height = "600px"))
                        )
                        
                        
                        
                        
-                       
-                       
+                     
                        
                        
                        
