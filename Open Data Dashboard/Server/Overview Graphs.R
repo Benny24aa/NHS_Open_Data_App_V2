@@ -679,6 +679,8 @@ output$hb_compare_diagnostics_graph <- renderPlotly({
 ############### Accident and Emergency Graph Section
 
 
+
+########## Accident and Emergency Filter for Hospitals
 output$accident_emergency_hospital_filter <- renderUI({
   
   HB_Hospital_List <- HB_Hospital_List %>% 
@@ -687,6 +689,7 @@ output$accident_emergency_hospital_filter <- renderUI({
   selectInput(inputId = "ae_weekly_hospital_input", label = "Select Hopsital", choices = HB_Hospital_List)
 })
 
+# Weekly Attendance AE Graph 
 output$total_weekly_ae_attendance_graph <- renderPlotly({
   
   req(input$hb_name_ae, input$attendance_category_ae_input, 
@@ -825,6 +828,8 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       )
     )
 })
+
+### Over Four Hours AE Graph
 
 output$total_weekly_ae_over_four_hours_graph <- renderPlotly({
   
@@ -965,6 +970,8 @@ output$total_weekly_ae_over_four_hours_graph <- renderPlotly({
     )
 })
 
+### Within 4 hours AE Graph
+
 output$total_weekly_ae_within_four_hours_graph <- renderPlotly({
   
   req(input$hb_name_ae, input$attendance_category_ae_input, 
@@ -1103,6 +1110,7 @@ output$total_weekly_ae_within_four_hours_graph <- renderPlotly({
       )
     )
 })
+### Within 4 hours AE Percentage Graph
 
 output$total_weekly_ae_within_four_hours_percentage_graph <- renderPlotly({
   
@@ -1243,6 +1251,8 @@ output$total_weekly_ae_within_four_hours_percentage_graph <- renderPlotly({
     )
 })
 
+### 8 hours AE Graph
+
 output$total_weekly_ae_over_eight_hours_graph <- renderPlotly({
   
   req(input$hb_name_ae, input$attendance_category_ae_input, 
@@ -1382,6 +1392,8 @@ output$total_weekly_ae_over_eight_hours_graph <- renderPlotly({
     )
 })
 
+### Within 8 hours AE Percentage Graph
+
 output$total_weekly_ae_over_eight_hours_percentage_graph <- renderPlotly({
   
   req(input$hb_name_ae, input$attendance_category_ae_input, 
@@ -1520,6 +1532,7 @@ output$total_weekly_ae_over_eight_hours_percentage_graph <- renderPlotly({
       )
     )
 })
+### 12 hours AE Graph
 
 output$total_weekly_ae_over_twelve_hours_graph <- renderPlotly({
   
@@ -1659,6 +1672,8 @@ output$total_weekly_ae_over_twelve_hours_graph <- renderPlotly({
       )
     )
 })
+
+### Within 12 hours AE Percentage Graph
 
 output$total_weekly_ae_over_twelve_hours_percentage_graph <- renderPlotly({
   
