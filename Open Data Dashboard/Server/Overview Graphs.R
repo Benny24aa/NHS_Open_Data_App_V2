@@ -676,6 +676,7 @@ output$hb_compare_diagnostics_graph <- renderPlotly({
   
 })
 
+############### Accident and Emergency Graph Section
 
 
 output$accident_emergency_hospital_filter <- renderUI({
@@ -685,3 +686,28 @@ output$accident_emergency_hospital_filter <- renderUI({
     pull(TreatmentLocationName)
   selectInput(inputId = "ae_weekly_hospital_input", label = "Select Hopsital", choices = HB_Hospital_List)
 })
+
+#### Total Weekly AE Attendance Graph (Episodes)
+output$total_weekly_ae_attendance_graph <- renderPlotly({
+  
+  WeeklyAE_Filtered <- WeeklyAE %>%
+    select(WeekEndingDate, AttendanceCategory, NumberOfAttendancesEpisode, HBName, TreatmentLocationName) %>%
+    filter(
+      HBName %in% input$hb_name_ae,
+      AttendanceCategory %in% input$attendance_category_ae_input,
+      TreatmentLocationName %in% input$ae_weekly_hospital_input,
+      lubridate::year(WeekEndingDate) %in% input$ae_year_input
+    )
+  
+  plot_ly(
+    data = WeeklyAE_Filtered,
+    x = ~WeekEndingDate,
+    y = ~NumberOfAttendancesEpisode,
+    color = ~HBName,
+    type = 'scatter',
+    mode = 'lines',
+    hoverinfo = "text"
+  )
+})
+
+
