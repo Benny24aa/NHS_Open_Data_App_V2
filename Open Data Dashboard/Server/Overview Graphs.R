@@ -825,3 +825,142 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       )
     )
 })
+
+output$total_weekly_ae_over_four_hours_graph <- renderPlotly({
+  
+  req(input$hb_name_ae, input$attendance_category_ae_input, 
+      input$ae_weekly_hospital_input, input$ae_year_input)
+  
+  # Filter for selected years
+  WeeklyAE_Filtered <- WeeklyAE %>%
+    select(WeekEndingDate, AttendanceCategory, NumberOver4HoursEpisode, HBName, TreatmentLocationName) %>%
+    filter(
+      HBName %in% input$hb_name_ae,
+      AttendanceCategory %in% input$attendance_category_ae_input,
+      TreatmentLocationName %in% input$ae_weekly_hospital_input,
+      lubridate::year(WeekEndingDate) %in% input$ae_year_input
+    )
+  
+  # Validate there is data
+  validate(
+    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
+  )
+  
+  # Current year(s) average
+  avg_attendance <- mean(WeeklyAE_Filtered$NumberOver4HoursEpisode, na.rm = TRUE)
+  
+  # Get selected years and define 2-year historic window
+  selected_years <- sort(as.numeric(input$ae_year_input))
+  min_selected_year <- min(selected_years)
+  historic_years <- (min_selected_year - 2):(min_selected_year - 1)
+  
+  # Historic data
+  WeeklyAE_Historic <- WeeklyAE %>%
+    filter(
+      HBName %in% input$hb_name_ae,
+      AttendanceCategory %in% input$attendance_category_ae_input,
+      TreatmentLocationName %in% input$ae_weekly_hospital_input,
+      lubridate::year(WeekEndingDate) %in% historic_years
+    )
+  
+  # Historic overall average
+  historic_avg <- mean(WeeklyAE_Historic$NumberOver4HoursEpisode, na.rm = TRUE)
+  
+  # Add week numbers
+  WeeklyAE_Historic <- WeeklyAE_Historic %>%
+    mutate(WeekNum = lubridate::isoweek(WeekEndingDate))
+  
+  WeeklyAE_Filtered <- WeeklyAE_Filtered %>%
+    mutate(WeekNum = lubridate::isoweek(WeekEndingDate))
+  
+  # Weekly average for historic years
+  HistoricWeeklyAvg <- WeeklyAE_Historic %>%
+    group_by(WeekNum) %>%
+    summarise(HistoricRollingAvg = mean(NumberOver4HoursEpisode, na.rm = TRUE)) %>%
+    ungroup()
+  
+  # Merge historic rolling average onto filtered data
+  WeeklyAE_WithRolling <- WeeklyAE_Filtered %>%
+    left_join(HistoricWeeklyAvg, by = "WeekNum")
+  
+  # Plot
+  plot_ly() %>%
+    add_trace(
+      data = WeeklyAE_Filtered,
+      x = ~WeekEndingDate,
+      y = ~NumberOver4HoursEpisode,
+      color = ~HBName,
+      type = 'scatter',
+      mode = 'lines',
+      name = 'Current Year(s)',
+      hoverinfo = "text"
+    ) %>%
+    add_trace(
+      data = WeeklyAE_WithRolling,
+      x = ~WeekEndingDate,
+      y = ~HistoricRollingAvg,
+      type = 'scatter',
+      mode = 'lines',
+      name = paste0("Historic Weekly Avg (", paste(historic_years, collapse = "-"), ")"),
+      line = list(dash = "dot", color = '#006400'),  # dark green
+      hoverinfo = "text"
+    ) %>%
+    layout(
+      shapes = list(
+        list(
+          type = "line",
+          x0 = min(WeeklyAE_Filtered$WeekEndingDate),
+          x1 = max(WeeklyAE_Filtered$WeekEndingDate),
+          y0 = avg_attendance,
+          y1 = avg_attendance,
+          line = list(color = "black", width = 2, dash = "dash")
+        ),
+        list(
+          type = "line",
+          x0 = min(WeeklyAE_Filtered$WeekEndingDate),
+          x1 = max(WeeklyAE_Filtered$WeekEndingDate),
+          y0 = historic_avg,
+          y1 = historic_avg,
+          line = list(color = "gray", width = 2, dash = "dot")
+        )
+      ),
+      annotations = list(
+        list(
+          x = max(WeeklyAE_Filtered$WeekEndingDate),
+          y = avg_attendance,
+          text = paste0("Avg ", paste0(input$ae_year_input, collapse = ", "), ": ", round(avg_attendance, 0)),
+          xref = "x",
+          yref = "y",
+          showarrow = FALSE,
+          xanchor = "left",
+          yanchor = "bottom",
+          font = list(size = 12, color = "black")
+        ),
+        list(
+          x = max(WeeklyAE_Filtered$WeekEndingDate),
+          y = historic_avg,
+          text = paste0("Avg ", paste(historic_years, collapse = "-"), ": ", round(historic_avg, 0)),
+          xref = "x",
+          yref = "y",
+          showarrow = FALSE,
+          xanchor = "left",
+          yanchor = "top",
+          font = list(size = 12, color = "gray")
+        )
+      ),
+      legend = list(
+        orientation = "h",
+        x = 0,
+        y = 1.1,
+        xanchor = "left"
+      ),
+      xaxis = list(
+        title = "Month",
+        tickformat = "%b\n%Y",
+        type = "date"
+      ),
+      yaxis = list(
+        title = "Number of People Seen Within 4 Hours"
+      )
+    )
+})

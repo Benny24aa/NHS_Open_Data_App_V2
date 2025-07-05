@@ -27,9 +27,14 @@ WeeklyAEUI <- tabPanel(title = "Weekly Accident and Emergency Statistics",
                          ))
                          
                        ),
-                       
+                       br(), 
                        fluidRow(
-                         column(6, plotlyOutput("total_weekly_ae_attendance_graph", height = "600px"))
+                         column(6,
+                                h3("Number of Attendances", style = "color:  #336699 ; font-weight: 600"),
+                                plotlyOutput("total_weekly_ae_attendance_graph", height = "600px")),
+                         column(6, 
+                                h3("Number of People Seen Within 4 Hours", style = "color:  #336699 ; font-weight: 600"),
+                                plotlyOutput("total_weekly_ae_over_four_hours_graph", height = "600px"))
                        )
                        
                        
