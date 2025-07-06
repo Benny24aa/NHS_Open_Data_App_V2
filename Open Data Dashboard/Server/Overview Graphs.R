@@ -1015,7 +1015,7 @@ output$total_weekly_ae_over_four_hours_graph <- renderPlotly({
 })
 
 
-### Within 4 hours AE Graph 
+### Within 4 hours AE Graph (done)
 
 output$total_weekly_ae_within_four_hours_graph <- renderPlotly({
   
@@ -1239,6 +1239,26 @@ output$total_weekly_ae_within_four_hours_percentage_graph <- renderPlotly({
   WeeklyAE_WithRolling <- WeeklyAE_Filtered %>%
     left_join(HistoricWeeklyAvg, by = "WeekNum")
   
+  # Add tooltips
+  WeeklyAE_Filtered <- WeeklyAE_Filtered %>%
+    mutate(
+      text = paste0(
+        "Week Ending: ", format(WeekEndingDate, "%d-%b-%Y"), "<br>",
+        "Health Board: ", HBName, "<br>",
+        "Hospital: ", TreatmentLocationName, "<br>",
+        "Category: ", AttendanceCategory, "<br>",
+        "Attendances: ", PercentageWithin4HoursEpisode
+      )
+    )
+  
+  WeeklyAE_WithRolling <- WeeklyAE_WithRolling %>%
+    mutate(
+      text_hist = paste0(
+        "Week Ending: ", format(WeekEndingDate, "%d-%b-%Y"), "<br>",
+        "Historic Weekly Avg: ", round(HistoricRollingAvg, 1)
+      )
+    )
+  
   # Plot
   plot_ly() %>%
     add_trace(
@@ -1249,6 +1269,7 @@ output$total_weekly_ae_within_four_hours_percentage_graph <- renderPlotly({
       type = 'scatter',
       mode = 'lines',
       name = 'Current Year(s)',
+      text = ~text,
       hoverinfo = "text"
     ) %>%
     add_trace(
@@ -1259,6 +1280,7 @@ output$total_weekly_ae_within_four_hours_percentage_graph <- renderPlotly({
       mode = 'lines',
       name = paste0("Historic Weekly Avg (", paste(historic_years, collapse = "-"), ")"),
       line = list(dash = "dot", color = '#006400'),  # dark green
+      text = ~text_hist,
       hoverinfo = "text"
     ) %>%
     layout(
