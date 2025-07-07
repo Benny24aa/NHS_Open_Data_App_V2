@@ -33,28 +33,28 @@ By comparing recent data with historical trends, the dashboard supports a better
                        fluidRow(
                          column(6,
                                 h3("Number of attendances", style = "color:  #336699 ; font-weight: 600"),
-                                plotlyOutput("total_weekly_ae_attendance_graph", height = "600px")),
+                                withSpinner(plotlyOutput("total_weekly_ae_attendance_graph", height = "600px")), type = 4, color = "blue", size = 1.5),
                          column(6, 
                                 h3("Number of people seen in over 4 Hours", style = "color:  #336699 ; font-weight: 600"),
-                                plotlyOutput("total_weekly_ae_over_four_hours_graph", height = "600px"))
+                                withSpinner(plotlyOutput("total_weekly_ae_over_four_hours_graph", height = "600px")), type = 4, color = "blue", size = 1.5),
                        ),
                        br(), 
                        fluidRow(
                          column(6,
                                 h3("Number of people seen within 4 hours", style = "color:  #336699 ; font-weight: 600"),
-                                plotlyOutput("total_weekly_ae_within_four_hours_graph", height = "600px")),
+                                withSpinner(plotlyOutput("total_weekly_ae_within_four_hours_graph", height = "600px")), type = 4, color = "blue", size = 1.5),
                          column(6,
                                 h3("Percentage of the number of people seen within 4 hours", style = "color:  #336699 ; font-weight: 600"),
-                                plotlyOutput("total_weekly_ae_within_four_hours_percentage_graph", height = "600px"))
+                                withSpinner(plotlyOutput("total_weekly_ae_within_four_hours_percentage_graph", height = "600px")), type = 4, color = "blue", size = 1.5),
                        ),
                        br(), 
                        fluidRow(
                          column(6,
                                 h3("Number of people seen in over 8 hours", style = "color:  #336699 ; font-weight: 600"),
-                                plotlyOutput("total_weekly_ae_over_eight_hours_graph", height = "600px")),
+                                withSpinner(plotlyOutput("total_weekly_ae_over_eight_hours_graph", height = "600px")), type = 4, color = "blue", size = 1.5),
                          column(6,
                                 h3("Percentage of the number of people seen over 8 hours", style = "color:  #336699 ; font-weight: 600"),
-                                plotlyOutput("total_weekly_ae_over_eight_hours_percentage_graph", height = "600px"))
+                                withSpinner(plotlyOutput("total_weekly_ae_over_eight_hours_percentage_graph", height = "600px")), type = 4, color = "blue", size = 1,5),
                        ),
                        
                        
@@ -62,10 +62,10 @@ By comparing recent data with historical trends, the dashboard supports a better
                        fluidRow(
                          column(6,
                                 h3("Number of people seen in over 12 hours", style = "color:  #336699 ; font-weight: 600"),
-                                plotlyOutput("total_weekly_ae_over_twelve_hours_graph", height = "600px")),
+                                withSpinner(plotlyOutput("total_weekly_ae_over_twelve_hours_graph", height = "600px")), type = 4, color = "blue", size = 1.5),
                          column(6,
-                                h3("Percentage of the number of people seen over 12 hours", style = "color:  #336699 ; font-weight: 600"),
-                                plotlyOutput("total_weekly_ae_over_twelve_hours_percentage_graph", height = "600px"))
+                                h3("Percentage of the number of people seen over 12 hours", style = "color:  #336699 ; font-weight: with600"),
+                                withSpinner(plotlyOutput("total_weekly_ae_over_twelve_hours_percentage_graph", height = "600px")), type = 4, color = "blue", size = 1.5)
                        )
                       
                        
