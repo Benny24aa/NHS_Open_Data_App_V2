@@ -35,6 +35,15 @@ HB_Hospital_List <- WeeklyAE %>%
 WeeklyAE_Healthboard <- WeeklyAE %>% 
   select(WeekEndingDate, AttendanceCategory, HBName, NumberOfAttendancesEpisode, NumberOver4HoursEpisode, NumberOver8HoursEpisode, NumberOver12HoursEpisode, NumberWithin4HoursEpisode)
 
+latest_two_weeks <- WeeklyAE_Healthboard %>%
+  distinct(WeekEndingDate) %>%
+  arrange(desc(WeekEndingDate)) %>%
+  slice(1:2) %>%
+  pull(WeekEndingDate)
+
+WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
+  filter(WeekEndingDate %in% latest_two_weeks)
+
 WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
   group_by(HBName, WeekEndingDate, AttendanceCategory) %>%
   summarise(
@@ -46,11 +55,3 @@ WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
     .groups = "drop"
   )
 
-latest_two_weeks <- WeeklyAE_Healthboard %>%
-  distinct(WeekEndingDate) %>%
-  arrange(desc(WeekEndingDate)) %>%
-  slice(1:2) %>%
-  pull(WeekEndingDate)
-
-WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
-  filter(WeekEndingDate %in% latest_two_weeks)
