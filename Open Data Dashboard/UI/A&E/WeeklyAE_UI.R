@@ -1,10 +1,12 @@
-WeeklyAEUI <- tabPanel(title = "Weekly Accident and Emergency Statistics", 
+WeeklyAEUI <- tabPanel(title = "Historical Weekly Accident and Emergency Statistics", 
                         icon = icon("ambulance"),
                        
                        fluidRow(
                          column(6,
-                                h2("Accident and Emergency Statistics", style = "color:  #336699 ; font-weight: 600"))),
-                       h4("Soon"),
+                                h2("Historical Accident and Emergency Statistics", style = "color:  #336699 ; font-weight: 600"))),
+                       h4("This dashboard provides an interactive overview of the Accident & Emergency (A&E) system across Scotland. Users can explore patterns and trends in activity across different health boards, hospital sites, and years. The visualisations offer insights into how demand and performance have changed over time, helping identify areas of pressure and variation across the country.
+
+By comparing recent data with historical trends, the dashboard supports a better understanding of the A&E landscape, aiding planning, evaluation, and decision-making at both local and national levels."),
 
                        fluidRow(
                          
