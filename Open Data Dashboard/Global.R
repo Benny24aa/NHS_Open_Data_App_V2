@@ -18,7 +18,12 @@ source("Global/Data Download Lists.R")
 ##### Sourcing in Cancer Data
 source("Global/Cancer/Incidence and Mortality.R")
 source("Global/Cancer/Waiting Times.R")
+
+#### Sourcing in Diagnostics Data
 source("Global/Diagnostics Waiting Times/Diagnostics.R")
+
+#### Sourcing in Weekly A&E Data
+source("Global/A&E/Weekly A&E/Weekly A&E Data.R")
 
 gender_palette <- c("Male" = "#0078D4",
                     "Female" = "#E1C7DF")
