@@ -27,7 +27,7 @@ Use the filters to choose a health board, waiting time band, and diagnostic test
   
   uiOutput("diagnostics_overview_graph_text"),   
   fluidRow(
-    column(11, plotlyOutput("diagnostics_overview_graph", height = "600px")),
+    column(11, withSpinner(plotlyOutput("diagnostics_overview_graph", height = "600px")), type = 4, color = "blue", size = 1.5),
     column(1,
            radioButtons(
              "line_option_diagnostics", 
@@ -47,7 +47,7 @@ Use the filters to choose a health board, waiting time band, and diagnostic test
   
   uiOutput("diagnostics_overview_graph_percent_change_text"),
   fluidRow(
-    column(11, plotlyOutput("diagnostics_overview_graph_percent_change", height = "600px")),
+    column(11, withSpinner(plotlyOutput("diagnostics_overview_graph_percent_change", height = "600px")), type = 4, color = "blue", size = 1.5),
     column(1, selectInput(
       inputId = "diagnostics_chart_type",
       label = "Select Chart Type:",
