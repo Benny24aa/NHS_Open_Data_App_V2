@@ -19,7 +19,7 @@ The page includes the ability to filter for different indicators relating to 62-
   
   uiOutput("Text_62_Days_Eligible_Referals"),
   fluidRow(
-    column(3, plotlyOutput("cancer_waiting_list_overview_62_days", width = "400%", height = "600px"))),
+    column(12, withSpinner(plotlyOutput("cancer_waiting_list_overview_62_days", height = "600px")), type = 4, size = 1.5, color = "blue")),
   
   
   uiOutput("Text_62_Days_Eligible_Referals_Treated"),
@@ -29,11 +29,11 @@ The page includes the ability to filter for different indicators relating to 62-
                                            multiple = TRUE)))),
   
   fluidRow(
-    column(3, plotlyOutput("cancer_waiting_list_overview_62_days_treatmenthb", width = "400%", height = "600px"))),
+    column(12, withSpinner(plotlyOutput("cancer_waiting_list_overview_62_days_treatmenthb", height = "600px")), type = 4, size = 1.5, color = "blue")),
   
   uiOutput("Text_62_Days_Eligible_Referals_Treated_Compare"),
   fluidRow(
-    column(3, plotlyOutput("cancer_waiting_list_overview_62_days_treatmenthb_compare", width = "400%", height = "600px")))
+    column(12, withSpinner(plotlyOutput("cancer_waiting_list_overview_62_days_treatmenthb_compare", height = "600px")), type = 4, size = 1.5, color = "blue"))
   
   
   

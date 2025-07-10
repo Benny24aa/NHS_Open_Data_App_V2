@@ -38,7 +38,10 @@ Diagnostics_Comparison_Page <- conditionalPanel(
                                            multiple = TRUE))),
  
     fluidRow(
-      column(3, plotlyOutput("hb_compare_diagnostics_graph", width = "400%", height = "600px")))
+      column(3, withSpinner(plotlyOutput("hb_compare_diagnostics_graph", width = "400%", height = "600px")), type = 4, color = "blue", size = 1.5)
+      
+      
+      )
    
     
 ) ### End of fluidRow
