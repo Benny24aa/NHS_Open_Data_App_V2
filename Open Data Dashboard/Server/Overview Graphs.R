@@ -1997,3 +1997,62 @@ output$total_weekly_ae_over_twelve_hours_percentage_graph <- renderPlotly({
       )
     )
 })
+
+
+
+
+
+
+################################## output boxes for AE current section
+
+filtered_data <- reactive({
+  WeeklyAE_Healthboard %>%
+    filter(
+      HBName == input$HBName_Current_AE,
+      AttendanceCategory == input$AttendanceCategory_Current_AE
+    )
+})
+
+latest_two_weeks <- reactive({
+  filtered_data() %>%
+    distinct(WeekEndingDate) %>%
+    arrange(desc(WeekEndingDate)) %>%
+    pull(WeekEndingDate)
+})
+
+this_week <- reactive({
+  req(length(latest_two_weeks()) >= 1)
+  filtered_data() %>%
+    filter(WeekEndingDate == latest_two_weeks()[1])
+})
+
+last_week <- reactive({
+  req(length(latest_two_weeks()) >= 2)
+  filtered_data() %>%
+    filter(WeekEndingDate == latest_two_weeks()[2])
+})
+
+output$attendancesBox <- renderValueBox({
+  change <- calc_change(this_week()$TotalAttendances, last_week()$TotalAttendances)
+  valueBoxWithChange("Total Attendances", this_week()$TotalAttendances, change)
+})
+
+output$over4Box <- renderValueBox({
+  change <- calc_change(this_week()$TotalOver4Hours, last_week()$TotalOver4Hours)
+  valueBoxWithChange("Over 4 Hours", this_week()$TotalOver4Hours, change)
+})
+
+output$over8Box <- renderValueBox({
+  change <- calc_change(this_week()$TotalOver8Hours, last_week()$TotalOver8Hours)
+  valueBoxWithChange("Over 8 Hours", this_week()$TotalOver8Hours, change)
+})
+
+output$over12Box <- renderValueBox({
+  change <- calc_change(this_week()$TotalOver12Hours, last_week()$TotalOver12Hours)
+  valueBoxWithChange("Over 12 Hours", this_week()$TotalOver12Hours, change)
+})
+
+output$within4Box <- renderValueBox({
+  change <- calc_change(this_week()$TotalWithin4Hours, last_week()$TotalWithin4Hours)
+  valueBoxWithChange("Within 4 Hours", this_week()$TotalWithin4Hours, change)
+})
