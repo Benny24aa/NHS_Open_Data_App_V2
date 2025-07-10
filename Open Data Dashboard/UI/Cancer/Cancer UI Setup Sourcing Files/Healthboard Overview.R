@@ -26,10 +26,14 @@ Cancer_Overview <- conditionalPanel(
   
   uiOutput("Cancer_Overview"),
   fluidRow(
-    column(3, plotlyOutput("scotland_info_graph_server", width = "400%", height = "600px"))),
+    column(3, withSpinner(plotlyOutput("scotland_info_graph_server", width = "400%", height = "600px")), type = 4, size = 1.5, color = "blue")   
+    
+    ),
   uiOutput("Cancer_Sex_Overview"),
   fluidRow(
-    column(3, plotlyOutput("scotland_gender_graph_server", width = "400%", height = "600px")))
+    column(3, withSpinner(plotlyOutput("scotland_gender_graph_server", width = "400%", height = "600px")), type = 4, size = 1.5, color = "blue")          
+    
+    )
   
   
 )

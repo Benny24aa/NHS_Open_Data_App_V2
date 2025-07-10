@@ -24,14 +24,14 @@ Use the dropdown filters to customize the view by cancer type, data type (e.g., 
                                            multiple = TRUE)))),
   uiOutput("Cancer_ScatterPlot_Text"),
   fluidRow(
-    column(3, plotlyOutput("hb_cancer_outlier", width = "400%", height = "600px"))),
+    column(3, withSpinner(plotlyOutput("hb_cancer_outlier", width = "400%", height = "600px")), type = 4, color = "blue", size = 1.5)),
   uiOutput("Cancer_boxplot_Text"),
   fluidRow(
     column(3, selectInput("BoxPlot_Input_Cancer", label = "Select Data Type",
                           choices = unique(GraphTypeOptionsStatsCancer$Graph_Types_Stats_Cancer,
                                            multiple = TRUE)))),
   fluidRow(
-    column(3, plotlyOutput("hb_cancer_outlier_box", width = "400%", height = "600px")))
+    column(3, withSpinner(plotlyOutput("hb_cancer_outlier_box", width = "400%", height = "600px")), type = 4, color = "blue", size = 1.5))
   
   
 ) #end of conditional panel
