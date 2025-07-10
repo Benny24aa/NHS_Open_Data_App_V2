@@ -43,7 +43,7 @@ Cancer_Compare <- conditionalPanel(
   ),
   
   fluidRow(
-    column(3, withSpinner(plotlyOutput("hb_compare_graph", width = "400%", height = "600px")), type = 4, size = 1.5, color = "blue")   
+    column(12, withSpinner(plotlyOutput("hb_compare_graph", height = "600px")), type = 4, size = 1.5, color = "blue")   
            
            )
   

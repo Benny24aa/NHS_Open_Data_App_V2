@@ -20,7 +20,7 @@ The page includes the ability to filter for different indicators relating to 31-
   
   uiOutput("Text_31_Days_Eligible_Referals"),
   fluidRow(
-    column(3, withSpinner(plotlyOutput("cancer_waiting_list_overview_31_days", width = "400%", height = "600px")), type = 4, color = "blue", size = 1.5)),
+    column(12, withSpinner(plotlyOutput("cancer_waiting_list_overview_31_days", height = "600px")), type = 4, color = "blue", size = 1.5)),
   
   uiOutput("Text_31_Days_Eligible_Referals_Treated"),
   
@@ -30,9 +30,9 @@ The page includes the ability to filter for different indicators relating to 31-
                                            multiple = TRUE)))),
   
   fluidRow(
-    column(3,  withSpinner(plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb", width = "400%", height = "600px")), type = 4, color = "blue", size = 1.5)),
+    column(12,  withSpinner(plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb", height = "600px")), type = 4, color = "blue", size = 1.5)),
   uiOutput("Text_31_Days_Eligible_Referals_Treated_Compare"),
   fluidRow(
-    column(3,withSpinner(plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb_compare", width = "400%", height = "600px")), type = 4, color = "blue", size = 1.5)
+    column(12, withSpinner(plotlyOutput("cancer_waiting_list_overview_31_days_treatmenthb_compare", height = "600px")), type = 4, color = "blue", size = 1.5)
   )
 )
