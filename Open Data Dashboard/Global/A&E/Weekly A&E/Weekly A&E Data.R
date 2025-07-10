@@ -55,3 +55,26 @@ WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
     .groups = "drop"
   )
 
+# Function to calculate percentage change
+calc_change <- function(current, previous) {
+  diff <- current - previous
+  pct_change <- ifelse(previous == 0, NA, (diff / previous) * 100)
+  
+  if (is.na(pct_change)) {
+    list(label = "N/A", icon = "", color = "black")
+  } else if (pct_change >= 0) {
+    list(label = paste0("🔼 ", round(pct_change, 1), "%"), icon = "arrow-up", color = "green")
+  } else {
+    list(label = paste0("🔽 ", round(abs(pct_change), 1), "%"), icon = "arrow-down", color = "red")
+  }
+}
+
+# Function to create a value box with change indicator
+valueBoxWithChange <- function(title, value, change_info) {
+  valueBox(
+    value = HTML(paste0(format(value, big.mark = ","), "<br><small style='color:", change_info$color, "'>", change_info$label, "</small>")),
+    subtitle = title,
+    color = ifelse(change_info$color == "green", "green", "red"),
+    icon = icon(change_info$icon)
+  )
+}
