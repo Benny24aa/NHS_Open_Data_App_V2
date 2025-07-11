@@ -74,7 +74,7 @@ valueBoxWithChange <- function(title, value, change_info) {
   box_color <- ifelse(change_info$color == "lightgreen", "lightgreen", "red")
   
   div(
-    style = "background-color: #336699; padding: 10px; border-radius: 8px; height: 190px;",
+    style = "background-color: #336699; padding: 10px; border-radius: 8px; height: 210px;",
     valueBox(
       value = HTML(paste0(
         "<div style='color: white;'>",  
@@ -119,7 +119,7 @@ valueBoxWithAbsoluteChange <- function(title, current, previous) {
   box_color <- if (diff < 0) "red" else if (diff > 0) "green" else "blue"
   
   div(
-    style = "background-color: #336699; padding: 10px; border-radius: 8px; height: 190px;",
+    style = "background-color: #336699; padding: 10px; border-radius: 8px; height: 210px;",
     valueBox(
       value = HTML(paste0(
         "<div style='color: white;'>",  
