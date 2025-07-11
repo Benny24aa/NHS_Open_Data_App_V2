@@ -2058,8 +2058,9 @@ output$within4Box <- renderValueBox({
 })
 
 
-
 output$currentAEBoxes <- renderUI({
+  div(
+    style = "background-color: #cce5ff; padding: 15px; border-radius: 10px;",  # lighter blue background
     fluidRow(
       column(2, valueBoxWithChange("Total Attendances", this_week()$TotalAttendances, calc_change(this_week()$TotalAttendances, last_week()$TotalAttendances))),
       column(2, valueBoxWithChange("Over 4 Hours", this_week()$TotalOver4Hours, calc_change(this_week()$TotalOver4Hours, last_week()$TotalOver4Hours))),
@@ -2067,5 +2068,5 @@ output$currentAEBoxes <- renderUI({
       column(2, valueBoxWithChange("Over 12 Hours", this_week()$TotalOver12Hours, calc_change(this_week()$TotalOver12Hours, last_week()$TotalOver12Hours))),
       column(2, valueBoxWithChange("Within 4 Hours", this_week()$TotalWithin4Hours, calc_change(this_week()$TotalWithin4Hours, last_week()$TotalWithin4Hours)))
     )
-  
+  )
 })
