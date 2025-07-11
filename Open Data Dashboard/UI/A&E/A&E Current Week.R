@@ -1,6 +1,11 @@
 CurrentAEUI <- tabPanel(title = "Most Recent Accident and Emergency Statistics", 
                        icon = icon("car-on"),
                        
+                       fluidRow(
+                         column(6,
+                                h2("Most Recent Accident and Emergency Statistics", style = "color:  #336699 ; font-weight: 600"))),
+                       h4("Coming Soon"),
+                       
 
                        
                        fluidRow(

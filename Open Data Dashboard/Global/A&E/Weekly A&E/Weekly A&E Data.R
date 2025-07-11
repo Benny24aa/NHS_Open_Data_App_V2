@@ -63,18 +63,42 @@ calc_change <- function(current, previous) {
   if (is.na(pct_change)) {
     list(label = "N/A", icon = "", color = "black")
   } else if (pct_change >= 0) {
-    list(label = paste0("🔼 ", round(pct_change, 1), "%"), icon = "arrow-up", color = "green")
+    list(label = paste0("🔼 ", round(pct_change, 1), "%"), icon = "arrow-up", color = "red")
   } else {
-    list(label = paste0("🔽 ", round(abs(pct_change), 1), "%"), icon = "arrow-down", color = "red")
+    list(label = paste0("🔽 ", round(abs(pct_change), 1), "%"), icon = "arrow-down", color = "green")
   }
 }
 
 # Function to create a value box with change indicator
 valueBoxWithChange <- function(title, value, change_info) {
-  valueBox(
-    value = HTML(paste0(format(value, big.mark = ","), "<br><small style='color:", change_info$color, "'>", change_info$label, "</small>")),
-    subtitle = title,
-    color = ifelse(change_info$color == "green", "green", "red"),
-    icon = icon(change_info$icon)
+  box_color <- ifelse(change_info$color == "lightgreen", "lightgreen", "red")
+  
+  div(
+    style = "background-color: #336699; padding: 10px; border-radius: 8px; height: 190px;",
+    valueBox(
+      value = HTML(paste0(
+        "<div style='color: white;'>",  
+        format(value, big.mark = ","), 
+        "<br><small style='color:", change_info$color, "'>", 
+        change_info$label, 
+        "</small></div>"
+      )),
+      subtitle = tags$span(style = "color: white;", title),
+      color = box_color,
+      icon = icon(change_info$icon, class = "white-icon")
+    ),
+    # Custom CSS to force icon and subtitle text white inside the colored box
+    tags$style(HTML("
+      /* Override subtitle color */
+      .small-box-footer, 
+      .small-box h3, 
+      .small-box p {
+        color: white !important;
+      }
+      /* Icon white */
+      .white-icon {
+        color: white !important;
+      }
+    "))
   )
 }
