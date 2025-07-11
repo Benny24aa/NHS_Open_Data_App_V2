@@ -7,7 +7,9 @@ CurrentAEUI <- tabPanel(title = "Most Recent Accident and Emergency Statistics",
                        h4("Coming Soon"),
                        
 
-                       
+                       div(
+                         style = "background-color: #cce5ff; padding: 15px; border-radius: 10px;",  # lighter blue background
+                         
                        fluidRow(
 
                          column(3, selectInput("HBName_Current_AE", "Select Health Board", choices = unique(WeeklyAE_Healthboard$HBName))),
@@ -17,8 +19,9 @@ CurrentAEUI <- tabPanel(title = "Most Recent Accident and Emergency Statistics",
 
 
                        ),
+                       br(),
                        uiOutput("currentAEBoxes")
                        
-                       
+                       )
                        
 )
