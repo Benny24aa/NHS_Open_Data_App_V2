@@ -2066,7 +2066,8 @@ output$currentAEBoxes <- renderUI({
       column(2, valueBoxWithChange("Over 4 Hours", this_week()$TotalOver4Hours, calc_change(this_week()$TotalOver4Hours, last_week()$TotalOver4Hours))),
       column(2, valueBoxWithChange("Over 8 Hours", this_week()$TotalOver8Hours, calc_change(this_week()$TotalOver8Hours, last_week()$TotalOver8Hours))),
       column(2, valueBoxWithChange("Over 12 Hours", this_week()$TotalOver12Hours, calc_change(this_week()$TotalOver12Hours, last_week()$TotalOver12Hours))),
-      column(2, valueBoxWithChange("Within 4 Hours", this_week()$TotalWithin4Hours, calc_change(this_week()$TotalWithin4Hours, last_week()$TotalWithin4Hours)))
-    )
+      column(2, valueBoxWithChange("Within 4 Hours", this_week()$TotalWithin4Hours, calc_change(this_week()$TotalWithin4Hours, last_week()$TotalWithin4Hours))),
+      column(2, valueBoxWithAbsoluteChange("Seen Within 4 Hours", this_week()$TotalWithin4Hours, last_week()$TotalWithin4Hours ))
+      )
   )
 })
