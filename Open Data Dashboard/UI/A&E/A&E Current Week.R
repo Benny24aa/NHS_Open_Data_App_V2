@@ -8,13 +8,22 @@ CurrentAEUI <- tabPanel(
            h2("Most Recent Accident and Emergency Statistics", style = "color: #336699; font-weight: 600"))
   ),
   
-  h4("Accident and Emergency (A&E) statistics in Scotland track unplanned attendances at emergency departments for urgent care. They include data on the number of attendances, waiting times, and how many patients are seen within the 4-hour target. Published weekly by Public Health Scotland, these figures help monitor demand, performance, and pressures on emergency services across the country. Please use the filters provided in the summary box below to choose between different Health Boards and Attendance breakdowns."),
+  h4("Accident and Emergency (A&E) statistics in Scotland track unplanned attendances at emergency departments for urgent care. They include data on the number of attendances, waiting times, and how many patients are seen within the 4-hour target. Published weekly by Public Health Scotland, these figures help monitor demand, performance, and pressures on emergency services across the country. Please use the filter provided below to change between Health Boards."),
   
   br(),
-  radioGroupButtons("ae_recent_select",
-                    choices = ae_recent_list, status = "primary",
-                    direction = "horizontal", justified = T),
+  radioGroupButtons(
+    inputId = "ae_recent_select",
+    choices = ae_recent_list,
+    status = "primary",
+    direction = "horizontal",
+    justified = TRUE,
+    size = "lg" 
+  ),
   br(),
+  
+  
+  conditionalPanel(
+    condition= 'input.ae_recent_select == "Recent_AE_Tab"', 
   
     uiOutput("currentAEHeadersummary"),
   
@@ -51,15 +60,14 @@ CurrentAEUI <- tabPanel(
   .custom-select label {
     color: #003366 !important;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 18px;
   }
 ")),
-    # Filters
+   
     fluidRow(
-      column(3,
-             div(class = "custom-select",
-                 selectInput("HBName_Current_AE", "Select Health Board", 
-                             choices = unique(WeeklyAE_Healthboard$HBName)))
+      column(3,div(class = "custom-select", selectInput("HBName_Current_AE", "Select Health Board", 
+                                                       choices = unique(WeeklyAE_Healthboard$HBName)))
+            
       ),
       column(3,
              div(class = "custom-select",
@@ -72,4 +80,5 @@ CurrentAEUI <- tabPanel(
     # AE Value Boxes
     uiOutput("currentAEBoxes")
   )
+)
 )
