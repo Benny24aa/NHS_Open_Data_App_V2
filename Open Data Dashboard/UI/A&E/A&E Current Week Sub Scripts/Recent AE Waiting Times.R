@@ -55,5 +55,20 @@ AE_Recent_Waiting_Times <- conditionalPanel(
     br(),
     # AE Value Boxes
     uiOutput("currentAEBoxes")
-  )
+  ),
+  br(),
+  selectInput(
+    inputId = "ae_recent_measure_select",
+    label = "Select Measure",
+    choices = c(
+      "Total Attendances" = "TotalAttendances",
+      "Over 4 Hours" = "TotalOver4Hours",
+      "Over 8 Hours" = "TotalOver8Hours",
+      "Over 12 Hours" = "TotalOver12Hours",
+      "Within 4 Hours" = "TotalWithin4Hours"
+    ),
+    selected = "TotalAttendances"
+  ),
+  
+  plotlyOutput("ae_recent_iso_graph")
 )
