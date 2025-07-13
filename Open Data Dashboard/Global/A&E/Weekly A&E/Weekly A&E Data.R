@@ -41,8 +41,6 @@ latest_two_weeks <- WeeklyAE_Healthboard %>%
   slice(1:2) %>%
   pull(WeekEndingDate)
 
-WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
-  filter(WeekEndingDate %in% latest_two_weeks)
 
 WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
   group_by(HBName, WeekEndingDate, AttendanceCategory) %>%
