@@ -2086,7 +2086,8 @@ output$ae_recent_iso_graph <- renderPlotly({
       iso_week = format(WeekEndingDate, "%V"),
       iso_week_num = as.integer(iso_week)
     ) %>%
-    filter(calendar_year >= (max(calendar_year, na.rm = TRUE) - 4))  
+    filter(calendar_year >= (max(calendar_year, na.rm = TRUE) - 4)) %>% 
+    filter(iso_week != "53")
   
 
   
