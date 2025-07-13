@@ -268,9 +268,25 @@ output$diagnostics_overview_graph_percent_change_text <- renderText({
   
 })
 
-
-# diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates %>% 
-#   filter(HBName %in% input$hb_name_diagnostics,
-#          WaitingTime %in% input$diagnostics_waiting_times_input,
-#          DiagnosticTestType %in% input$diagnostics_test_type_input,
-#          DiagnosticTestDescription %in% input$diagnostics_description_type)
+output$currentAEHeadersummary <- renderUI({
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE, this_week(), last_week())
+  
+  week_1 <- format(latest_two_weeks()[1], "%d %B %Y")
+  week_2 <- format(latest_two_weeks()[2], "%d %B %Y")
+  
+  ae_label <- if (input$AttendanceCategory_Current_AE == "All") {
+    "all"
+  } else if (input$AttendanceCategory_Current_AE == "Unplanned") {
+    "unplanned"
+  } else if (input$AttendanceCategory_Current_AE == "New planned") {
+    "new planned"
+} else {
+  input$AttendanceCategory_Current_AE
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+   "Most Recent Accident and Emergency Statistics for", input$HBName_Current_AE, "for", ae_label, "attendances", "comparing weeks ending", week_1, "and", week_2),
+   "</div>"
+  ))
+})
