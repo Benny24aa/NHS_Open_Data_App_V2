@@ -10,6 +10,12 @@ CurrentAEUI <- tabPanel(
   
   h4("Accident and Emergency (A&E) statistics in Scotland track unplanned attendances at emergency departments for urgent care. They include data on the number of attendances, waiting times, and how many patients are seen within the 4-hour target. Published weekly by Public Health Scotland, these figures help monitor demand, performance, and pressures on emergency services across the country. Please use the filters provided in the summary box below to choose between different Health Boards and Attendance breakdowns."),
   
+  br(),
+  radioGroupButtons("ae_recent_select",
+                    choices = ae_recent_list, status = "primary",
+                    direction = "horizontal", justified = T),
+  br(),
+  
     uiOutput("currentAEHeadersummary"),
   
   # Styled section: filters + value boxes
