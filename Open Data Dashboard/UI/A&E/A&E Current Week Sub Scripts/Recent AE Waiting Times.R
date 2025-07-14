@@ -57,21 +57,31 @@ AE_Recent_Waiting_Times <- conditionalPanel(
     uiOutput("currentAEBoxes")
   ),
   br(),
-  fluidRow(
+  div(
+    style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
     
-    column(3, selectInput(
-    inputId = "ae_recent_measure_select",
-    label = "Select Measure",
-    choices = c(
-      "Total Attendances" = "TotalAttendances",
-      "Over 4 Hours" = "TotalOver4Hours",
-      "Over 8 Hours" = "TotalOver8Hours",
-      "Over 12 Hours" = "TotalOver12Hours",
-      "Within 4 Hours" = "TotalWithin4Hours"
+    fluidRow(
+      column(3, 
+             selectInput(
+               inputId = "ae_recent_measure_select",
+               label = "Select Measure",
+               choices = c(
+                 "Total Attendances" = "TotalAttendances",
+                 "Over 4 Hours" = "TotalOver4Hours",
+                 "Over 8 Hours" = "TotalOver8Hours",
+                 "Over 12 Hours" = "TotalOver12Hours",
+                 "Within 4 Hours" = "TotalWithin4Hours"
+               ),
+               selected = "TotalAttendances"
+             )
+      )
     ),
-    selected = "TotalAttendances"
-  ))),
-  fluidRow(
+    
+    fluidRow(
+      column(12,
+             plotlyOutput("ae_recent_iso_graph", height = "600px")
+      )
+    )
+  )
   
-  column(12,plotlyOutput("ae_recent_iso_graph", height = "600px")))
-)
+) # end of conditional panel
