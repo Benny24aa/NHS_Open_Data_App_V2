@@ -60,9 +60,48 @@ AE_Recent_Waiting_Times <- conditionalPanel(
   div(
     style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
     
+    
+    tags$style(HTML("
+  .custom-select-ae-graph .form-group {
+    background-color: #f0f0f0 !important;
+  }
+
+  .custom-select-ae-graph .selectize-control {
+    background-color: #f0f0f0 !important;
+  }
+
+  .custom-select-ae-graph .selectize-input {
+    background-color: #cce5ff !important;
+    color: #254a7c !important;
+    font-weight: bold;
+    border: 1px solid #999999;           /* Grey border */
+    border-radius: 4px;
+  }
+
+  .custom-select-ae-graph .selectize-dropdown {
+    background-color: #white !important;
+  }
+
+  .custom-select-ae-graph .selectize-dropdown-content .option {
+    color: #254a7c !important;
+    font-weight: bold;
+  }
+
+  .custom-select-ae-graph label {
+    color: #003366 !important;
+    font-weight: bold;
+    font-size: 18px;
+  }
+")),
+    
+    
+    
     fluidRow(
+      
+      
+     
       column(3, 
-             selectInput(
+             div(class = "custom-select-ae-graph", selectInput(
                inputId = "ae_recent_measure_select",
                label = "Select Measure",
                choices = c(
@@ -73,7 +112,7 @@ AE_Recent_Waiting_Times <- conditionalPanel(
                  "Within 4 Hours" = "TotalWithin4Hours"
                ),
                selected = "TotalAttendances"
-             )
+             ))
       )
     ),
     

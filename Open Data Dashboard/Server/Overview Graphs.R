@@ -2096,7 +2096,7 @@ output$ae_recent_iso_graph <- renderPlotly({
     color = ~iso_year,
     colors = "Set1",
     type = 'scatter',
-    mode = 'lines+markers',
+    mode = 'lines',  # Only lines, no markers
     text = ~paste(
       "Year:", iso_year,
       "<br>Week:", iso_week,
@@ -2111,7 +2111,7 @@ output$ae_recent_iso_graph <- renderPlotly({
       yaxis = list(title = input$ae_recent_measure_select),
       legend = list(title = list(text = "Year")),
       hovermode = "closest",
-      plot_bgcolor = "#f0f0f0",   # Inner plot area
-      paper_bgcolor = "#f0f0f0"   # Whole figure background
+      plot_bgcolor = "#f0f0f0",
+      paper_bgcolor = "#f0f0f0"
     )
 })
