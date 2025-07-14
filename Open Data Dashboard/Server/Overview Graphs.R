@@ -2075,6 +2075,17 @@ output$currentAEBoxes <- renderUI({
 output$ae_recent_iso_graph <- renderPlotly({
   req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE, input$ae_recent_measure_select)
   
+  measure_labels <- c(
+    "TotalAttendances"   = "Total Attendances",
+    "TotalOver4Hours"    = "Over 4 Hours",
+    "TotalOver8Hours"    = "Over 8 Hours",
+    "TotalOver12Hours"   = "Over 12 Hours",
+    "TotalWithin4Hours"  = "Within 4 Hours"
+  )
+  
+  y_axis_label <- measure_labels[[input$ae_recent_measure_select]]
+  
+  
   df <- WeeklyAE_Healthboard %>%
     filter(
       HBName == input$HBName_Current_AE,
@@ -2098,17 +2109,15 @@ output$ae_recent_iso_graph <- renderPlotly({
     type = 'scatter',
     mode = 'lines',  # Only lines, no markers
     text = ~paste(
-      "Year:", iso_year,
-      "<br>Week:", iso_week,
-      "<br>Measure Type:", input$ae_recent_measure_select,
-      "<br>Total:", get(input$ae_recent_measure_select),
-      "<br>Date:", format(WeekEndingDate, "%d %B %Y")
+      "<b>Week:</b>", iso_week,
+      "<br><b>Health Board:</b>", input$HBName_Current_AE,
+      paste0("<br><b>", y_axis_label, ":</b> "), get(input$ae_recent_measure_select)
     ),
     hoverinfo = 'text'
   ) %>%
     layout(
       xaxis = list(title = "ISO Week", tickmode = "linear", dtick = 4),
-      yaxis = list(title = input$ae_recent_measure_select),
+      yaxis = list(title = y_axis_label),
       legend = list(title = list(text = "Year")),
       hovermode = "closest",
       plot_bgcolor = "#f0f0f0",
