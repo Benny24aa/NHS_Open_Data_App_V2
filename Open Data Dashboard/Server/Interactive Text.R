@@ -286,7 +286,7 @@ output$currentAEHeadersummary <- renderUI({
   
   HTML(paste0(
     paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
-   "Most Recent Accident and Emergency Statistics for", input$HBName_Current_AE, "for", ae_label, "attendances", "comparing weeks ending", week_1, "and", week_2),
+   "Summary of Accident and Emergency Statistics in", input$HBName_Current_AE, "for", ae_label, "attendances", "comparing weeks ending", week_1, "and", week_2),
    "</div>"
   ))
 })

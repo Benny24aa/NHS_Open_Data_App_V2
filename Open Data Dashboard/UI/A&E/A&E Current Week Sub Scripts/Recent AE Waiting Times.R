@@ -57,7 +57,9 @@ AE_Recent_Waiting_Times <- conditionalPanel(
     uiOutput("currentAEBoxes")
   ),
   br(),
-  selectInput(
+  fluidRow(
+    
+    column(3, selectInput(
     inputId = "ae_recent_measure_select",
     label = "Select Measure",
     choices = c(
@@ -68,7 +70,8 @@ AE_Recent_Waiting_Times <- conditionalPanel(
       "Within 4 Hours" = "TotalWithin4Hours"
     ),
     selected = "TotalAttendances"
-  ),
+  ))),
+  fluidRow(
   
-  plotlyOutput("ae_recent_iso_graph")
+  column(12,plotlyOutput("ae_recent_iso_graph", height = "600px")))
 )
