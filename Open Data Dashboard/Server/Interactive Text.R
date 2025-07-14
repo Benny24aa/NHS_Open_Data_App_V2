@@ -290,3 +290,46 @@ output$currentAEHeadersummary <- renderUI({
    "</div>"
   ))
 })
+
+
+
+output$currentAEHeaderyearcomparetitle <- renderUI({
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE, this_week(), last_week())
+
+  
+  ae_label <- if (input$AttendanceCategory_Current_AE == "All") {
+    "both planned and unplanned care"
+  } else if (input$AttendanceCategory_Current_AE == "Unplanned") {
+    "unplanned care"
+  } else if (input$AttendanceCategory_Current_AE == "New planned") {
+    "new planned care"
+  } else {
+    input$AttendanceCategory_Current_AE
+  }
+  
+  
+  Description <- if (input$ae_recent_measure_select == "TotalAttendances") {
+    "Total attendances"
+  } else if (input$ae_recent_measure_select == "TotalOver4Hours") {
+    "People waiting over 4 hours"
+  } else if (input$ae_recent_measure_select == "TotalOver8Hours") {
+    "People waiting over 8 hours"
+  } 
+ else if (input$ae_recent_measure_select == "TotalOver12Hours") {
+  "People waiting over 12 hours" 
+ }
+  else if (input$ae_recent_measure_select == "TotalWithin4Hours") {
+    "People seen within 4 hours" 
+  }
+else {
+    input$ae_recent_measure_select
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+         Description, "for", ae_label, "at", input$HBName_Current_AE, "over the last five years"),
+    "</div>"
+  ))
+})
+
+

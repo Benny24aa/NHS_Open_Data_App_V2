@@ -57,6 +57,10 @@ AE_Recent_Waiting_Times <- conditionalPanel(
     uiOutput("currentAEBoxes")
   ),
   br(),
+  
+  uiOutput("currentAEHeaderyearcomparetitle"),
+  br(),
+  
   div(
     style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
     
