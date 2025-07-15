@@ -55,7 +55,7 @@ AE_Recent_Waiting_Times <- conditionalPanel(
     br(),
     # AE Value Boxes
     uiOutput("currentAEBoxes")
-  ),
+  ), ## end of division for summary boxes 
   br(),
   
   uiOutput("currentAEHeaderyearcomparetitle"),
@@ -125,6 +125,38 @@ AE_Recent_Waiting_Times <- conditionalPanel(
              plotlyOutput("ae_recent_iso_graph", height = "600px")
       )
     )
-  )
+  ), ### end of division graph 1
+  br(),
   
+  uiOutput("currentAEHeaderyearaggregatedbargraph"),
+  
+  br(),
+  div(
+    style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
+    
+    fluidRow(
+      
+      
+      
+      column(3, 
+             div(class = "custom-select-ae-graph", selectInput(
+               inputId = "ae_recent_measure_select_bar_graph",
+               label = "Select Measure",
+               choices = c(
+                 "Total Attendances" = "TotalAttendances",
+                 "Over 4 Hours" = "TotalOver4Hours",
+                 "Over 8 Hours" = "TotalOver8Hours",
+                 "Over 12 Hours" = "TotalOver12Hours",
+                 "Within 4 Hours" = "TotalWithin4Hours"
+               ),
+               selected = "TotalAttendances"
+             ))
+      )
+    ),
+    
+    fluidRow(
+      column(12,
+             plotlyOutput("ae_recent_iso_bargraph", height = "600px")
+      )
+    ))
 ) # end of conditional panel
