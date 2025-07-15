@@ -2124,3 +2124,58 @@ output$ae_recent_iso_graph <- renderPlotly({
       paper_bgcolor = "#f0f0f0"
     )
 })
+
+output$ae_recent_iso_bargraph <- renderPlotly({
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE, input$ae_recent_measure_select_bar_graph)
+  
+  measure_labels <- c(
+    "TotalAttendances"   = "Total Attendances",
+    "TotalOver4Hours"    = "Over 4 Hours",
+    "TotalOver8Hours"    = "Over 8 Hours",
+    "TotalOver12Hours"   = "Over 12 Hours",
+    "TotalWithin4Hours"  = "Within 4 Hours"
+  )
+  
+  y_axis_label <- measure_labels[[input$ae_recent_measure_select_bar_graph]]
+  
+  df <- WeeklyAE_Healthboard %>%
+    filter(
+      HBName == input$HBName_Current_AE,
+      AttendanceCategory == input$AttendanceCategory_Current_AE
+    ) %>%
+    mutate(
+      calendar_year = year(WeekEndingDate),
+      iso_year = format(WeekEndingDate, "%G"),
+      iso_week = format(WeekEndingDate, "%V")
+    ) %>%
+    filter(
+      calendar_year >= (max(calendar_year, na.rm = TRUE) - 4),
+      iso_week != "53"
+    ) %>%
+    group_by(iso_year) %>%
+    summarise(
+      measure_sum = sum(get(input$ae_recent_measure_select_bar_graph), na.rm = TRUE),
+      .groups = 'drop'
+    )
+  
+  plot_ly(
+    df,
+    x = ~iso_year,
+    y = ~measure_sum,
+    type = 'bar',
+    marker = list(color = 'steelblue'),
+    text = ~paste(
+      "<b>Year:</b>", iso_year,
+      "<br><b>Health Board:</b>", input$HBName_Current_AE,
+      paste0("<br><b>", y_axis_label, ":</b> "), format(measure_sum, big.mark = ",")
+    ),
+    hoverinfo = 'text',
+    textposition = 'none'
+  ) %>%
+    layout(
+      xaxis = list(title = "Year"),
+      yaxis = list(title = y_axis_label),
+      plot_bgcolor = "#f0f0f0",
+      paper_bgcolor = "#f0f0f0"
+    )
+})
