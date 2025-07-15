@@ -106,9 +106,9 @@ valueBoxWithAbsoluteChange <- function(title, current, previous) {
   
   # Set change label and color
   change_label <- if (diff < 0) {
-    paste0("↓ ", abs(diff), " fewer")
+    paste0("🔽 ", abs(diff))
   } else if (diff > 0) {
-    paste0("↑ ", diff, " more")
+    paste0("🔼 ", diff)
   } else {
     "No change"
   }
