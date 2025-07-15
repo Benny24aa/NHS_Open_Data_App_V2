@@ -294,7 +294,7 @@ output$currentAEHeadersummary <- renderUI({
 
 
 output$currentAEHeaderyearcomparetitle <- renderUI({
-  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE, this_week(), last_week())
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE)
 
   
   ae_label <- if (input$AttendanceCategory_Current_AE == "All") {
@@ -309,7 +309,7 @@ output$currentAEHeaderyearcomparetitle <- renderUI({
   
   
   Description <- if (input$ae_recent_measure_select == "TotalAttendances") {
-    "Total attendances"
+    "Total attendance"
   } else if (input$ae_recent_measure_select == "TotalOver4Hours") {
     "People waiting over 4 hours"
   } else if (input$ae_recent_measure_select == "TotalOver8Hours") {
@@ -327,9 +327,47 @@ else {
   
   HTML(paste0(
     paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
-         Description, "for", ae_label, "at", input$HBName_Current_AE, "over the last five years"),
+         Description, "for", ae_label, "at", input$HBName_Current_AE, "over the last five years by iso week"),
     "</div>"
   ))
 })
 
+output$currentAEHeaderyearaggregatedbargraph <- renderUI({
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE)
+  
+  
+  ae_label <- if (input$AttendanceCategory_Current_AE == "All") {
+    "both planned and unplanned care"
+  } else if (input$AttendanceCategory_Current_AE == "Unplanned") {
+    "unplanned care"
+  } else if (input$AttendanceCategory_Current_AE == "New planned") {
+    "new planned care"
+  } else {
+    input$AttendanceCategory_Current_AE
+  }
+  
+  
+  Description <- if (input$ae_recent_measure_select_bar_graph == "TotalAttendances") {
+    "Total attendance"
+  } else if (input$ae_recent_measure_select_bar_graph == "TotalOver4Hours") {
+    "Total number of people waiting over 4 hours"
+  } else if (input$ae_recent_measure_select_bar_graph == "TotalOver8Hours") {
+    "Total number of people waiting over 8 hours"
+  } 
+  else if (input$ae_recent_measure_select_bar_graph == "TotalOver12Hours") {
+    "Total number of people waiting over 12 hours" 
+  }
+  else if (input$ae_recent_measure_select_bar_graph == "TotalWithin4Hours") {
+    "Total numebr of people seen within 4 hours" 
+  }
+  else {
+    input$ae_recent_measure_select_bar_graph
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          Description, "for", ae_label, "at", input$HBName_Current_AE, "each year over the last five years"),
+    "</div>"
+  ))
+})
 
