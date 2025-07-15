@@ -268,9 +268,106 @@ output$diagnostics_overview_graph_percent_change_text <- renderText({
   
 })
 
+output$currentAEHeadersummary <- renderUI({
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE, this_week(), last_week())
+  
+  week_1 <- format(latest_two_weeks()[1], "%d %B %Y")
+  week_2 <- format(latest_two_weeks()[2], "%d %B %Y")
+  
+  ae_label <- if (input$AttendanceCategory_Current_AE == "All") {
+    "all"
+  } else if (input$AttendanceCategory_Current_AE == "Unplanned") {
+    "unplanned"
+  } else if (input$AttendanceCategory_Current_AE == "New planned") {
+    "new planned"
+} else {
+  input$AttendanceCategory_Current_AE
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+   "Summary of Accident and Emergency Statistics in", input$HBName_Current_AE, "for", ae_label, "attendances", "comparing weeks ending", week_1, "and", week_2),
+   "</div>"
+  ))
+})
 
-# diagnostics_final_dataset_rates_filtered <- diagnostics_final_dataset_rates %>% 
-#   filter(HBName %in% input$hb_name_diagnostics,
-#          WaitingTime %in% input$diagnostics_waiting_times_input,
-#          DiagnosticTestType %in% input$diagnostics_test_type_input,
-#          DiagnosticTestDescription %in% input$diagnostics_description_type)
+
+
+output$currentAEHeaderyearcomparetitle <- renderUI({
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE)
+
+  
+  ae_label <- if (input$AttendanceCategory_Current_AE == "All") {
+    "both planned and unplanned care"
+  } else if (input$AttendanceCategory_Current_AE == "Unplanned") {
+    "unplanned care"
+  } else if (input$AttendanceCategory_Current_AE == "New planned") {
+    "new planned care"
+  } else {
+    input$AttendanceCategory_Current_AE
+  }
+  
+  
+  Description <- if (input$ae_recent_measure_select == "TotalAttendances") {
+    "Total attendance"
+  } else if (input$ae_recent_measure_select == "TotalOver4Hours") {
+    "People waiting over 4 hours"
+  } else if (input$ae_recent_measure_select == "TotalOver8Hours") {
+    "People waiting over 8 hours"
+  } 
+ else if (input$ae_recent_measure_select == "TotalOver12Hours") {
+  "People waiting over 12 hours" 
+ }
+  else if (input$ae_recent_measure_select == "TotalWithin4Hours") {
+    "People seen within 4 hours" 
+  }
+else {
+    input$ae_recent_measure_select
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+         Description, "for", ae_label, "at", input$HBName_Current_AE, "over the last five years by iso week"),
+    "</div>"
+  ))
+})
+
+output$currentAEHeaderyearaggregatedbargraph <- renderUI({
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE)
+  
+  
+  ae_label <- if (input$AttendanceCategory_Current_AE == "All") {
+    "both planned and unplanned care"
+  } else if (input$AttendanceCategory_Current_AE == "Unplanned") {
+    "unplanned care"
+  } else if (input$AttendanceCategory_Current_AE == "New planned") {
+    "new planned care"
+  } else {
+    input$AttendanceCategory_Current_AE
+  }
+  
+  
+  Description <- if (input$ae_recent_measure_select_bar_graph == "TotalAttendances") {
+    "Total attendance"
+  } else if (input$ae_recent_measure_select_bar_graph == "TotalOver4Hours") {
+    "Total number of people waiting over 4 hours"
+  } else if (input$ae_recent_measure_select_bar_graph == "TotalOver8Hours") {
+    "Total number of people waiting over 8 hours"
+  } 
+  else if (input$ae_recent_measure_select_bar_graph == "TotalOver12Hours") {
+    "Total number of people waiting over 12 hours" 
+  }
+  else if (input$ae_recent_measure_select_bar_graph == "TotalWithin4Hours") {
+    "Total numebr of people seen within 4 hours" 
+  }
+  else {
+    input$ae_recent_measure_select_bar_graph
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          Description, "for", ae_label, "at", input$HBName_Current_AE, "each year over the last five years"),
+    "</div>"
+  ))
+})
+

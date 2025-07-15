@@ -41,8 +41,6 @@ latest_two_weeks <- WeeklyAE_Healthboard %>%
   slice(1:2) %>%
   pull(WeekEndingDate)
 
-WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
-  filter(WeekEndingDate %in% latest_two_weeks)
 
 WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
   group_by(HBName, WeekEndingDate, AttendanceCategory) %>%
@@ -55,3 +53,91 @@ WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
     .groups = "drop"
   )
 
+# Function to calculate percentage change
+calc_change <- function(current, previous) {
+  diff <- current - previous
+  pct_change <- ifelse(previous == 0, NA, (diff / previous) * 100)
+  
+  if (is.na(pct_change)) {
+    list(label = "N/A", icon = "", color = "black")
+  } else if (pct_change >= 0) {
+    list(label = paste0("🔼 ", round(pct_change, 1), "%"), icon = "arrow-up", color = "red")
+  } else {
+    list(label = paste0("🔽 ", round(abs(pct_change), 1), "%"), icon = "arrow-down", color = "green")
+  }
+}
+
+# Function to create a value box with change indicator
+valueBoxWithChange <- function(title, value, change_info) {
+  box_color <- ifelse(change_info$color == "lightgreen", "lightgreen", "red")
+  
+  div(
+    style = "background-color: #336699; padding: 10px; border-radius: 8px; height: 210px;",
+    valueBox(
+      value = HTML(paste0(
+        "<div style='color: white;'>",  
+        format(value, big.mark = ","), 
+        "<br><small style='color:", change_info$color, "'>", 
+        change_info$label, 
+        "</small></div>"
+      )),
+      subtitle = tags$span(style = "color: white;", title),
+      color = box_color,
+      icon = icon(change_info$icon, class = "white-icon")
+    ),
+    # Custom CSS to force icon and subtitle text white inside the colored box
+    tags$style(HTML("
+      /* Override subtitle color */
+      .small-box-footer, 
+      .small-box h3, 
+      .small-box p {
+        color: white !important;
+      }
+      /* Icon white */
+      .white-icon {
+        color: white !important;
+      }
+    "))
+  )
+}
+
+valueBoxWithAbsoluteChange <- function(title, current, previous) {
+  diff <- current - previous
+  
+  # Set change label and color
+  change_label <- if (diff < 0) {
+    paste0("🔽 ", abs(diff))
+  } else if (diff > 0) {
+    paste0("🔼 ", diff)
+  } else {
+    "No change"
+  }
+  
+  change_color <- if (diff < 0) "red" else if (diff > 0) "green" else "white"
+  box_color <- if (diff < 0) "red" else if (diff > 0) "green" else "blue"
+  
+  div(
+    style = "background-color: #336699; padding: 10px; border-radius: 8px; height: 210px;",
+    valueBox(
+      value = HTML(paste0(
+        "<div style='color: white;'>",  
+        format(current, big.mark = ","), 
+        "<br><small style='color:", change_color, "'>", 
+        change_label, 
+        "</small></div>"
+      )),
+      subtitle = tags$span(style = "color: white;", title),
+      color = box_color,
+      icon = icon("clock", class = "white-icon")
+    ),
+    # White icon style
+    tags$style(HTML("
+      .white-icon {
+        color: white !important;
+      }
+      .small-box p {
+        color: white !important;
+      }
+    "))
+  )
+}

@@ -64,7 +64,7 @@ By comparing recent data with historical trends, the dashboard supports a better
                                 h3("Number of people seen in over 12 hours", style = "color:  #336699 ; font-weight: 600"),
                                 withSpinner(plotlyOutput("total_weekly_ae_over_twelve_hours_graph", height = "600px")), type = 4, color = "blue", size = 1.5),
                          column(6,
-                                h3("Percentage of the number of people seen over 12 hours", style = "color:  #336699 ; font-weight: with600"),
+                                h3("Percentage of the number of people seen over 12 hours", style = "color:  #336699 ; font-weight: 600"),
                                 withSpinner(plotlyOutput("total_weekly_ae_over_twelve_hours_percentage_graph", height = "600px")), type = 4, color = "blue", size = 1.5)
                        )
                       

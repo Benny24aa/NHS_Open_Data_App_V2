@@ -1997,3 +1997,185 @@ output$total_weekly_ae_over_twelve_hours_percentage_graph <- renderPlotly({
       )
     )
 })
+
+
+
+
+
+
+################################## output boxes for AE current section
+
+filtered_data <- reactive({
+  WeeklyAE_Healthboard %>%
+    filter(
+      HBName == input$HBName_Current_AE,
+      AttendanceCategory == input$AttendanceCategory_Current_AE
+    )
+})
+
+latest_two_weeks <- reactive({
+  filtered_data() %>%
+    distinct(WeekEndingDate) %>%
+    arrange(desc(WeekEndingDate)) %>%
+    pull(WeekEndingDate)
+})
+
+this_week <- reactive({
+  req(length(latest_two_weeks()) >= 1)
+  filtered_data() %>%
+    filter(WeekEndingDate == latest_two_weeks()[1])
+})
+
+last_week <- reactive({
+  req(length(latest_two_weeks()) >= 2)
+  filtered_data() %>%
+    filter(WeekEndingDate == latest_two_weeks()[2])
+})
+
+output$attendancesBox <- renderValueBox({
+  change <- calc_change(this_week()$TotalAttendances, last_week()$TotalAttendances)
+  valueBoxWithChange("Total Attendances", this_week()$TotalAttendances, change)
+})
+
+output$over4Box <- renderValueBox({
+  change <- calc_change(this_week()$TotalOver4Hours, last_week()$TotalOver4Hours)
+  valueBoxWithChange("Over 4 Hours", this_week()$TotalOver4Hours, change)
+})
+
+output$over8Box <- renderValueBox({
+  change <- calc_change(this_week()$TotalOver8Hours, last_week()$TotalOver8Hours)
+  valueBoxWithChange("Over 8 Hours", this_week()$TotalOver8Hours, change)
+})
+
+output$over12Box <- renderValueBox({
+  change <- calc_change(this_week()$TotalOver12Hours, last_week()$TotalOver12Hours)
+  valueBoxWithChange("Over 12 Hours", this_week()$TotalOver12Hours, change)
+})
+
+output$within4Box <- renderValueBox({
+  change <- calc_change(this_week()$TotalWithin4Hours, last_week()$TotalWithin4Hours)
+  valueBoxWithChange("Within 4 Hours", this_week()$TotalWithin4Hours, change)
+})
+
+
+output$currentAEBoxes <- renderUI({
+  
+    fluidRow(
+      column(2, valueBoxWithChange("Total Attendances", this_week()$TotalAttendances, calc_change(this_week()$TotalAttendances, last_week()$TotalAttendances))),
+      column(2, valueBoxWithChange("Over 4 Hours", this_week()$TotalOver4Hours, calc_change(this_week()$TotalOver4Hours, last_week()$TotalOver4Hours))),
+      column(2, valueBoxWithChange("Over 8 Hours", this_week()$TotalOver8Hours, calc_change(this_week()$TotalOver8Hours, last_week()$TotalOver8Hours))),
+      column(2, valueBoxWithChange("Over 12 Hours", this_week()$TotalOver12Hours, calc_change(this_week()$TotalOver12Hours, last_week()$TotalOver12Hours))),
+      column(2, valueBoxWithChange("Within 4 Hours", this_week()$TotalWithin4Hours, calc_change(this_week()$TotalWithin4Hours, last_week()$TotalWithin4Hours))),
+      column(2, valueBoxWithAbsoluteChange("Seen Within 4 Hours", this_week()$TotalWithin4Hours, last_week()$TotalWithin4Hours ))
+      )
+  
+})
+
+
+output$ae_recent_iso_graph <- renderPlotly({
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE, input$ae_recent_measure_select)
+  
+  measure_labels <- c(
+    "TotalAttendances"   = "Total Attendances",
+    "TotalOver4Hours"    = "Over 4 Hours",
+    "TotalOver8Hours"    = "Over 8 Hours",
+    "TotalOver12Hours"   = "Over 12 Hours",
+    "TotalWithin4Hours"  = "Within 4 Hours"
+  )
+  
+  y_axis_label <- measure_labels[[input$ae_recent_measure_select]]
+  
+  
+  df <- WeeklyAE_Healthboard %>%
+    filter(
+      HBName == input$HBName_Current_AE,
+      AttendanceCategory == input$AttendanceCategory_Current_AE
+    ) %>%
+    mutate(
+      calendar_year = year(WeekEndingDate),
+      iso_year = format(WeekEndingDate, "%G"),
+      iso_week = format(WeekEndingDate, "%V"),
+      iso_week_num = as.integer(iso_week)
+    ) %>%
+    filter(calendar_year >= (max(calendar_year, na.rm = TRUE) - 4)) %>% 
+    filter(iso_week != "53")
+  
+  plot_ly(
+    df,
+    x = ~iso_week_num,
+    y = ~get(input$ae_recent_measure_select),
+    color = ~iso_year,
+    colors = "Set1",
+    type = 'scatter',
+    mode = 'lines',  # Only lines, no markers
+    text = ~paste(
+      "<b>Week:</b>", iso_week,
+      "<br><b>Health Board:</b>", input$HBName_Current_AE,
+      paste0("<br><b>", y_axis_label, ":</b> "), get(input$ae_recent_measure_select)
+    ),
+    hoverinfo = 'text'
+  ) %>%
+    layout(
+      xaxis = list(title = "ISO Week", tickmode = "linear", dtick = 4),
+      yaxis = list(title = y_axis_label),
+      legend = list(title = list(text = "Year")),
+      hovermode = "closest",
+      plot_bgcolor = "#f0f0f0",
+      paper_bgcolor = "#f0f0f0"
+    )
+})
+
+output$ae_recent_iso_bargraph <- renderPlotly({
+  req(input$HBName_Current_AE, input$AttendanceCategory_Current_AE, input$ae_recent_measure_select_bar_graph)
+  
+  measure_labels <- c(
+    "TotalAttendances"   = "Total Attendances",
+    "TotalOver4Hours"    = "Over 4 Hours",
+    "TotalOver8Hours"    = "Over 8 Hours",
+    "TotalOver12Hours"   = "Over 12 Hours",
+    "TotalWithin4Hours"  = "Within 4 Hours"
+  )
+  
+  y_axis_label <- measure_labels[[input$ae_recent_measure_select_bar_graph]]
+  
+  df <- WeeklyAE_Healthboard %>%
+    filter(
+      HBName == input$HBName_Current_AE,
+      AttendanceCategory == input$AttendanceCategory_Current_AE
+    ) %>%
+    mutate(
+      calendar_year = year(WeekEndingDate),
+      iso_year = format(WeekEndingDate, "%G"),
+      iso_week = format(WeekEndingDate, "%V")
+    ) %>%
+    filter(
+      calendar_year >= (max(calendar_year, na.rm = TRUE) - 4),
+      iso_week != "53"
+    ) %>%
+    group_by(iso_year) %>%
+    summarise(
+      measure_sum = sum(get(input$ae_recent_measure_select_bar_graph), na.rm = TRUE),
+      .groups = 'drop'
+    )
+  
+  plot_ly(
+    df,
+    x = ~iso_year,
+    y = ~measure_sum,
+    type = 'bar',
+    marker = list(color = 'steelblue'),
+    text = ~paste(
+      "<b>Year:</b>", iso_year,
+      "<br><b>Health Board:</b>", input$HBName_Current_AE,
+      paste0("<br><b>", y_axis_label, ":</b> "), format(measure_sum, big.mark = ",")
+    ),
+    hoverinfo = 'text',
+    textposition = 'none'
+  ) %>%
+    layout(
+      xaxis = list(title = "Year"),
+      yaxis = list(title = y_axis_label),
+      plot_bgcolor = "#f0f0f0",
+      paper_bgcolor = "#f0f0f0"
+    )
+})
