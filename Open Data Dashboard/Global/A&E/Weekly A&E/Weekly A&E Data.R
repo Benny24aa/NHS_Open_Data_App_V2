@@ -149,6 +149,7 @@ WeeklyAEDemographics <- get_resource(res_id = "6abbf8e4-e4e0-4a56-a7b9-f7c7b4171
   mutate(
     Month = ym(Month)
   ) %>% 
-  select(-HBT)
+  select(-HBT) %>% 
+  filter(!is.na(Age))
 
 
