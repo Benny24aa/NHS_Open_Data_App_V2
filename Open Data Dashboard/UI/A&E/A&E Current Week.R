@@ -1,4 +1,5 @@
 source("UI/A&E/A&E Current Week Sub Scripts/Recent AE Waiting Times.R")
+source("UI/A&E/A&E Current Week Sub Scripts/AE Demographic UI.R")
 
 CurrentAEUI <- tabPanel(
   title = "Most Recent Accident and Emergency Statistics", 
@@ -24,5 +25,6 @@ CurrentAEUI <- tabPanel(
   br(),
   
   
-  AE_Recent_Waiting_Times
+  AE_Recent_Waiting_Times,
+  AE_Demographic
 )
