@@ -11,9 +11,15 @@ AE_Demographic <- conditionalPanel(
            div(class = "custom-select",
                selectInput("AE_Department_Type_Input", "Select Department Type", 
                            choices = unique(AE_Department_Type_Options$DepartmentType)))
-    )
+    ),
+    
+    column(3,
+           div(class = "custom-select",
+               selectInput("measure_type_demo_ae", "Select Demographic Type",
+                           choices = c("Deprivation", "Age", "Sex"),
+                           selected = "Deprivation")))
   
-  )  
+  )  # This ends the whole dashboard filters filter row
   ) ## end of division for summary boxes 
   
 ) # End of Conditional Panel
