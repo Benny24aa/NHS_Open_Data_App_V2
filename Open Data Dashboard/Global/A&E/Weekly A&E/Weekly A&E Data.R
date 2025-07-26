@@ -142,7 +142,7 @@ valueBoxWithAbsoluteChange <- function(title, current, previous) {
   )
 }
 
-WeeklyAEDemographics <- get_resource(res_id = "6abbf8e4-e4e0-4a56-a7b9-f7c7b4171ff3") %>% 
+MonthlyAEDemographics <- get_resource(res_id = "6abbf8e4-e4e0-4a56-a7b9-f7c7b4171ff3") %>% 
   select(-SexQF, -DeprivationQF, -AgeQF, -Country) %>% 
   filter(!is.na(Deprivation)) %>% 
   full_join(HB_Lookup_AE, by = "HBT")%>%
