@@ -2179,3 +2179,13 @@ output$ae_recent_iso_bargraph <- renderPlotly({
       paper_bgcolor = "#f0f0f0"
     )
 })
+
+############# A&E Demographical Analysis Code
+
+filtered_demo_ae_data <- reactive({
+  MonthlyAEDemographics %>%
+    filter(
+      HBName == input$HBName_Current_AE_Demographic,
+      DepartmentType == input$AE_Department_Type_Input
+    )
+})
