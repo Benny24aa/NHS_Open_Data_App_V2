@@ -152,4 +152,6 @@ MonthlyAEDemographics <- get_resource(res_id = "6abbf8e4-e4e0-4a56-a7b9-f7c7b417
   select(-HBT) %>% 
   filter(!is.na(Age))
 
-
+AE_Department_Type_Options <- MonthlyAEDemographics %>% 
+  select(DepartmentType) %>% 
+  unique()
