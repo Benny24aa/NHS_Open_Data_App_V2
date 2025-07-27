@@ -155,3 +155,38 @@ MonthlyAEDemographics <- get_resource(res_id = "6abbf8e4-e4e0-4a56-a7b9-f7c7b417
 AE_Department_Type_Options <- MonthlyAEDemographics %>% 
   select(DepartmentType) %>% 
   unique()
+
+
+Deprivation_Summary_AE <- MonthlyAEDemographics %>%
+  group_by(Month, DepartmentType, HBName, Deprivation) %>%
+  summarize(NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(
+    names_from = Deprivation,
+    values_from = NumberOfAttendances,
+    names_prefix = "Deprivation_Q"
+  )
+
+
+Age_Summary_AE <- MonthlyAEDemographics %>%
+  group_by(Month, DepartmentType, HBName, Age) %>%
+  summarize(NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(
+    names_from = Age,
+    values_from = NumberOfAttendances
+  )
+
+Sex_Summary_AE <- MonthlyAEDemographics %>%
+  group_by(Month, DepartmentType, HBName, Sex) %>%
+  summarize(NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(
+    names_from = Sex,
+    values_from = NumberOfAttendances
+  )
+
+Monthly_AE_Demographic_Data <- Deprivation_Summary_AE %>%
+  full_join(Age_Summary_AE, by = c("Month", "DepartmentType", "HBName")) %>%
+  full_join(Sex_Summary_AE, by = c("Month", "DepartmentType", "HBName"))
+
+rm(Age_Summary_AE, Deprivation_Summary_AE, Sex_Summary_AE)
+
+
