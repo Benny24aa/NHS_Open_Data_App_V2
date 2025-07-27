@@ -2218,11 +2218,39 @@ output$deprivation_ae_one <- renderValueBox({
   valueBoxWithChange("Number of people admitted in Deprivation Quintile One", this_month_demo_ae()$Deprivation1, change)
 })
 
+output$deprivation_ae_two <- renderValueBox({
+  
+  change <- calc_change(this_month_demo_ae()$Deprivation2, last_month_demo_ae()$Deprivation2)
+  valueBoxWithChange("Number of people admitted in Deprivation Quintile Two", this_month_demo_ae()$Deprivation2, change)
+})
+
+output$deprivation_ae_three <- renderValueBox({
+  
+  change <- calc_change(this_month_demo_ae()$Deprivation3, last_month_demo_ae()$Deprivation3)
+  valueBoxWithChange("Number of people admitted in Deprivation Quintile Two", this_month_demo_ae()$Deprivation3, change)
+})
+
+output$deprivation_ae_four <- renderValueBox({
+  
+  change <- calc_change(this_month_demo_ae()$Deprivation4, last_month_demo_ae()$Deprivation4)
+  valueBoxWithChange("Number of people admitted in Deprivation Quintile Two", this_month_demo_ae()$Deprivation4, change)
+})
+
+output$deprivation_ae_five <- renderValueBox({
+  
+  change <- calc_change(this_month_demo_ae()$Deprivation5, last_month_demo_ae()$Deprivation5)
+  valueBoxWithChange("Number of people admitted in Deprivation Quintile Two", this_month_demo_ae()$Deprivation5, change)
+})
+
 output$Deprivation_Boxes_AE <- renderUI({
   
   fluidRow(
-    column(2, valueBoxWithChange("Deprivation Quintile 1", this_month_demo_ae()$Deprivation1, calc_change(this_month_demo_ae()$Deprivation1, last_month_demo_ae()$Deprivation1)))
-
+    column(2, valueBoxWithChange("Deprivation Quintile 1", this_month_demo_ae()$Deprivation1, calc_change(this_month_demo_ae()$Deprivation1, last_month_demo_ae()$Deprivation1))),
+    column(2, valueBoxWithChange("Deprivation Quintile 2", this_month_demo_ae()$Deprivation2, calc_change(this_month_demo_ae()$Deprivation2, last_month_demo_ae()$Deprivation2))),
+    column(2, valueBoxWithChange("Deprivation Quintile 3", this_month_demo_ae()$Deprivation3, calc_change(this_month_demo_ae()$Deprivation3, last_month_demo_ae()$Deprivation3))),
+    column(2, valueBoxWithChange("Deprivation Quintile 4", this_month_demo_ae()$Deprivation4, calc_change(this_month_demo_ae()$Deprivation4, last_month_demo_ae()$Deprivation4))),
+    column(2, valueBoxWithChange("Deprivation Quintile 5", this_month_demo_ae()$Deprivation5, calc_change(this_month_demo_ae()$Deprivation5, last_month_demo_ae()$Deprivation5)))
+    
   )
   
 })
