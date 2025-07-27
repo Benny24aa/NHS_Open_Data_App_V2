@@ -2244,13 +2244,34 @@ output$deprivation_ae_five <- renderValueBox({
 
 output$Deprivation_Boxes_AE <- renderUI({
   
-  fluidRow(
+  req(input$measure_type_demo_ae)
+  
+  switch(input$measure_type_demo_ae,
+  
+  "Deprivation" = fluidRow(
     column(2, valueBoxWithChange("Deprivation Quintile 1", this_month_demo_ae()$Deprivation1, calc_change(this_month_demo_ae()$Deprivation1, last_month_demo_ae()$Deprivation1))),
     column(2, valueBoxWithChange("Deprivation Quintile 2", this_month_demo_ae()$Deprivation2, calc_change(this_month_demo_ae()$Deprivation2, last_month_demo_ae()$Deprivation2))),
     column(2, valueBoxWithChange("Deprivation Quintile 3", this_month_demo_ae()$Deprivation3, calc_change(this_month_demo_ae()$Deprivation3, last_month_demo_ae()$Deprivation3))),
     column(2, valueBoxWithChange("Deprivation Quintile 4", this_month_demo_ae()$Deprivation4, calc_change(this_month_demo_ae()$Deprivation4, last_month_demo_ae()$Deprivation4))),
     column(2, valueBoxWithChange("Deprivation Quintile 5", this_month_demo_ae()$Deprivation5, calc_change(this_month_demo_ae()$Deprivation5, last_month_demo_ae()$Deprivation5)))
+  ),
+  
+  "Sex" = fluidRow(
+    column(5, valueBoxWithChange("Male", this_month_demo_ae()$Male, calc_change(this_month_demo_ae()$Male, last_month_demo_ae()$Male))),
+    column(5, valueBoxWithChange("Female", this_month_demo_ae()$Female, calc_change(this_month_demo_ae()$Female, last_month_demo_ae()$Female)))
     
+  ),
+  
+  "Age" = fluidRow(
+    
+    
+    
+  )
+  
+  
+  
+  
+  
   )
   
 })
