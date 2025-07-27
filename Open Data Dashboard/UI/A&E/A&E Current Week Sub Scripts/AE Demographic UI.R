@@ -18,8 +18,13 @@ AE_Demographic <- conditionalPanel(
                selectInput("measure_type_demo_ae", "Select Demographic Type",
                            choices = c("Deprivation", "Age", "Sex"),
                            selected = "Deprivation")))
+    
+  ),# This ends the whole dashboard filters filter row
   
-  )  # This ends the whole dashboard filters filter row
+    br(),
+    uiOutput("Deprivation_Boxes_AE"),
+    br()
+  
   ) ## end of division for summary boxes 
   
 ) # End of Conditional Panel

@@ -2183,9 +2183,46 @@ output$ae_recent_iso_bargraph <- renderPlotly({
 ############# A&E Demographical Analysis Code
 
 filtered_demo_ae_data <- reactive({
-  MonthlyAEDemographics %>%
+  Monthly_AE_Demographic_Data %>%
     filter(
       HBName == input$HBName_Current_AE_Demographic,
       DepartmentType == input$AE_Department_Type_Input
     )
+})
+
+
+
+latest_two_months_ae_demo <- reactive({
+  filtered_demo_ae_data() %>%
+    distinct(Month) %>%
+    arrange(desc(Month)) %>%
+    pull(Month)
+})
+
+this_month_demo_ae <- reactive({
+  req(length(latest_two_months_ae_demo()) >= 1)
+  filtered_demo_ae_data() %>%
+    filter(Month == latest_two_months_ae_demo()[1])
+})
+
+last_month_demo_ae <- reactive({
+  req(length(latest_two_months_ae_demo()) >= 2)
+  filtered_demo_ae_data() %>%
+    filter(Month == latest_two_months_ae_demo()[2])
+})
+
+
+output$deprivation_ae_one <- renderValueBox({
+
+  change <- calc_change(this_month_demo_ae()$Deprivation1, last_month_demo_ae()$Deprivation1)
+  valueBoxWithChange("Number of people admitted in Deprivation Quintile One", this_month_demo_ae()$Deprivation1, change)
+})
+
+output$Deprivation_Boxes_AE <- renderUI({
+  
+  fluidRow(
+    column(2, valueBoxWithChange("Deprivation Quintile 1", this_month_demo_ae()$Deprivation1, calc_change(this_month_demo_ae()$Deprivation1, last_month_demo_ae()$Deprivation1)))
+
+  )
+  
 })
