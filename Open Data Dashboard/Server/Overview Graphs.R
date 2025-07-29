@@ -2265,6 +2265,8 @@ output$Deprivation_Boxes_AE <- renderUI({
   total_this_month_deprivation <- sum(this_month_deprivation$Deprivation1, this_month_deprivation$Deprivation2, this_month_deprivation$Deprivation3, this_month_deprivation$Deprivation4, this_month_deprivation$Deprivation5, na.rm = TRUE)
   total_last_month_deprivation <- sum(last_month_deprivation$Deprivation1, last_month_deprivation$Deprivation2, last_month_deprivation$Deprivation3, last_month_deprivation$Deprivation4, last_month_deprivation$Deprivation5, na.rm = TRUE)
   
+  total_this_month_gender <- sum(this_month_deprivation$Male, this_month_deprivation$Female, na.rm = TRUE)
+  total_last_month_gender <- sum(last_month_deprivation$Male, this_month_deprivation$Female, na.rm = TRUE)
   
   
   switch(input$measure_type_demo_ae,
@@ -2283,8 +2285,9 @@ output$Deprivation_Boxes_AE <- renderUI({
      ),
   
   "Sex" = fluidRow(
-    column(5, valueBoxWithChange("Male", this_month_demo_ae()$Male, calc_change(this_month_demo_ae()$Male, last_month_demo_ae()$Male))),
-    column(5, valueBoxWithChange("Female", this_month_demo_ae()$Female, calc_change(this_month_demo_ae()$Female, last_month_demo_ae()$Female)))
+    column(4, valueBoxWithChange("Male", this_month_demo_ae()$Male, calc_change(this_month_demo_ae()$Male, last_month_demo_ae()$Male))),
+    column(4, valueBoxWithChange("Female", this_month_demo_ae()$Female, calc_change(this_month_demo_ae()$Female, last_month_demo_ae()$Female))),
+    column(4, valueBoxWithChange("Total (All)", total_this_month_gender, calc_change(total_this_month_gender, total_last_month_gender)))
     
   ),
   
