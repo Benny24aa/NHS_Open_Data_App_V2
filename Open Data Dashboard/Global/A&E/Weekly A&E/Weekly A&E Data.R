@@ -86,6 +86,12 @@ Age_Summary_AE <- MonthlyAEDemographics %>%
     values_from = NumberOfAttendances
   )
 
+cols_to_rename <- setdiff(names(Age_Summary_AE), c("Month", "DepartmentType", "HBName"))
+
+
+names(Age_Summary_AE)[names(Age_Summary_AE) %in% cols_to_rename] <- 
+  gsub("[- ]", "_", cols_to_rename)
+
 Sex_Summary_AE <- MonthlyAEDemographics %>%
   group_by(Month, DepartmentType, HBName, Sex) %>%
   summarize(NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE), .groups = "drop") %>%
@@ -198,4 +204,6 @@ valueBoxWithAbsoluteChange <- function(title, current, previous) {
 }
 
 
-
+HB_Department_Type_List <- Monthly_AE_Demographic_Data %>% 
+  select(HBName, DepartmentType) %>% 
+  unique()

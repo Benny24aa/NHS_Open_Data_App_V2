@@ -2242,19 +2242,45 @@ output$deprivation_ae_five <- renderValueBox({
   valueBoxWithChange("Number of people admitted in Deprivation Quintile Two", this_month_demo_ae()$Deprivation5, change)
 })
 
+output$ae_department_type_filter <- renderUI({
+  
+ HB_Department_Type_List <- HB_Department_Type_List %>% 
+    filter(HBName %in% input$HBName_Current_AE_Demographic) %>% 
+    pull(DepartmentType)
+ 
+ column(3,
+        div(class = "custom-select",
+            selectInput("AE_Department_Type_Input", "Select Department Type", 
+                        choices = unique(HB_Department_Type_List)))
+ )
+})
+
 output$Deprivation_Boxes_AE <- renderUI({
   
   req(input$measure_type_demo_ae)
   
+  this_month_deprivation <- this_month_demo_ae()
+  last_month_deprivation <- last_month_demo_ae()
+  
+  total_this_month_deprivation <- sum(this_month_deprivation$Deprivation1, this_month_deprivation$Deprivation2, this_month_deprivation$Deprivation3, this_month_deprivation$Deprivation4, this_month_deprivation$Deprivation5, na.rm = TRUE)
+  total_last_month_deprivation <- sum(last_month_deprivation$Deprivation1, last_month_deprivation$Deprivation2, last_month_deprivation$Deprivation3, last_month_deprivation$Deprivation4, last_month_deprivation$Deprivation5, na.rm = TRUE)
+  
+  
+  
   switch(input$measure_type_demo_ae,
+         
+         
   
   "Deprivation" = fluidRow(
+    
     column(2, valueBoxWithChange("Deprivation Quintile 1", this_month_demo_ae()$Deprivation1, calc_change(this_month_demo_ae()$Deprivation1, last_month_demo_ae()$Deprivation1))),
     column(2, valueBoxWithChange("Deprivation Quintile 2", this_month_demo_ae()$Deprivation2, calc_change(this_month_demo_ae()$Deprivation2, last_month_demo_ae()$Deprivation2))),
     column(2, valueBoxWithChange("Deprivation Quintile 3", this_month_demo_ae()$Deprivation3, calc_change(this_month_demo_ae()$Deprivation3, last_month_demo_ae()$Deprivation3))),
     column(2, valueBoxWithChange("Deprivation Quintile 4", this_month_demo_ae()$Deprivation4, calc_change(this_month_demo_ae()$Deprivation4, last_month_demo_ae()$Deprivation4))),
-    column(2, valueBoxWithChange("Deprivation Quintile 5", this_month_demo_ae()$Deprivation5, calc_change(this_month_demo_ae()$Deprivation5, last_month_demo_ae()$Deprivation5)))
-  ),
+    column(2, valueBoxWithChange("Deprivation Quintile 5", this_month_demo_ae()$Deprivation5, calc_change(this_month_demo_ae()$Deprivation5, last_month_demo_ae()$Deprivation5))),
+    column(2, valueBoxWithChange("Total (All Quintiles)", total_this_month_deprivation, calc_change(total_this_month_deprivation, total_last_month_deprivation)))
+    
+     ),
   
   "Sex" = fluidRow(
     column(5, valueBoxWithChange("Male", this_month_demo_ae()$Male, calc_change(this_month_demo_ae()$Male, last_month_demo_ae()$Male))),
@@ -2263,8 +2289,12 @@ output$Deprivation_Boxes_AE <- renderUI({
   ),
   
   "Age" = fluidRow(
-    
-    
+    column(2, valueBoxWithChange("Under 18", this_month_demo_ae()$Under_18, calc_change(this_month_demo_ae()$Under_18, last_month_demo_ae()$Under_18))),
+    column(2, valueBoxWithChange("Between 18 and 24", this_month_demo_ae()$`18_24`, calc_change(this_month_demo_ae()$`18_24`, last_month_demo_ae()$`18_24`))),
+    column(2, valueBoxWithChange("Between 25 and 39", this_month_demo_ae()$`25_39`, calc_change(this_month_demo_ae()$`25_39`, last_month_demo_ae()$`25_39`))),
+    column(2, valueBoxWithChange("Between 40 and 64", this_month_demo_ae()$`40_64`, calc_change(this_month_demo_ae()$`40_64`, last_month_demo_ae()$`40_64`))),
+    column(2, valueBoxWithChange("Between 65 and 74", this_month_demo_ae()$`65_74`, calc_change(this_month_demo_ae()$`65_74`, last_month_demo_ae()$`65_74`))),
+    column(2, valueBoxWithChange("Over 75", this_month_demo_ae()$`75_plus`, calc_change(this_month_demo_ae()$`75_plus`, last_month_demo_ae()$`75_plus`)))
     
   )
   

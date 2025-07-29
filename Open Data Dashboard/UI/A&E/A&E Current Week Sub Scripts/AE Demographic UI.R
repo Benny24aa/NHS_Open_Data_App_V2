@@ -7,11 +7,7 @@ AE_Demographic <- conditionalPanel(
     column(3,div(class = "custom-select", selectInput("HBName_Current_AE_Demographic", "Select Health Board", 
                                                       choices = unique(WeeklyAE_Healthboard$HBName)))),
     
-    column(3,
-           div(class = "custom-select",
-               selectInput("AE_Department_Type_Input", "Select Department Type", 
-                           choices = unique(AE_Department_Type_Options$DepartmentType)))
-    ),
+    uiOutput("ae_department_type_filter"),
     
     column(3,
            div(class = "custom-select",
