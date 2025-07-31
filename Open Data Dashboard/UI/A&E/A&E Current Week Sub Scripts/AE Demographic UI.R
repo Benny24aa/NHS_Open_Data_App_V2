@@ -34,7 +34,13 @@ AE_Demographic <- conditionalPanel(
   ), ### end of division graph 1
   br(),
   
-  uiOutput("dynamic_filter_ui")
+  uiOutput("dynamic_filter_ui"),
+  
+  fluidRow(
+    column(12,
+           plotlyOutput("demographic_bar_graph_output", height = "600px")
+    )
+  )
   
 
   
