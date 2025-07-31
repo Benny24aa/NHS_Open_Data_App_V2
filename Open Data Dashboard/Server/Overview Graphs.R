@@ -2308,3 +2308,115 @@ output$Deprivation_Boxes_AE <- renderUI({
   )
   
 })
+  
+  ######## Demographic Graphs
+  
+output$demographic_graph_output <- renderPlotly({
+  req(input$measure_type_demo_ae)
+  
+  filtered_data <- Monthly_AE_Demographic_Data %>%
+    filter(
+      HBName == input$HBName_Current_AE_Demographic,
+      DepartmentType == input$AE_Department_Type_Input
+    )
+  
+  hb <- input$HBName_Current_AE_Demographic
+  dept <- input$AE_Department_Type_Input
+  
+  if (input$measure_type_demo_ae == "Deprivation") {
+    deprivation <- filtered_data %>%
+      select(Month, starts_with("Deprivation")) %>%
+      mutate(HBName = hb, DepartmentType = dept)
+    
+    deprivation_long <- deprivation %>%
+      pivot_longer(cols = starts_with("Deprivation"), 
+                   names_to = "DeprivationLevel", 
+                   values_to = "Value") %>%
+      mutate(tooltip = paste0(
+        "Health Board: ", HBName,
+        "<br>Department: ", DepartmentType,
+        "<br>Deprivation: ", DeprivationLevel,
+        "<br>Month: ", Month,
+        "<br>Attendances: ", Value
+      ))
+    
+    plot_ly(deprivation_long,
+            x = ~Month,
+            y = ~Value,
+            color = ~DeprivationLevel,
+            text = ~tooltip,
+            hoverinfo = "text",
+            type = 'scatter',
+            mode = 'lines') %>%
+      layout(
+     
+        xaxis = list(title = "Month"),
+        yaxis = list(title = "Attendances"),
+        hovermode = "closest",
+        plot_bgcolor = "#f0f0f0",
+        paper_bgcolor = "#f0f0f0"
+      )
+    
+  } else if (input$measure_type_demo_ae == "Age") {
+    age <- filtered_data %>%
+      select(Month, Under_18, `18_24`, `25_39`, `40_64`, `65_74`, `75_plus`) %>%
+      mutate(HBName = hb, DepartmentType = dept)
+    
+    age_long <- age %>%
+      pivot_longer(-c(Month, HBName, DepartmentType), names_to = "AgeGroup", values_to = "Value") %>%
+      mutate(tooltip = paste0(
+        "Health Board: ", HBName,
+        "<br>Department: ", DepartmentType,
+        "<br>Age Group: ", AgeGroup,
+        "<br>Month: ", Month,
+        "<br>Attendances: ", Value
+      ))
+    
+    plot_ly(age_long,
+            x = ~Month,
+            y = ~Value,
+            color = ~AgeGroup,
+            text = ~tooltip,
+            hoverinfo = "text",
+            type = 'scatter',
+            mode = 'lines') %>%
+      layout(
+        xaxis = list(title = "Month"),
+        yaxis = list(title = "Attendances"),
+        hovermode = "closest",
+        plot_bgcolor = "#f0f0f0",
+        paper_bgcolor = "#f0f0f0"
+      )
+    
+  } else if (input$measure_type_demo_ae == "Sex") {
+    sex <- filtered_data %>%
+      select(Month, Female, Male) %>%
+      mutate(HBName = hb, DepartmentType = dept)
+    
+    sex_long <- sex %>%
+      pivot_longer(-c(Month, HBName, DepartmentType), names_to = "Sex", values_to = "Value") %>%
+      mutate(tooltip = paste0(
+        "Health Board: ", HBName,
+        "<br>Department: ", DepartmentType,
+        "<br>Sex: ", Sex,
+        "<br>Month: ", Month,
+        "<br>Attendances: ", Value
+      ))
+    
+    plot_ly(sex_long,
+            x = ~Month,
+            y = ~Value,
+            color = ~Sex,
+            text = ~tooltip,
+            hoverinfo = "text",
+            type = 'scatter',
+            mode = 'lines') %>%
+      layout(
+        xaxis = list(title = "Month"),
+        yaxis = list(title = "Attendances"),
+        hovermode = "closest",
+        plot_bgcolor = "#f0f0f0",
+        paper_bgcolor = "#f0f0f0"
+      )
+  }
+})

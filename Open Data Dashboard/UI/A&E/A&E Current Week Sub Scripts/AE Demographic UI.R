@@ -19,8 +19,21 @@ AE_Demographic <- conditionalPanel(
   
     br(),
     uiOutput("Deprivation_Boxes_AE"),
-    br()
+    br(),
   
-  ) ## end of division for summary boxes 
+  ), ## end of division for summary boxes 
+  br(),
+  div(
+    style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
+    
+    fluidRow(
+      column(12,
+             plotlyOutput("demographic_graph_output", height = "600px")
+      )
+    )
+  ), ### end of division graph 1
+  br()
+  
+
   
 ) # End of Conditional Panel
