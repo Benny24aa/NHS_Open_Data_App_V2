@@ -2333,11 +2333,11 @@ output$demographic_graph_output <- renderPlotly({
                    names_to = "DeprivationLevel", 
                    values_to = "Value") %>%
       mutate(tooltip = paste0(
-        "Health Board: ", HBName,
-        "<br>Department: ", DepartmentType,
-        "<br>Deprivation: ", DeprivationLevel,
-        "<br>Month: ", Month,
-        "<br>Attendances: ", Value
+        "<b>Health Board: </b> ", HBName,
+        "<br><b>Department:</b> ", DepartmentType,
+        "<br><b>Deprivation: </b>", DeprivationLevel,
+        "<br><b>Month:</b> ", Month,
+        "<br><b>Attendances:</b> ", Value
       ))
     
     plot_ly(deprivation_long,
@@ -2365,11 +2365,11 @@ output$demographic_graph_output <- renderPlotly({
     age_long <- age %>%
       pivot_longer(-c(Month, HBName, DepartmentType), names_to = "AgeGroup", values_to = "Value") %>%
       mutate(tooltip = paste0(
-        "Health Board: ", HBName,
-        "<br>Department: ", DepartmentType,
-        "<br>Age Group: ", AgeGroup,
-        "<br>Month: ", Month,
-        "<br>Attendances: ", Value
+        "<b>Health Board:</b> ", HBName,
+        "<br><b>Department: </b>", DepartmentType,
+        "<br><b>Age Group:</b> ", AgeGroup,
+        "<br><b>Month:</b> ", Month,
+        "<br><b>Attendances:</b> ", Value
       ))
     
     plot_ly(age_long,
@@ -2396,11 +2396,11 @@ output$demographic_graph_output <- renderPlotly({
     sex_long <- sex %>%
       pivot_longer(-c(Month, HBName, DepartmentType), names_to = "Sex", values_to = "Value") %>%
       mutate(tooltip = paste0(
-        "Health Board: ", HBName,
-        "<br>Department: ", DepartmentType,
-        "<br>Sex: ", Sex,
-        "<br>Month: ", Month,
-        "<br>Attendances: ", Value
+        "<b>Health Board:</b> ", HBName,
+        "<br><b>Department:</b> ", DepartmentType,
+        "<br><b>Sex:</b> ", Sex,
+        "<br><b>Month:</b> ", Month,
+        "<br><b>Attendances:</b> ", Value
       ))
     
     plot_ly(sex_long,
