@@ -2424,19 +2424,22 @@ output$demographic_graph_output <- renderPlotly({
 
 output$dynamic_filter_ui <- renderUI({
   if (input$measure_type_demo_ae == "Age") {
-    selectInput("dynamic_filter", "Select Age Group(s):",
+    div(class = "custom-select-ae-graph",
+    selectInput("dynamic_filter", "Select Age Group:",
                 choices = c("Under_18", "18_24", "25_39", "40_64", "65_74", "75_plus"),
-                selected = NULL)
+                selected = NULL))
     
   } else if (input$measure_type_demo_ae == "Sex") {
+    div(class = "custom-select-ae-graph",
     selectInput("dynamic_filter", "Select Sex:",
                 choices = c("Male", "Female"),
-                selected = NULL)
+                selected = NULL))
     
   } else if (input$measure_type_demo_ae == "Deprivation") {
-    selectInput("dynamic_filter", "Select Deprivation Level(s):",
+    div(class = "custom-select-ae-graph",
+    selectInput("dynamic_filter", "Select Deprivation Level:",
                 choices = c("Deprivation1", "Deprivation2", "Deprivation3", "Deprivation4", "Deprivation5"),
-                selected = NULL)
+                selected = NULL))
   }
 })
 
