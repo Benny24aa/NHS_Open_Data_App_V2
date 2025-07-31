@@ -2420,3 +2420,22 @@ output$demographic_graph_output <- renderPlotly({
       )
   }
 })
+
+
+output$dynamic_filter_ui <- renderUI({
+  if (input$measure_type_demo_ae == "Age") {
+    selectInput("dynamic_filter", "Select Age Group(s):",
+                choices = c("Under_18", "18_24", "25_39", "40_64", "65_74", "75_plus"),
+                selected = NULL)
+    
+  } else if (input$measure_type_demo_ae == "Sex") {
+    selectInput("dynamic_filter", "Select Sex:",
+                choices = c("Male", "Female"),
+                selected = NULL)
+    
+  } else if (input$measure_type_demo_ae == "Deprivation") {
+    selectInput("dynamic_filter", "Select Deprivation Level(s):",
+                choices = c("Deprivation1", "Deprivation2", "Deprivation3", "Deprivation4", "Deprivation5"),
+                selected = NULL)
+  }
+})
