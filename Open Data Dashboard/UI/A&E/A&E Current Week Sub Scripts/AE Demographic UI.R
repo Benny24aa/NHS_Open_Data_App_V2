@@ -32,7 +32,9 @@ AE_Demographic <- conditionalPanel(
       )
     )
   ), ### end of division graph 1
-  br()
+  br(),
+  
+  uiOutput("dynamic_filter_ui")
   
 
   
