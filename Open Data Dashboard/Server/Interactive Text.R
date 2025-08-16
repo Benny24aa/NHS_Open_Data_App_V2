@@ -371,3 +371,98 @@ output$currentAEHeaderyearaggregatedbargraph <- renderUI({
   ))
 })
 
+
+output$currentAEHeadersummaryDemographic <- renderUI({
+  req(input$HBName_Current_AE_Demographic, input$measure_type_demo_ae, input$AE_Department_Type_Input, this_month_demo_ae(), last_month_demo_ae())
+  
+  week_1 <- format(latest_two_months_ae_demo()[1], "%B %Y")
+  week_2 <- format(latest_two_months_ae_demo()[2], "%B %Y")
+  
+  Description <- if (input$measure_type_demo_ae == "Deprivation") {
+    "Deprivation Quintile"
+  } else if (input$measure_type_demo_ae == "Age") {
+    "Age Group"
+  } 
+  else {
+    input$measure_type_demo_ae
+  }
+  
+  
+  DescriptionType <- if (input$AE_Department_Type_Input == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$AE_Department_Type_Input == "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$AE_Department_Type_Input
+  }
+  
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Summary of Accident and Emergency Statistics", "in", input$HBName_Current_AE_Demographic, "for all attendances comparing months ending", week_1, "and", week_2, "broken down by", Description, "in", DescriptionType),
+    "</div>"
+  ))
+})
+
+output$demographic_line_graph_title <- renderUI({
+  req(input$HBName_Current_AE_Demographic, input$measure_type_demo_ae, input$AE_Department_Type_Input)
+  
+  Description <- if (input$measure_type_demo_ae == "Deprivation") {
+    "Deprivation Quintile"
+  } else if (input$measure_type_demo_ae == "Age") {
+    "Age Group"
+  } 
+  else {
+    input$measure_type_demo_ae
+  }
+  
+  
+  DescriptionType <- if (input$AE_Department_Type_Input == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$AE_Department_Type_Input == "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$AE_Department_Type_Input
+  }
+  
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Total Attendance", "in", input$HBName_Current_AE_Demographic, "broken down by", Description, "in", DescriptionType, "over the last seven years"),
+    "</div>"
+  ))
+})
+
+output$demographic_bar_graph_title <- renderUI({
+  req(input$HBName_Current_AE_Demographic, input$measure_type_demo_ae, input$AE_Department_Type_Input)
+  
+  Description <- if (input$measure_type_demo_ae == "Deprivation") {
+    "Deprivation Quintile"
+  } else if (input$measure_type_demo_ae == "Age") {
+    "Age Group"
+  } 
+  else {
+    input$measure_type_demo_ae
+  }
+  
+  
+  DescriptionType <- if (input$AE_Department_Type_Input == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$AE_Department_Type_Input == "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$AE_Department_Type_Input
+  }
+  
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Total Attendance", "in", input$HBName_Current_AE_Demographic, "broken down by", Description, "in", DescriptionType, "aggregated each year over the last seven years"),
+    "</div>"
+  ))
+})
+
+

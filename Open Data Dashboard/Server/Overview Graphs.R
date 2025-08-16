@@ -2308,3 +2308,246 @@ output$Deprivation_Boxes_AE <- renderUI({
   )
   
 })
+  
+  ######## Demographic Graphs
+  
+output$demographic_graph_output <- renderPlotly({
+  req(input$measure_type_demo_ae)
+  
+  filtered_data <- Monthly_AE_Demographic_Data %>%
+    filter(
+      HBName == input$HBName_Current_AE_Demographic,
+      DepartmentType == input$AE_Department_Type_Input
+    )
+  
+  hb <- input$HBName_Current_AE_Demographic
+  dept <- input$AE_Department_Type_Input
+  
+  if (input$measure_type_demo_ae == "Deprivation") {
+    deprivation <- filtered_data %>%
+      select(Month, starts_with("Deprivation")) %>%
+      mutate(HBName = hb, DepartmentType = dept)
+    
+    deprivation_long <- deprivation %>%
+      pivot_longer(cols = starts_with("Deprivation"), 
+                   names_to = "DeprivationLevel", 
+                   values_to = "Value") %>%
+      mutate(tooltip = paste0(
+        "<b>Health Board: </b> ", HBName,
+        "<br><b>Department:</b> ", DepartmentType,
+        "<br><b>Deprivation: </b>", DeprivationLevel,
+        "<br><b>Month:</b> ", Month,
+        "<br><b>Attendances:</b> ", Value
+      ))
+    
+    plot_ly(deprivation_long,
+            x = ~Month,
+            y = ~Value,
+            color = ~DeprivationLevel,
+            text = ~tooltip,
+            hoverinfo = "text",
+            type = 'scatter',
+            mode = 'lines') %>%
+      layout(
+     
+        xaxis = list(title = "Month"),
+        yaxis = list(title = "Attendances"),
+        hovermode = "closest",
+        plot_bgcolor = "#f0f0f0",
+        paper_bgcolor = "#f0f0f0"
+      )
+    
+  } else if (input$measure_type_demo_ae == "Age") {
+    age <- filtered_data %>%
+      select(Month, Under_18, `18_24`, `25_39`, `40_64`, `65_74`, `75_plus`) %>%
+      mutate(HBName = hb, DepartmentType = dept)
+    
+    age_long <- age %>%
+      pivot_longer(-c(Month, HBName, DepartmentType), names_to = "AgeGroup", values_to = "Value") %>%
+      mutate(tooltip = paste0(
+        "<b>Health Board:</b> ", HBName,
+        "<br><b>Department: </b>", DepartmentType,
+        "<br><b>Age Group:</b> ", AgeGroup,
+        "<br><b>Month:</b> ", Month,
+        "<br><b>Attendances:</b> ", Value
+      ))
+    
+    plot_ly(age_long,
+            x = ~Month,
+            y = ~Value,
+            color = ~AgeGroup,
+            text = ~tooltip,
+            hoverinfo = "text",
+            type = 'scatter',
+            mode = 'lines') %>%
+      layout(
+        xaxis = list(title = "Month"),
+        yaxis = list(title = "Attendances"),
+        hovermode = "closest",
+        plot_bgcolor = "#f0f0f0",
+        paper_bgcolor = "#f0f0f0"
+      )
+    
+  } else if (input$measure_type_demo_ae == "Sex") {
+    sex <- filtered_data %>%
+      select(Month, Female, Male) %>%
+      mutate(HBName = hb, DepartmentType = dept)
+    
+    sex_long <- sex %>%
+      pivot_longer(-c(Month, HBName, DepartmentType), names_to = "Sex", values_to = "Value") %>%
+      mutate(tooltip = paste0(
+        "<b>Health Board:</b> ", HBName,
+        "<br><b>Department:</b> ", DepartmentType,
+        "<br><b>Sex:</b> ", Sex,
+        "<br><b>Month:</b> ", Month,
+        "<br><b>Attendances:</b> ", Value
+      ))
+    
+    plot_ly(sex_long,
+            x = ~Month,
+            y = ~Value,
+            color = ~Sex,
+            text = ~tooltip,
+            hoverinfo = "text",
+            type = 'scatter',
+            mode = 'lines') %>%
+      layout(
+        xaxis = list(title = "Month"),
+        yaxis = list(title = "Attendances"),
+        hovermode = "closest",
+        plot_bgcolor = "#f0f0f0",
+        paper_bgcolor = "#f0f0f0"
+      )
+  }
+})
+
+
+output$dynamic_filter_ui <- renderUI({
+  if (input$measure_type_demo_ae == "Age") {
+    div(class = "custom-select-ae-graph",
+    selectInput("dynamic_filter", "Select Age Group:",
+                choices = c("Under_18", "18_24", "25_39", "40_64", "65_74", "75_plus"),
+                selected = NULL))
+    
+  } else if (input$measure_type_demo_ae == "Sex") {
+    div(class = "custom-select-ae-graph",
+    selectInput("dynamic_filter", "Select Sex:",
+                choices = c("Male", "Female"),
+                selected = NULL))
+    
+  } else if (input$measure_type_demo_ae == "Deprivation") {
+    div(class = "custom-select-ae-graph",
+    selectInput("dynamic_filter", "Select Deprivation Level:",
+                choices = c("Deprivation1", "Deprivation2", "Deprivation3", "Deprivation4", "Deprivation5"),
+                selected = NULL))
+  }
+})
+
+
+output$demographic_bar_graph_output <- renderPlotly({
+  req(input$measure_type_demo_ae, input$dynamic_filter)
+  
+  filtered_data <- Monthly_AE_Demographic_Data %>%
+    filter(
+      HBName == input$HBName_Current_AE_Demographic,
+      DepartmentType == input$AE_Department_Type_Input
+    ) %>%
+    mutate(Year = lubridate::year(Month))  # Extract year
+  
+  hb <- input$HBName_Current_AE_Demographic
+  dept <- input$AE_Department_Type_Input
+  
+  x_title <- "Year"
+  y_title <- "Attendances"
+  
+  if (input$measure_type_demo_ae == "Deprivation") {
+    deprivation_yearly <- filtered_data %>%
+      select(Year, all_of(input$dynamic_filter)) %>%
+      group_by(Year) %>%
+      summarise(across(everything(), sum, na.rm = TRUE)) %>%
+      pivot_longer(cols = -Year, names_to = "DeprivationLevel", values_to = "Value") %>%
+      mutate(tooltip = paste0(
+        "<b>Health Board:</b> ", hb,
+        "<br><b>Department:</b> ", dept,
+        "<br><b>Deprivation:</b> ", DeprivationLevel,
+        "<br><b>Year:</b> ", Year,
+        "<br><b>Attendances:</b> ", Value
+      ))
+    
+    plot_ly(deprivation_yearly,
+            x = ~Year,
+            y = ~Value,
+            color = ~DeprivationLevel,
+            text = ~tooltip,
+            hoverinfo = "text",
+            type = 'bar') %>%
+      layout(
+        barmode = "group",
+        xaxis = list(title = x_title, type = "category"),
+        yaxis = list(title = y_title),
+        hovermode = "closest",
+        plot_bgcolor = "#f0f0f0",
+        paper_bgcolor = "#f0f0f0"
+      )
+    
+  } else if (input$measure_type_demo_ae == "Age") {
+    age_yearly <- filtered_data %>%
+      select(Year, all_of(input$dynamic_filter)) %>%
+      group_by(Year) %>%
+      summarise(across(everything(), sum, na.rm = TRUE)) %>%
+      pivot_longer(cols = -Year, names_to = "AgeGroup", values_to = "Value") %>%
+      mutate(tooltip = paste0(
+        "<b>Health Board:</b> ", hb,
+        "<br><b>Department:</b> ", dept,
+        "<br><b>Age Group:</b> ", AgeGroup,
+        "<br><b>Year:</b> ", Year,
+        "<br><b>Attendances:</b> ", Value
+      ))
+    
+    plot_ly(age_yearly,
+            x = ~Year,
+            y = ~Value,
+            color = ~AgeGroup,
+            text = ~tooltip,
+            hoverinfo = "text",
+            type = 'bar') %>%
+      layout(
+        barmode = "group",
+        xaxis = list(title = x_title, type = "category"),
+        yaxis = list(title = y_title),
+        hovermode = "closest",
+        plot_bgcolor = "#f0f0f0",
+        paper_bgcolor = "#f0f0f0"
+      )
+    
+  } else if (input$measure_type_demo_ae == "Sex") {
+    sex_yearly <- filtered_data %>%
+      select(Year, all_of(input$dynamic_filter)) %>%
+      group_by(Year) %>%
+      summarise(across(everything(), sum, na.rm = TRUE)) %>%
+      pivot_longer(cols = -Year, names_to = "Sex", values_to = "Value") %>%
+      mutate(tooltip = paste0(
+        "<b>Health Board:</b> ", hb,
+        "<br><b>Department:</b> ", dept,
+        "<br><b>Sex:</b> ", Sex,
+        "<br><b>Year:</b> ", Year,
+        "<br><b>Attendances:</b> ", Value
+      ))
+    
+    plot_ly(sex_yearly,
+            x = ~Year,
+            y = ~Value,
+            color = ~Sex,
+            text = ~tooltip,
+            hoverinfo = "text",
+            type = 'bar') %>%
+      layout(
+        barmode = "group",
+        xaxis = list(title = x_title, type = "category"),
+        yaxis = list(title = y_title),
+        hovermode = "closest",
+        plot_bgcolor = "#f0f0f0",
+        paper_bgcolor = "#f0f0f0"
+      )
+  }
+})

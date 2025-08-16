@@ -10,6 +10,7 @@ library(openssl)
 library(shinycssloaders)
 library(ISOweek)
 library(janitor)
+library(sf)
 
 options(httr_config = httr::config(ssl_verifypeer = FALSE))
 ##### Sourcing Reference Files 
@@ -47,3 +48,6 @@ Cancer_Metadata_Mortality <- read_csv("Metadata Files/Cancer Mortality Metadata.
 Cancer_Metadata_Incidence <- read_csv("Metadata Files/Cancer Incidence Metadata.csv")
 Cancer_31day_Metadata <- read_csv("Metadata Files/Cancer 31 Day Standard Cancer Metadata.csv")
 Cancer_62day_Metadata <- read_csv("Metadata Files/Cancer 62 Day Standard Cancer Metadata.csv")
+
+HealthBoards_shp <- st_read("Scottish Healthboards/SG_NHS_HealthBoards_2019.shp")%>%
+  mutate(HBName = paste("NHS", HBName))
