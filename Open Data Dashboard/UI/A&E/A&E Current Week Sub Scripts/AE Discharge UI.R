@@ -28,11 +28,11 @@ AE_Discharge_Source <- conditionalPanel(
   div(
     style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
     
-    # fluidRow(
-    #   column(12,
-    #          plotlyOutput("ae_ref_recent_iso_graph", height = "600px")
-    #   )
-    # )
+    fluidRow(
+      column(12,
+             plotlyOutput("ae_ref_discharge_iso_graph", height = "600px")
+      )
+    )
   ) ### end of division graph 1
   
   

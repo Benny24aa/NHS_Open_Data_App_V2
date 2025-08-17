@@ -2723,4 +2723,37 @@ output$referral_boxes_discharges <- renderUI({
   
 })
 
+output$ae_ref_discharge_iso_graph <- renderPlotly({
+  
+  
+  df <- Discharge_Source_AE_Graph %>%
+    filter(
+      HBName == input$HBName_Current_AE_Discharge,
+      DepartmentType == input$Discharge_AE_Department_Type,
+      Age == input$Discharge_AE_Department_Age
+    ) 
+  
+  plot_ly(
+    df,
+    x = ~Month,
+    y = ~NumberOfAttendances,
+    color = ~Discharge,
+    colors = "Set1",
+    type = 'scatter',
+    mode = 'lines',  # Only lines, no markers
+    text = ~paste(
+      "<b>Month:</b>", Month,
+      "<br><b>Health Board:</b>", input$HBName_Current_AE_Discharge,
+      "<br><b>Age Group:</b>", input$Discharge_AE_Department_Age,
+      "<br><b>Department Type:</b>", input$Discharge_AE_Department_Type,
+      "<br><b>Number of Attendances:</b>", NumberOfAttendances),
+    hoverinfo = 'text'
+  ) %>%
+    layout(
+      hovermode = "closest",
+      plot_bgcolor = "#f0f0f0",
+      paper_bgcolor = "#f0f0f0"
+    )
+})
+
 
