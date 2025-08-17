@@ -19,7 +19,7 @@ AE_Referral_Source <- conditionalPanel(
     ),# This ends the whole dashboard filters filter row
     
     br(),
-    # uiOutput("Deprivation_Boxes_AE"),
+    uiOutput("referral_boxes"),
     br(),
     
   ), ## end of division for summary boxes 
