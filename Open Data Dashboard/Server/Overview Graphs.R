@@ -2699,4 +2699,28 @@ last_month_discharge_ae <- reactive({
     filter(Month == latest_two_months_ae_discharge()[2])
 })
 
+output$referral_boxes_discharges <- renderUI({
+  
+
+  
+  this_month_discharge <- this_month_discharge_ae()
+  last_month_discharge <- last_month_discharge_ae()
+  
+  total_this_month_discharge_other_not_available <- sum(this_month_discharge$'Other', this_month_discharge$'Not Available', na.rm = TRUE)
+  total_last_month_discharge_other_not_available <- sum(last_month_discharge$'Other', this_month_discharge$'Not Available', na.rm = TRUE)
+  
+  fluidRow(
+    column(3, valueBoxWithChange("Admissions to same Hospital", this_month_discharge_ae()$'Admission to same Hospital', calc_change(this_month_discharge_ae()$'Admission to same Hospital', last_month_discharge_ae()$'Admission to same Hospital'))),
+    column(3, valueBoxWithChange("Discharged Home or Place of Residence", this_month_discharge_ae()$'Discharged Home or to usual Place of Residence', calc_change(this_month_discharge_ae()$'Discharged Home or to usual Place of Residence', last_month_discharge_ae()$'Discharged Home or to usual Place of Residence'))),
+    column(3, valueBoxWithChange("Transferred to Other Hospital/Service", this_month_discharge_ae()$'Transferred to Other Hospital/Service', calc_change(this_month_discharge_ae()$'Transferred to Other Hospital/Service', last_month_discharge_ae()$'Transferred to Other Hospital/Service'))),
+    column(3, valueBoxWithChange("Other and Breakdown Not Available", total_this_month_discharge_other_not_available, calc_change(total_this_month_discharge_other_not_available, total_last_month_discharge_other_not_available)))
+    
+    
+    
+    
+    
+    )
+  
+})
+
 

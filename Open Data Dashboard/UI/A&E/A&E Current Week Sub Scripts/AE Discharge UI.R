@@ -18,7 +18,7 @@ AE_Discharge_Source <- conditionalPanel(
     ),# This ends the whole dashboard filters filter row
     
     br(),
-    # uiOutput("referral_boxes"),
+    uiOutput("referral_boxes_discharges"),
     br(),
     
   ), ## end of division for summary boxes 
