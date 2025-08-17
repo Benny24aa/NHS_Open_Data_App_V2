@@ -514,3 +514,48 @@ output$currentAEHeadersummaryRef <- renderUI({
     "</div>"
   ))
 })
+
+output$ref_line_graph_title <- renderUI({
+
+  
+  DescriptionType <- if (input$Referral_AE_Department_Type == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$Referral_AE_Department_Type== "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$Referral_AE_Department_Type
+  }
+  
+  AgeDescription <- if (input$Referral_AE_Department_Age == "All") {
+    "all ages"
+  } else if (input$Referral_AE_Department_Age == "18-24") {
+    "people aged between 18 and 24"
+  } else if (input$Referral_AE_Department_Age == "25-39") {
+    "people aged between 25 and 39"
+  }
+  else if (input$Referral_AE_Department_Age == "40-64") {
+    "people aged between 40 and 64"
+  }
+  else if (input$Referral_AE_Department_Age == "65-74") {
+    "people aged between 65 and 74"
+  }
+  else if (input$Referral_AE_Department_Age == "75 plus") {
+    "people aged over 75"
+  }
+  else if (input$Referral_AE_Department_Age == "Under 18") {
+    "people aged under 18"
+  }
+  else if (input$Referral_AE_Department_Age == "Unknown") {
+    "people of unknown age"
+  }
+  else {
+    input$Referral_AE_Department_Type
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Total number of attendances in", input$HBName_Current_AE_Referral, "based on referral type for", AgeDescription, "in", DescriptionType),
+    "</div>"
+  ))
+})

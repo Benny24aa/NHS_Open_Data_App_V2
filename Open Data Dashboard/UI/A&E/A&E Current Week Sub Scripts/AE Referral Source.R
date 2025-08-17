@@ -23,7 +23,7 @@ AE_Referral_Source <- conditionalPanel(
     
   ), ## end of division for summary boxes 
   br(),
-  # uiOutput("demographic_line_graph_title"),
+  uiOutput("ref_line_graph_title"),
   br(),
   div(
     style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
