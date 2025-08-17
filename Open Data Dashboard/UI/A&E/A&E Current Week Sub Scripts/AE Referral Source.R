@@ -7,8 +7,13 @@ AE_Referral_Source <- conditionalPanel(
     style = "background-color: #cce5ff; padding: 15px; border-radius: 10px; margin-top: 15px;",
     fluidRow(
       column(3,div(class = "custom-select", selectInput("HBName_Current_AE_Referral", "Select Health Board", 
-                                                        choices = unique(WeeklyAE_Healthboard$HBName))))
+                                                        choices = unique(WeeklyAE_Healthboard$HBName)))),
       
+      column(3,div(class = "custom-select", selectInput("Referral_AE_Department_Age", "Select Age Group", 
+                                                        choices = unique(AE_Referral_Age$Age)))),
+      
+       column(3,div(class = "custom-select", selectInput("Referral_AE_Department_Type", "Select Department Type", 
+                                                        choices = unique(AE_Referral_Departments$DepartmentType)))),
   
       
     ),# This ends the whole dashboard filters filter row
