@@ -143,7 +143,7 @@ rm (Referral_Source_All_Ages_AE)
 #### Lookups for Referral Source
 
 AE_Referral_Departments <- Referral_Source_AE %>% 
-  select(DepartmentType) %>% 
+  select(DepartmentType, HBName) %>% 
   unique()
 
 AE_Referral_Age <- Referral_Source_AE %>% 

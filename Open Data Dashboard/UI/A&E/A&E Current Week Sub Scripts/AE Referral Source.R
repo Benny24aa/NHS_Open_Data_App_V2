@@ -12,8 +12,7 @@ AE_Referral_Source <- conditionalPanel(
       column(3,div(class = "custom-select", selectInput("Referral_AE_Department_Age", "Select Age Group", 
                                                         choices = unique(AE_Referral_Age$Age)))),
       
-       column(3,div(class = "custom-select", selectInput("Referral_AE_Department_Type", "Select Department Type", 
-                                                        choices = unique(AE_Referral_Departments$DepartmentType)))),
+      uiOutput("ae_department_type_ref_filter"),
   
       
     ),# This ends the whole dashboard filters filter row

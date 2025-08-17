@@ -2555,6 +2555,19 @@ output$demographic_bar_graph_output <- renderPlotly({
 
 ### Referral Source Code
 
+output$ae_department_type_ref_filter <- renderUI({
+  
+  AE_Referral_Departments <- AE_Referral_Departments %>% 
+    filter(HBName %in% input$HBName_Current_AE_Referral) %>% 
+    pull(DepartmentType)
+  
+  column(3,
+         div(class = "custom-select",
+             selectInput("Referral_AE_Department_Type", "Select Department Type", 
+                         choices = unique(AE_Referral_Departments)))
+  )
+})
+
 filtered_referral_data <- reactive({
  Referral_Source_AE %>%
     filter(
@@ -2583,7 +2596,7 @@ last_month_ref_ae <- reactive({
   filtered_referral_data() %>%
     filter(Month == latest_two_months_ae_referral()[2])
 })
-
+ 
 
 
 output$referral_boxes <- renderUI({
@@ -2594,7 +2607,11 @@ output$referral_boxes <- renderUI({
   last_month_referral <- last_month_ref_ae()
   
   fluidRow(
-    column(2, valueBoxWithChange("Ambulance", this_month_ref_ae()$Ambulance, calc_change(this_month_ref_ae()$Ambulance, last_month_ref_ae()$Ambulance))))
+    column(2, valueBoxWithChange("Ambulance", this_month_ref_ae()$Ambulance, calc_change(this_month_ref_ae()$Ambulance, last_month_ref_ae()$Ambulance))),
+    column(2, valueBoxWithChange("GP Practice", this_month_ref_ae()$'GP Practice', calc_change(this_month_ref_ae()$'GP Practice', last_month_ref_ae()$'GP Practice')))
+    
+    
+    )
 
 
 })
