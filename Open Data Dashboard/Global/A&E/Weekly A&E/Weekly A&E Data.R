@@ -128,6 +128,18 @@ Referral_Source_AE <- get_resource(res_id = "235407ca-1676-472e-9e4d-6e7230934a9
   full_join(HB_Lookup_AE, by = "HBT") %>% 
   select(-HBT)
 
+Referral_Source_All_Ages_AE <- Referral_Source_AE %>% 
+  group_by(Month, HBName, DepartmentType, Referral) %>% 
+  summarize(
+    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+    .groups = "drop"
+  ) %>% 
+  mutate(Age = "All")
+
+Referral_Source_AE <- bind_rows(Referral_Source_AE, Referral_Source_All_Ages_AE)
+
+rm (Referral_Source_All_Ages_AE)
+
 # Function to calculate percentage change
 calc_change <- function(current, previous) {
   diff <- current - previous
