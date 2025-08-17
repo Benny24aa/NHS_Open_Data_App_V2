@@ -2551,3 +2551,35 @@ output$demographic_bar_graph_output <- renderPlotly({
       )
   }
 })
+
+
+### Referral Source Code
+
+filtered_referral_data <- reactive({
+ Referral_Source_AE %>%
+    filter(
+      HBName == input$HBName_Current_AE_Referral,
+      DepartmentType == input$AReferral_AE_Department_Type,
+      Age == input$Referral_AE_Department_Age
+    )
+})
+
+
+latest_two_months_ae_ref <- reactive({
+  filtered_referral_data () %>%
+    distinct(Month) %>%
+    arrange(desc(Month)) %>%
+    pull(Month)
+})
+
+this_month_ref_ae <- reactive({
+  req(length(latest_two_months_ae_ref()) >= 1)
+  filtered_demo_ae_data() %>%
+    filter(Month == latest_two_months_ae_ref()[1])
+})
+
+last_month_ref_ae <- reactive({
+  req(length(latest_two_months_ae_ref()) >= 2)
+  filtered_demo_ae_data() %>%
+    filter(Month == latest_two_months_ae_ref()[2])
+})
