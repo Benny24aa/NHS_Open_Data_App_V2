@@ -2654,3 +2654,19 @@ output$ae_ref_recent_iso_graph <- renderPlotly({
     )
 })
 
+
+############# Discharge Stuff
+
+output$ae_department_type_discharge_filter <- renderUI({
+  
+  AE_Discharge_Departments <- AE_Discharge_Departments %>% 
+    filter(HBName %in% input$HBName_Current_AE_Discharge) %>% 
+    pull(DepartmentType)
+  
+  column(3,
+         div(class = "custom-select",
+             selectInput("Discharge_AE_Department_Type", "Select Department Type", 
+                         choices = unique(AE_Discharge_Departments)))
+  )
+})
+
