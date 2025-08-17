@@ -559,3 +559,102 @@ output$ref_line_graph_title <- renderUI({
     "</div>"
   ))
 })
+
+output$currentAEHeadersummaryDischarge <- renderUI({
+  
+  week_1 <- format(latest_two_months_ae_discharge()[1], "%B %Y")
+  week_2 <- format(latest_two_months_ae_discharge()[2], "%B %Y")
+  
+  
+  DescriptionType <- if (input$Discharge_AE_Department_Type == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$Discharge_AE_Department_Type== "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$Discharge_AE_Department_Type
+  }
+  
+  AgeDescription <- if (input$Discharge_AE_Department_Age == "All") {
+    "all ages"
+  } else if (input$Discharge_AE_Department_Age == "18-24") {
+    "people aged between 18 and 24"
+  } else if (input$Discharge_AE_Department_Age == "25-39") {
+    "people aged between 25 and 39"
+  }
+  else if (input$Discharge_AE_Department_Age == "40-64") {
+    "people aged between 40 and 64"
+  }
+  else if (input$Discharge_AE_Department_Age == "65-74") {
+    "people aged between 65 and 74"
+  }
+  else if (input$Discharge_AE_Department_Age == "75 plus") {
+    "people aged over 75"
+  }
+  else if (input$Discharge_AE_Department_Age == "Under 18") {
+    "people aged under 18"
+  }
+  else if (input$Discharge_AE_Department_Age == "Unknown") {
+    "people of unknown age"
+  }
+  else {
+    input$Discharge_AE_Department_Type
+  }
+  
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Summary of Discharge Source Accident and Emergency Statistics in", input$HBName_Current_AE_Discharge, "for all discharges from hospital comparing months ending", week_1, "and", week_2, "from", DescriptionType, "for", AgeDescription),
+    "</div>"
+  ))
+})
+
+
+output$discharge_line_graph_title <- renderUI({
+  
+  
+  week_1 <- format(latest_two_months_ae_discharge()[1], "%B %Y")
+  week_2 <- format(latest_two_months_ae_discharge()[2], "%B %Y")
+  
+  
+  DescriptionType <- if (input$Discharge_AE_Department_Type == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$Discharge_AE_Department_Type== "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$Discharge_AE_Department_Type
+  }
+  
+  AgeDescription <- if (input$Discharge_AE_Department_Age == "All") {
+    "all ages"
+  } else if (input$Discharge_AE_Department_Age == "18-24") {
+    "people aged between 18 and 24"
+  } else if (input$Discharge_AE_Department_Age == "25-39") {
+    "people aged between 25 and 39"
+  }
+  else if (input$Discharge_AE_Department_Age == "40-64") {
+    "people aged between 40 and 64"
+  }
+  else if (input$Discharge_AE_Department_Age == "65-74") {
+    "people aged between 65 and 74"
+  }
+  else if (input$Discharge_AE_Department_Age == "75 plus") {
+    "people aged over 75"
+  }
+  else if (input$Discharge_AE_Department_Age == "Under 18") {
+    "people aged under 18"
+  }
+  else if (input$Discharge_AE_Department_Age == "Unknown") {
+    "people of unknown age"
+  }
+  else {
+    input$Discharge_AE_Department_Type
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Total number of people discharged in", input$HBName_Current_AE_Discharge, "based on discharge type for", AgeDescription, "from", DescriptionType),
+    "</div>"
+  ))
+})

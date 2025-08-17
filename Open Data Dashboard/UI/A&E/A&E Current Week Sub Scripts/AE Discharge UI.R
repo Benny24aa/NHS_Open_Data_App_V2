@@ -1,7 +1,7 @@
 AE_Discharge_Source <- conditionalPanel(
   condition= 'input.ae_recent_select == "Recent_AE_Discharge_Tab"',
   
-  # uiOutput("currentAEHeadersummaryRef"),
+  uiOutput("currentAEHeadersummaryDischarge"),
   
   div(
     style = "background-color: #cce5ff; padding: 15px; border-radius: 10px; margin-top: 15px;",
@@ -23,7 +23,7 @@ AE_Discharge_Source <- conditionalPanel(
     
   ), ## end of division for summary boxes 
   br(),
-  # uiOutput("ref_line_graph_title"),
+  uiOutput("discharge_line_graph_title"),
   br(),
   div(
     style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
