@@ -113,12 +113,12 @@ latest_two_months_ae_demo <- Monthly_AE_Demographic_Data %>%
 
 rm(Age_Summary_AE, Deprivation_Summary_AE, Sex_Summary_AE)
 
-
 Referral_Source_AE <- get_resource(res_id = "235407ca-1676-472e-9e4d-6e7230934a95") %>% 
   select(-Country, -AgeQF, -ReferralQF) %>% 
   mutate(
     Age = replace_na(Age, "Unknown"),
-    Referral = replace_na(Referral, "Unknown")
+    Referral = replace_na(Referral, "Unknown"),
+    Month = ymd(paste0(Month, "01"))
   ) %>% 
   group_by(Month, HBT, DepartmentType, Age, Referral) %>% 
   summarize(
