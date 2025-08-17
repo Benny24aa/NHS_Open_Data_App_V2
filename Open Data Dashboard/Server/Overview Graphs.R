@@ -2642,6 +2642,8 @@ output$ae_ref_recent_iso_graph <- renderPlotly({
     text = ~paste(
       "<b>Month:</b>", Month,
       "<br><b>Health Board:</b>", input$HBName_Current_AE_Referral,
+      "<br><b>Age Group:</b>", input$Referral_AE_Department_Age,
+      "<br><b>Department Type:</b>", input$Referral_AE_Department_Type,
       "<br><b>Number of Attendances:</b>", NumberOfAttendances),
     hoverinfo = 'text'
   ) %>%

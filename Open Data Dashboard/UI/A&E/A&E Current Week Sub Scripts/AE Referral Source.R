@@ -1,7 +1,7 @@
 AE_Referral_Source <- conditionalPanel(
   condition= 'input.ae_recent_select == "Recent_AE_Referral_Tab"',
   
-  # uiOutput("currentAEHeadersummaryDemographic"),
+  uiOutput("currentAEHeadersummaryRef"),
   
   div(
     style = "background-color: #cce5ff; padding: 15px; border-radius: 10px; margin-top: 15px;",
