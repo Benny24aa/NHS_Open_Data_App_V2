@@ -113,6 +113,50 @@ latest_two_months_ae_demo <- Monthly_AE_Demographic_Data %>%
 
 rm(Age_Summary_AE, Deprivation_Summary_AE, Sex_Summary_AE)
 
+Referral_Source_AE <- get_resource(res_id = "235407ca-1676-472e-9e4d-6e7230934a95") %>% 
+  select(-Country, -AgeQF, -ReferralQF) %>% 
+  mutate(
+    Age = replace_na(Age, "Unknown"),
+    Referral = replace_na(Referral, "Unknown"),
+    Month = ymd(paste0(Month, "01"))
+  ) %>% 
+  group_by(Month, HBT, DepartmentType, Age, Referral) %>% 
+  summarize(
+    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  full_join(HB_Lookup_AE, by = "HBT") %>% 
+  select(-HBT)
+
+Referral_Source_All_Ages_AE <- Referral_Source_AE %>% 
+  group_by(Month, HBName, DepartmentType, Referral) %>% 
+  summarize(
+    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+    .groups = "drop"
+  ) %>% 
+  mutate(Age = "All")
+
+Referral_Source_AE <- bind_rows(Referral_Source_AE, Referral_Source_All_Ages_AE)
+
+rm (Referral_Source_All_Ages_AE)
+
+#### Lookups for Referral Source
+
+AE_Referral_Departments <- Referral_Source_AE %>% 
+  select(DepartmentType) %>% 
+  unique()
+
+AE_Referral_Age <- Referral_Source_AE %>% 
+  select(Age) %>% 
+  distinct() %>% 
+  arrange(Age) %>% 
+  bind_rows(tibble(Age = "All"), .)
+
+latest_two_months_ae_referral <- Referral_Source_AE %>%
+  distinct(Month) %>%
+  arrange(desc(Month)) %>%
+  slice(1:2) %>%
+  pull(Month)
 
 # Function to calculate percentage change
 calc_change <- function(current, previous) {
