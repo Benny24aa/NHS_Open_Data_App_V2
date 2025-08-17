@@ -124,7 +124,9 @@ Referral_Source_AE <- get_resource(res_id = "235407ca-1676-472e-9e4d-6e7230934a9
   summarize(
     NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
     .groups = "drop"
-  )
+  ) %>%
+  full_join(HB_Lookup_AE, by = "HBT") %>% 
+  select(-HBT)
 
 # Function to calculate percentage change
 calc_change <- function(current, previous) {
