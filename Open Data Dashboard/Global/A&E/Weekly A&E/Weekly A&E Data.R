@@ -166,6 +166,35 @@ Referral_Source_AE <- Referral_Source_AE %>%
     values_from = NumberOfAttendances
   )
 
+Referral_Source_AE_Graph <- Referral_Source_AE_Graph %>%
+  mutate(Year = year(Month))
+
+
+
+Referral_Populations <- get_resource(res_id = "0876fc67-05e6-4e87-bc30-c4b0756fff04") %>% 
+  select(-HBQF, -SexQF) %>% 
+  mutate(
+         Year = ym(paste0(Year, "01"))) %>% 
+  mutate(Year = year(Year))%>%
+  full_join(HB_Lookup_AE, by = c("HB" = "HBT"))  %>%
+  filter(!is.na(HBName)) %>% 
+  filter(Sex == "All") %>% 
+  select(-Sex, -HB)%>%
+  filter(Year >= 2018 & Year <= year(Sys.Date())) %>% 
+  mutate(
+  `Under 18` = rowSums(select(., starts_with("Age0"):Age17), na.rm = TRUE),
+  `18-24`    = rowSums(select(., Age18:Age24), na.rm = TRUE),
+  `25-39`    = rowSums(select(., Age25:Age39), na.rm = TRUE),
+  `40-64`    = rowSums(select(., Age40:Age64), na.rm = TRUE),
+  `65-74`    = rowSums(select(., Age65:Age74), na.rm = TRUE),
+  `75 Plus`  = rowSums(select(., Age75:Age90plus), na.rm = TRUE)  # include Age90plus
+) %>%
+  select(Year, HBName, `Under 18`:`75 Plus`)  # keep only relevant columns
+
+
+
+
+
 # Function to calculate percentage change
 calc_change <- function(current, previous) {
   diff <- current - previous
