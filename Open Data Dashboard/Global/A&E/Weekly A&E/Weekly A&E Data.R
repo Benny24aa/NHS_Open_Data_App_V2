@@ -138,6 +138,8 @@ Referral_Source_All_Ages_AE <- Referral_Source_AE %>%
 
 Referral_Source_AE <- bind_rows(Referral_Source_AE, Referral_Source_All_Ages_AE)
 
+Referral_Source_AE_Graph <- Referral_Source_AE
+
 rm (Referral_Source_All_Ages_AE)
 
 #### Lookups for Referral Source
