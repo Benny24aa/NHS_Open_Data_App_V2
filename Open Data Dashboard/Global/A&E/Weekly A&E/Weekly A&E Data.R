@@ -138,12 +138,14 @@ Referral_Source_All_Ages_AE <- Referral_Source_AE %>%
 
 Referral_Source_AE <- bind_rows(Referral_Source_AE, Referral_Source_All_Ages_AE)
 
+Referral_Source_AE_Graph <- Referral_Source_AE
+
 rm (Referral_Source_All_Ages_AE)
 
 #### Lookups for Referral Source
 
 AE_Referral_Departments <- Referral_Source_AE %>% 
-  select(DepartmentType) %>% 
+  select(DepartmentType, HBName) %>% 
   unique()
 
 AE_Referral_Age <- Referral_Source_AE %>% 
@@ -157,6 +159,15 @@ latest_two_months_ae_referral <- Referral_Source_AE %>%
   arrange(desc(Month)) %>%
   slice(1:2) %>%
   pull(Month)
+
+Referral_Source_AE <- Referral_Source_AE %>% 
+  pivot_wider(
+    names_from = Referral,
+    values_from = NumberOfAttendances
+  )
+
+Referral_Source_AE_Graph <- Referral_Source_AE_Graph %>%
+  mutate(Year = year(Month))
 
 # Function to calculate percentage change
 calc_change <- function(current, previous) {

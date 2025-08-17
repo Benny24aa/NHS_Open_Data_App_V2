@@ -2344,6 +2344,7 @@ output$demographic_graph_output <- renderPlotly({
             x = ~Month,
             y = ~Value,
             color = ~DeprivationLevel,
+            colors = "Set1",
             text = ~tooltip,
             hoverinfo = "text",
             type = 'scatter',
@@ -2376,6 +2377,7 @@ output$demographic_graph_output <- renderPlotly({
             x = ~Month,
             y = ~Value,
             color = ~AgeGroup,
+            colors = "Set1",
             text = ~tooltip,
             hoverinfo = "text",
             type = 'scatter',
@@ -2407,6 +2409,7 @@ output$demographic_graph_output <- renderPlotly({
             x = ~Month,
             y = ~Value,
             color = ~Sex,
+            colors = "Set1",
             text = ~tooltip,
             hoverinfo = "text",
             type = 'scatter',
@@ -2551,3 +2554,103 @@ output$demographic_bar_graph_output <- renderPlotly({
       )
   }
 })
+
+
+### Referral Source Code
+
+output$ae_department_type_ref_filter <- renderUI({
+  
+  AE_Referral_Departments <- AE_Referral_Departments %>% 
+    filter(HBName %in% input$HBName_Current_AE_Referral) %>% 
+    pull(DepartmentType)
+  
+  column(3,
+         div(class = "custom-select",
+             selectInput("Referral_AE_Department_Type", "Select Department Type", 
+                         choices = unique(AE_Referral_Departments)))
+  )
+})
+
+filtered_referral_data <- reactive({
+ Referral_Source_AE %>%
+    filter(
+      HBName == input$HBName_Current_AE_Referral,
+      DepartmentType == input$Referral_AE_Department_Type,
+      Age == input$Referral_AE_Department_Age
+    )
+})
+
+
+latest_two_months_ae_referral <- reactive({
+  filtered_referral_data() %>%
+    distinct(Month) %>%
+    arrange(desc(Month)) %>%
+    pull(Month)
+})
+
+this_month_ref_ae <- reactive({
+  req(length(latest_two_months_ae_referral()) >= 1)
+  filtered_referral_data() %>%
+    filter(Month == latest_two_months_ae_referral()[1])
+})
+
+last_month_ref_ae <- reactive({
+  req(length(latest_two_months_ae_referral()) >= 2)
+  filtered_referral_data() %>%
+    filter(Month == latest_two_months_ae_referral()[2])
+})
+ 
+
+
+output$referral_boxes <- renderUI({
+  
+  
+  
+  this_month_referral <- this_month_ref_ae()
+  last_month_referral <- last_month_ref_ae()
+  
+  fluidRow(
+    column(2, valueBoxWithChange("Ambulance", this_month_ref_ae()$Ambulance, calc_change(this_month_ref_ae()$Ambulance, last_month_ref_ae()$Ambulance))),
+    column(2, valueBoxWithChange("GP Practice", this_month_ref_ae()$'GP Practice', calc_change(this_month_ref_ae()$'GP Practice', last_month_ref_ae()$'GP Practice'))),
+    column(2, valueBoxWithChange("NHS 24", this_month_ref_ae()$'NHS 24', calc_change(this_month_ref_ae()$'NHS 24', last_month_ref_ae()$'NHS 24'))),
+    column(2, valueBoxWithChange("Self Referral", this_month_ref_ae()$'Self Referral', calc_change(this_month_ref_ae()$'Self Referral', last_month_ref_ae()$'Self Referral'))),
+    column(2, valueBoxWithChange("Virtual Clinic", this_month_ref_ae()$'Flow Navigation Centre/Virtual Clinic', calc_change(this_month_ref_ae()$'Flow Navigation Centre/Virtual Clinic', last_month_ref_ae()$'Flow Navigation Centre/Virtual Clinic'))),
+    column(2, valueBoxWithChange("Other", this_month_ref_ae()$'Other', calc_change(this_month_ref_ae()$'Other', last_month_ref_ae()$'Other')))
+  )
+  
+})
+
+
+output$ae_ref_recent_iso_graph <- renderPlotly({
+
+
+  df <- Referral_Source_AE_Graph %>%
+    filter(
+      HBName == input$HBName_Current_AE_Referral,
+      DepartmentType == input$Referral_AE_Department_Type,
+      Age == input$Referral_AE_Department_Age
+    ) 
+
+  plot_ly(
+    df,
+    x = ~Month,
+    y = ~NumberOfAttendances,
+    color = ~Referral,
+    colors = "Set1",
+    type = 'scatter',
+    mode = 'lines',  # Only lines, no markers
+    text = ~paste(
+      "<b>Month:</b>", Month,
+      "<br><b>Health Board:</b>", input$HBName_Current_AE_Referral,
+      "<br><b>Age Group:</b>", input$Referral_AE_Department_Age,
+      "<br><b>Department Type:</b>", input$Referral_AE_Department_Type,
+      "<br><b>Number of Attendances:</b>", NumberOfAttendances),
+    hoverinfo = 'text'
+  ) %>%
+    layout(
+      hovermode = "closest",
+      plot_bgcolor = "#f0f0f0",
+      paper_bgcolor = "#f0f0f0"
+    )
+})
+
