@@ -2670,3 +2670,33 @@ output$ae_department_type_discharge_filter <- renderUI({
   )
 })
 
+filtered_discharge_data <- reactive({
+Discharge_Source_AE %>%
+    filter(
+      HBName == input$HBName_Current_AE_Discharge,
+      DepartmentType == input$Discharge_AE_Department_Type,
+      Age == input$Discharge_AE_Department_Age
+    )
+})
+
+
+latest_two_months_ae_discharge <- reactive({
+  filtered_discharge_data() %>%
+    distinct(Month) %>%
+    arrange(desc(Month)) %>%
+    pull(Month)
+})
+
+this_month_discharge_ae <- reactive({
+  req(length(latest_two_months_ae_discharge()) >= 1)
+  filtered_discharge_data() %>%
+    filter(Month == latest_two_months_ae_discharge()[1])
+})
+
+last_month_discharge_ae <- reactive({
+  req(length(latest_two_months_ae_discharge()) >= 2)
+  filtered_discharge_data() %>%
+    filter(Month == latest_two_months_ae_discharge()[2])
+})
+
+
