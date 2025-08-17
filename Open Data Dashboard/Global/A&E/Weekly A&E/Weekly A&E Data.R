@@ -169,6 +169,70 @@ Referral_Source_AE <- Referral_Source_AE %>%
 Referral_Source_AE_Graph <- Referral_Source_AE_Graph %>%
   mutate(Year = year(Month))
 
+
+######### Discharge Stuff
+
+
+Discharge_Source_AE <- get_resource(res_id = "c4622324-f59c-4011-a67b-83b59c59ca94") %>% 
+  select(-Country, -AgeQF, -DischargeQF) %>% 
+  mutate(
+    Age = replace_na(Age, "Not Available"),
+    Discharge = replace_na(Discharge, "Not Available"),
+    Month = ymd(paste0(Month, "01"))
+  ) %>% 
+  group_by(Month, HBT, DepartmentType, Age, Discharge) %>% 
+  summarize(
+    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  full_join(HB_Lookup_AE, by = "HBT") %>% 
+  select(-HBT)
+
+
+Discharge_Source_All_Ages_AE <- Discharge_Source_AE %>% 
+  group_by(Month, HBName, DepartmentType, Discharge) %>% 
+  summarize(
+    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+    .groups = "drop"
+  ) %>% 
+  mutate(Age = "All")
+
+Discharge_Source_AE <- bind_rows(Discharge_Source_AE, Discharge_Source_All_Ages_AE)
+
+Discharge_Source_AE_Graph <- Discharge_Source_AE
+
+rm (Discharge_Source_All_Ages_AE)
+
+#### Lookups for Referral Source
+
+AE_Discharge_Departments <- Discharge_Source_AE %>% 
+  select(DepartmentType, HBName) %>% 
+  unique()
+
+AE_Discharge_Age <- Discharge_Source_AE %>% 
+  select(Age) %>% 
+  distinct() %>% 
+  arrange(Age) %>% 
+  bind_rows(tibble(Age = "All"), .)
+
+latest_two_months_ae_discharge <- Discharge_Source_AE %>%
+  distinct(Month) %>%
+  arrange(desc(Month)) %>%
+  slice(1:2) %>%
+  pull(Month)
+
+Discharge_Source_AE <- Discharge_Source_AE %>% 
+  pivot_wider(
+    names_from = Discharge,
+    values_from = NumberOfAttendances
+  )
+
+Discharge_Source_AE_Graph <- Discharge_Source_AE_Graph %>%
+  mutate(Year = year(Month))
+
+
+##### Box Functions
+
 # Function to calculate percentage change
 calc_change <- function(current, previous) {
   diff <- current - previous
