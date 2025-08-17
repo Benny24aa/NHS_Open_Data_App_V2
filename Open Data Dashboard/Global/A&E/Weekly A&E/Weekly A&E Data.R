@@ -158,6 +158,12 @@ latest_two_months_ae_referral <- Referral_Source_AE %>%
   slice(1:2) %>%
   pull(Month)
 
+Referral_Source_AE <- Referral_Source_AE %>% 
+  pivot_wider(
+    names_from = Referral,
+    values_from = NumberOfAttendances
+  )
+
 # Function to calculate percentage change
 calc_change <- function(current, previous) {
   diff <- current - previous
