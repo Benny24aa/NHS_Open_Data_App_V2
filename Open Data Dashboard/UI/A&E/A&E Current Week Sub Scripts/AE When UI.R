@@ -26,13 +26,36 @@ AE_When_Source_UI <- conditionalPanel(
   div(
     style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
     
-    # fluidRow(
-    #   column(12,
-    #          plotlyOutput("ae_ref_discharge_iso_graph", height = "600px")
-    #   )
-    # )
-  ) ### end of division graph 1
+    fluidRow(
+      column(12,
+             plotlyOutput("ae_ref_when_graph", height = "600px")
+      )
+    )
+  ),### end of division graph 1
   
+ br(),
+ 
+ #uiOutput("demographic_bar_graph_title"),
+ br(),
+ div(
+   style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
+   
+   fluidRow(
+     column(3,div(class = "custom-select-ae-graph", selectInput("When_AE_Week", "Select Weekends or Weekdays",
+                                                       choices = unique(AE_When_Week$Week)))),
+     
+       column(3,div(class = "custom-select-ae-graph", selectInput("InOut_AE_Week", "Select Out of Hours or In Hours",
+                                                         choices = unique(AE_When_InOut$InOut))))
+     
+     
+     ),
+   
+   fluidRow(
+     column(12,
+            plotlyOutput("ae_ref_hour_graph", height = "600px")
+     )
+   )
+ )
   
   
 ) # End of Conditional Panel

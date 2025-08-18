@@ -2821,3 +2821,76 @@ output$referral_boxes_when <- renderUI({
   )
   
 })
+
+
+output$ae_ref_when_graph <- renderPlotly({
+  
+  df <- When_Source_AE_Final %>%
+    filter(
+      HBName == input$HBName_Current_AE_When,
+      DepartmentType == input$When_AE_Department_Type
+    ) %>%
+    pivot_longer(
+      cols = c(`In Hours`, `Out of Hours`, `Weekday`, `Weekend`),
+      names_to = "Category",
+      values_to = "NumberOfAttendances"
+    )
+  
+  plot_ly(
+    df,
+    x = ~Month,
+    y = ~NumberOfAttendances,
+    color = ~Category,
+    colors = "Set1",
+    type = 'scatter',
+    mode = 'lines',
+    text = ~paste(
+      "<b>Month:</b>", Month,
+      "<br><b>Health Board:</b>", HBName,
+      "<br><b>Department Type:</b>", DepartmentType,
+      "<br><b>Category:</b>", Category,
+      "<br><b>Number of Attendances:</b>", NumberOfAttendances
+    ),
+    hoverinfo = 'text'
+  ) %>%
+    layout(
+      hovermode = "closest",
+      plot_bgcolor = '#f0f0f0',
+      paper_bgcolor = '#f0f0f0'
+    )
+})
+
+
+output$ae_ref_hour_graph <- renderPlotly({
+  
+  df <- When_Hour_Data_AE %>%
+    filter(
+      HBName == input$HBName_Current_AE_When,
+      DepartmentType == input$When_AE_Department_Type,
+      Week %in% input$When_AE_Week,
+      InOut %in% input$InOut_AE_Week
+    )
+  
+  plot_ly(
+    df,
+    x = ~Month,
+    y = ~NumberOfAttendances,
+    color = ~as.factor(Hour),   # each hour gets a different line
+    type = 'scatter',
+    mode = 'lines',
+    text = ~paste(
+      "<b>Month:</b>", Month,
+      "<br><b>Health Board:</b>", HBName,
+      "<br><b>Department Type:</b>", DepartmentType,
+      "<br><b>Hour:</b>", Hour,
+      "<br><b>Number of Attendances:</b>", NumberOfAttendances
+    ),
+    hoverinfo = 'text'
+  ) %>%
+    layout(
+      hovermode = "closest",
+      plot_bgcolor = '#f0f0f0',
+      paper_bgcolor = '#f0f0f0',
+      legend = list(title = list(text = "Hour"))
+    )
+})
