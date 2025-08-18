@@ -264,16 +264,32 @@ latest_two_months_ae_when <- When_Source_AE %>%
   pull(Month)
 
 When_Source_AE_Week <- When_Source_AE %>% 
+  group_by(Month, HBName, DepartmentType, Week) %>% 
+  summarize(
+    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+When_Source_AE_InOut <- When_Source_AE %>% 
+  group_by(Month, HBName, DepartmentType, InOut) %>% 
+  summarize(
+    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+When_Source_AE_Week <- When_Source_AE_Week %>% 
   pivot_wider(
     names_from = Week,
     values_from = NumberOfAttendances
   )
 
-When_Source_AE_InOut <- When_Source_AE %>% 
+When_Source_AE_InOut <- When_Source_AE_InOut %>% 
   pivot_wider(
     names_from = InOut,
     values_from = NumberOfAttendances
   )
+
+When_Source_AE_Final <- full_join(When_Source_AE_InOut, When_Source_AE_Week, by = c("Month", "DepartmentType", "HBName"))
 
 
 ##### Box Functions
