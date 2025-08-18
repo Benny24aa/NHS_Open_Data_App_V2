@@ -2770,3 +2770,54 @@ output$ae_department_type_when_filter <- renderUI({
                          choices = unique(AE_When_Departments)))
   )
 })
+
+
+filtered_when_data <- reactive({
+  When_Source_AE_Final  %>%
+    filter(
+      HBName == input$HBName_Current_AE_When,
+      DepartmentType == input$When_AE_Department_Type
+    )
+})
+
+
+latest_two_months_ae_when <- reactive({
+  filtered_when_data() %>%
+    distinct(Month) %>%
+    arrange(desc(Month)) %>%
+    pull(Month)
+})
+
+this_month_when_ae <- reactive({
+  req(length(latest_two_months_ae_when()) >= 1)
+  filtered_when_data() %>%
+    filter(Month == latest_two_months_ae_when()[1])
+})
+
+last_month_when_ae <- reactive({
+  req(length(latest_two_months_ae_when()) >= 2)
+  filtered_when_data() %>%
+    filter(Month == latest_two_months_ae_when()[2])
+})
+
+output$referral_boxes_when <- renderUI({
+  
+  
+  
+  this_month_when <- this_month_when_ae()
+  last_month_when <- last_month_when_ae()
+  
+  
+  fluidRow(
+    column(3, valueBoxWithChange("Weekday", this_month_when_ae()$'Weekday', calc_change(this_month_when_ae()$'Weekday', last_month_when_ae()$'Weekday'))),
+    column(3, valueBoxWithChange("Weekend", this_month_when_ae()$'Weekend', calc_change(this_month_when_ae()$'Weekend', last_month_when_ae()$'Weekend'))),
+    column(3, valueBoxWithChange("In Hours", this_month_when_ae()$'In Hours', calc_change(this_month_when_ae()$'In Hours', last_month_when_ae()$'In Hours'))),
+    column(3, valueBoxWithChange("Out Hours", this_month_when_ae()$'Out of Hours', calc_change(this_month_when_ae()$'Out of Hours', last_month_when_ae()$'Out of Hours')))
+    
+    
+    
+    
+    
+  )
+  
+})
