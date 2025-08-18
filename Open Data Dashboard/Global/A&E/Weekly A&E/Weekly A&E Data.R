@@ -231,6 +231,51 @@ Discharge_Source_AE_Graph <- Discharge_Source_AE_Graph %>%
   mutate(Year = year(Month))
 
 
+######### When Data
+
+When_Source_AE <- get_resource(res_id = "022c3b27-6a58-48dc-8038-8f1f93bb0e78") %>% 
+ group_by(Month, HBT, DepartmentType, Week, InOut) %>% 
+  summarize(
+    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  full_join(HB_Lookup_AE, by = "HBT") %>% 
+  select(-HBT) %>% 
+  mutate(Month = ymd(paste0(Month, "01")))
+
+When_Source_AE_Graph <- When_Source_AE
+
+AE_When_Departments <- When_Source_AE %>% 
+  select(DepartmentType, HBName) %>% 
+  unique()
+
+AE_When_InOut <- When_Source_AE %>% 
+  select(InOut) %>% 
+  distinct()
+
+AE_When_Week <- When_Source_AE %>% 
+  select(Week) %>% 
+  distinct()
+
+latest_two_months_ae_when <- When_Source_AE %>%
+  distinct(Month) %>%
+  arrange(desc(Month)) %>%
+  slice(1:2) %>%
+  pull(Month)
+
+When_Source_AE_Week <- When_Source_AE %>% 
+  pivot_wider(
+    names_from = Week,
+    values_from = NumberOfAttendances
+  )
+
+When_Source_AE_InOut <- When_Source_AE %>% 
+  pivot_wider(
+    names_from = InOut,
+    values_from = NumberOfAttendances
+  )
+
+
 ##### Box Functions
 
 # Function to calculate percentage change
