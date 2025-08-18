@@ -2756,4 +2756,17 @@ output$ae_ref_discharge_iso_graph <- renderPlotly({
     )
 })
 
+##### When Code
 
+output$ae_department_type_when_filter <- renderUI({
+  
+  AE_When_Departments <- AE_When_Departments %>% 
+    filter(HBName %in% input$HBName_Current_AE_When) %>% 
+    pull(DepartmentType)
+  
+  column(3,
+         div(class = "custom-select",
+             selectInput("When_AE_Department_Type", "Select Department Type", 
+                         choices = unique(AE_When_Departments)))
+  )
+})
