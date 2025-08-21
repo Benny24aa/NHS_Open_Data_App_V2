@@ -250,7 +250,7 @@ AE_When_Departments <- When_Source_AE %>%
   unique()
 
 AE_When_InOut <- When_Source_AE %>% 
-  select(InOut) %>% 
+  select(InOut, HBName, Week) %>% 
   distinct()
 
 AE_When_Week <- When_Source_AE %>% 

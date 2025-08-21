@@ -2823,6 +2823,25 @@ output$referral_boxes_when <- renderUI({
 })
 
 
+
+output$ae_inout_type_when_filter <- renderUI({
+  
+  AE_When_InOut <- AE_When_InOut %>% 
+    filter(HBName %in% input$HBName_Current_AE_When) %>% 
+    filter(Week %in% input$When_AE_Week) %>% 
+    pull(InOut)
+  
+  column(3,
+         div(class = "custom-select-ae-graph",
+             selectInput("InOut_AE_Week", "Select Out of Hours or In Hours",
+                         choices = unique(AE_When_InOut)))
+         
+         
+    
+         
+  )
+})
+
 output$ae_ref_when_graph <- renderPlotly({
   
   df <- When_Source_AE_Final %>%
