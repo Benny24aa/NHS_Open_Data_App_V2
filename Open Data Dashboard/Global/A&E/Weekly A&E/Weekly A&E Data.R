@@ -302,7 +302,9 @@ When_Hour_Data_AE <- get_resource(res_id = "022c3b27-6a58-48dc-8038-8f1f93bb0e78
   select(-HBT) %>% 
   mutate(Month = ymd(paste0(Month, "01")))
 
-
+When_Hour_List_AE <- When_Hour_Data_AE %>% 
+  select(InOut, HBName, Week, Hour) %>% 
+  unique()
   
 
 ##### Box Functions

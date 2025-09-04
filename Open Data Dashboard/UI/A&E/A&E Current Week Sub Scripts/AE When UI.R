@@ -40,13 +40,17 @@ AE_When_Source_UI <- conditionalPanel(
  div(
    style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
    
+   
+   
    fluidRow(
      column(3,div(class = "custom-select-ae-graph", selectInput("When_AE_Week", "Select Weekends or Weekdays",
                                                        choices = unique(AE_When_Week$Week)))),
      
        # column(3,div(class = "custom-select-ae-graph", selectInput("InOut_AE_Week", "Select Out of Hours or In Hours",
        #                                                   choices = unique(AE_When_InOut$InOut))))
-     uiOutput("ae_inout_type_when_filter")
+     uiOutput("ae_inout_type_when_filter"),
+     
+     uiOutput("ae_hour_when_filter"),
      
      ),
    

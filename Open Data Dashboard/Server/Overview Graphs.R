@@ -2842,6 +2842,8 @@ output$ae_inout_type_when_filter <- renderUI({
   )
 })
 
+
+
 output$ae_ref_when_graph <- renderPlotly({
   
   df <- When_Source_AE_Final %>%
@@ -2880,6 +2882,40 @@ output$ae_ref_when_graph <- renderPlotly({
 })
 
 
+output$ae_hour_when_filter <- renderUI({
+  
+ When_Hour_List_AE <- When_Hour_List_AE  %>% 
+    filter(HBName %in% input$HBName_Current_AE_When) %>% 
+    filter(Week %in% input$When_AE_Week) %>% 
+   filter(InOut %in% input$InOut_AE_Week) %>% 
+   pull(Hour)
+ 
+ column(3,
+        div(class = "custom-select-ae-graph",
+        pickerInput(
+          inputId = "hour_input_ae",
+          label = "Select Hours to see",
+          choices = unique( When_Hour_List_AE),
+          selected = head(unique(When_Hour_List_AE), 3), 
+          multiple = TRUE,
+          options = list(
+            `actions-box` = TRUE,
+            `live-search` = TRUE,
+            `selected-text-format` = "count > 3"
+          )
+        )
+ ))
+  
+  # column(3,
+  #        div(class = "custom-select-ae-graph",
+  #            selectInput("hour_input_ae", "Select Hours", 
+  #                        choices = unique(When_Hour_List_AE)))
+  # )
+})
+
+
+
+
 output$ae_ref_hour_graph <- renderPlotly({
   
   df <- When_Hour_Data_AE %>%
@@ -2887,7 +2923,8 @@ output$ae_ref_hour_graph <- renderPlotly({
       HBName == input$HBName_Current_AE_When,
       DepartmentType == input$When_AE_Department_Type,
       Week %in% input$When_AE_Week,
-      InOut %in% input$InOut_AE_Week
+      InOut %in% input$InOut_AE_Week,
+      Hour %in% input$hour_input_ae
     )
   
   plot_ly(
@@ -2895,6 +2932,7 @@ output$ae_ref_hour_graph <- renderPlotly({
     x = ~Month,
     y = ~NumberOfAttendances,
     color = ~as.factor(Hour),   # each hour gets a different line
+    colors = "Set1",
     type = 'scatter',
     mode = 'lines',
     text = ~paste(
