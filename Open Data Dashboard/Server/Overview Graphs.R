@@ -2958,7 +2958,7 @@ output$ae_inout_type_when_filter_bar <- renderUI({
   
   AE_When_InOut <- AE_When_InOut %>% 
     filter(HBName %in% input$HBName_Current_AE_When) %>% 
-    filter(Week %in% input$When_AE_Week) %>% 
+    filter(Week %in% input$When_AE_Week_Bar) %>% 
     pull(InOut)
   
   column(3,
@@ -2994,7 +2994,7 @@ output$ae_hour_when_filter_bar <- renderUI({
   
   When_Hour_List_AE <- When_Hour_List_AE  %>%
     filter(HBName %in% input$HBName_Current_AE_When) %>%
-    filter(Week %in% input$When_AE_Week) %>%
+    filter(Week %in% input$When_AE_Week_Bar) %>%
     filter(InOut %in% input$InOut_AE_Week_Bar) %>%
     filter(Month %in% input$month_input_ae_bar) %>%
     pull(Hour)
@@ -3004,8 +3004,8 @@ output$ae_hour_when_filter_bar <- renderUI({
              pickerInput(
                inputId = "hour_input_ae_bar",
                label = "Select Hours to see",
-               choices = unique( When_Hour_List_AE),
-               selected = head(unique(When_Hour_List_AE), 3), 
+               choices = unique(When_Hour_List_AE),
+               selected = unique(When_Hour_List_AE),
                multiple = TRUE,
                options = list(
                  `actions-box` = TRUE,
@@ -3018,3 +3018,42 @@ output$ae_hour_when_filter_bar <- renderUI({
 
 })
 
+
+
+
+
+output$ae_hour_when_barplot <- renderPlotly({
+  
+  df <- When_Hour_Data_AE %>%
+    filter(
+      HBName == input$HBName_Current_AE_When,
+      Week %in% input$When_AE_Week_Bar,
+      InOut %in% input$InOut_AE_Week_Bar,
+      Month %in% input$month_input_ae_bar,
+      Hour %in% input$hour_input_ae_bar
+    )
+  
+  plot_ly(
+    df,
+    x = ~Hour,
+    y = ~NumberOfAttendances,
+    type = 'bar',
+    color = ~as.factor(Hour),   # keeps colours per hour
+    colors = "Set1",
+    text = ~paste(
+      "<b>Hour:</b>", Hour,
+      "<br><b>Month:</b>", Month,
+      "<br><b>Health Board:</b>", HBName,
+      "<br><b>Number of Attendances:</b>", NumberOfAttendances
+    ),
+    hoverinfo = 'text'
+  ) %>%
+    layout(
+      barmode = "group",          # group bars side by side
+      xaxis = list(title = "Hour of Day"),
+      yaxis = list(title = "Number of Attendances"),
+      plot_bgcolor = '#f0f0f0',
+      paper_bgcolor = '#f0f0f0',
+      legend = list(title = list(text = "Hour"))
+    )
+})
