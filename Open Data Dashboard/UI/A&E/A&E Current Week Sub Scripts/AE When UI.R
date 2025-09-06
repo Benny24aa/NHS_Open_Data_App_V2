@@ -75,7 +75,14 @@ AE_When_Source_UI <- conditionalPanel(
      
      uiOutput("ae_hour_when_filter_bar"),
   
+   ),
+   
+   fluidRow(
+     column(12,
+            plotlyOutput("ae_hour_when_barplot", height = "600px")
+     )
    )
+   
    
    ),
 ) # End of Conditional Panel

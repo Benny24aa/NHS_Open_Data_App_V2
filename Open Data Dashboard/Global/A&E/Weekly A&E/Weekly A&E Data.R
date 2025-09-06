@@ -311,6 +311,10 @@ When_Hour_List_AE <- When_Hour_Data_AE %>%
   select(Month, InOut, HBName, Week, Hour) %>% 
   unique()
 
+AE_When_Week_Bar <- When_Source_AE %>% 
+  select(Week, InOut) %>% 
+  distinct()
+
 
 ##### Box Functions
 
