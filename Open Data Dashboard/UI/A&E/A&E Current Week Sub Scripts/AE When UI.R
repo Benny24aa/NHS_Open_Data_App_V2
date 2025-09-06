@@ -59,7 +59,23 @@ AE_When_Source_UI <- conditionalPanel(
             plotlyOutput("ae_ref_hour_graph", height = "600px")
      )
    )
- )
+ ),
+ br(),
+ div(
+   style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
+   
+   
+   
+   fluidRow(
+     uiOutput("ae_month_when_filter_bar"),
+     column(3,div(class = "custom-select-ae-graph", selectInput("When_AE_Week_Bar", "Select Weekends or Weekdays",
+                                                                choices = unique(AE_When_Week$Week)))),
+     
+     uiOutput("ae_inout_type_when_filter_bar"),
+     
+     uiOutput("ae_hour_when_filter_bar"),
   
-  
+   )
+   
+   ),
 ) # End of Conditional Panel

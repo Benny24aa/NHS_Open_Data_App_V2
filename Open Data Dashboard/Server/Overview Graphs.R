@@ -2951,3 +2951,70 @@ output$ae_ref_hour_graph <- renderPlotly({
       legend = list(title = list(text = "Hour"))
     )
 })
+
+
+
+output$ae_inout_type_when_filter_bar <- renderUI({
+  
+  AE_When_InOut <- AE_When_InOut %>% 
+    filter(HBName %in% input$HBName_Current_AE_When) %>% 
+    filter(Week %in% input$When_AE_Week) %>% 
+    pull(InOut)
+  
+  column(3,
+         div(class = "custom-select-ae-graph",
+             selectInput("InOut_AE_Week_Bar", "Select Out of Hours or In Hours",
+                         choices = unique(AE_When_InOut)))
+         
+         
+         
+         
+  )
+})
+
+
+output$ae_month_when_filter_bar <- renderUI({
+  
+  When_Month_List_AE <- When_Hour_List_AE %>%
+    filter(HBName %in% input$HBName_Current_AE_When) %>%
+    filter(Week %in% input$When_AE_Week) %>%
+    filter(InOut %in% input$InOut_AE_Week_Bar) %>%
+    arrange(desc(Month)) %>%      
+    pull(Month) %>%
+    unique()          
+  
+  column(3,
+         div(class = "custom-select-ae-graph",
+             selectInput("month_input_ae_bar", "Select date",
+                         choices = unique(When_Month_List_AE))))
+  
+})
+
+output$ae_hour_when_filter_bar <- renderUI({
+  
+  When_Hour_List_AE <- When_Hour_List_AE  %>%
+    filter(HBName %in% input$HBName_Current_AE_When) %>%
+    filter(Week %in% input$When_AE_Week) %>%
+    filter(InOut %in% input$InOut_AE_Week_Bar) %>%
+    filter(Month %in% input$month_input_ae_bar) %>%
+    pull(Hour)
+
+  column(3,
+         div(class = "custom-select-ae-graph",
+             pickerInput(
+               inputId = "hour_input_ae_bar",
+               label = "Select Hours to see",
+               choices = unique( When_Hour_List_AE),
+               selected = head(unique(When_Hour_List_AE), 3), 
+               multiple = TRUE,
+               options = list(
+                 `actions-box` = TRUE,
+                 `live-search` = TRUE,
+                 `selected-text-format` = "count > 3"
+               )
+             )
+         ))
+  
+
+})
+
