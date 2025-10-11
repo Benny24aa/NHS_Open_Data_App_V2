@@ -41,7 +41,7 @@ cancer_waiting_times <- c("Landing Page" = "Cancer_Waiting_Time_Page", "31 Days 
 
 diagnostics_dashboard_list <- c("Landing Page" = "Diagnostics_Landing_Page", "Overview" = "Diagnostics_Healthboard_Overview", "Comparison" = "Diagnostics_Healthboard_Comparison", "Download Data" = "Diagnostics_Download_Data")
 
-ae_recent_list <- c("Weekly Waiting Times" = "Recent_AE_Tab",  "Demographics" = "Recent_AE_Demographic_Tab", "Referral Source" = "Recent_AE_Referral_Tab", "Discharge" = "Recent_AE_Discharge_Tab", "When" = "Recent_AE_When_Tab", "Multiple Attendances" = "Recent_AE_Multi_Attend_Tab")
+ae_recent_list <- c("Weekly Waiting Times" = "Recent_AE_Tab",  "Demographics" = "Recent_AE_Demographic_Tab", "Referral Source" = "Recent_AE_Referral_Tab", "Discharge" = "Recent_AE_Discharge_Tab", "When" = "Recent_AE_When_Tab")
 ### Commentary and Metadata data files
 
 Cancer_Metadata_Mortality <- read_csv("Metadata Files/Cancer Mortality Metadata.csv")
