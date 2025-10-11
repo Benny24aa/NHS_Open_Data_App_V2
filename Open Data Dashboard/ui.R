@@ -53,9 +53,9 @@ navbarPage(id = "maintabid",
            ##### Tab Panels
            information,
            navbarMenu("Dashboard Information",icon = icon("info"), DashboardUse, Roadmap, Commentary),
+           navbarMenu("A&E Waiting Times", icon = icon("hospital"), CurrentAEUI, WeeklyAEUI ),
            navbarMenu("Cancer", icon = icon("disease"), Cancer_UI_Setup, Cancer_Waiting_List),
            Diagnsotics_UI,
-           navbarMenu("A&E Waiting Times", icon = icon("hospital"), CurrentAEUI, WeeklyAEUI ),
            reference_file_download,
            navbarMenu("Contact and Feedback", icon = icon("envelope"),Feedback,Report_Bug )
            ##### more soon
