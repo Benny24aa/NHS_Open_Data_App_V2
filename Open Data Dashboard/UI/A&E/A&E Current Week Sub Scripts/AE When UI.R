@@ -1,7 +1,7 @@
 AE_When_Source_UI <- conditionalPanel(
   condition= 'input.ae_recent_select == "Recent_AE_When_Tab"',
   
-  #uiOutput("currentAEHeadersummaryDischarge"),
+  uiOutput("currentAEHeadersummaryWhen"),
   
   div(
     style = "background-color: #cce5ff; padding: 15px; border-radius: 10px; margin-top: 15px;",
@@ -21,7 +21,7 @@ AE_When_Source_UI <- conditionalPanel(
     
   ), ## end of division for summary boxes 
   br(),
- # uiOutput("discharge_line_graph_title"),
+ uiOutput("when_ae_title_graph_one"),
   br(),
   div(
     style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
@@ -35,7 +35,7 @@ AE_When_Source_UI <- conditionalPanel(
   
  br(),
  
- #uiOutput("demographic_bar_graph_title"),
+ uiOutput("when_ae_title_graph_two"),
  br(),
  div(
    style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
@@ -60,6 +60,10 @@ AE_When_Source_UI <- conditionalPanel(
      )
    )
  ),
+ br(),
+ 
+ uiOutput("when_ae_title_graph_three"),
+ 
  br(),
  div(
    style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
