@@ -2756,4 +2756,304 @@ output$ae_ref_discharge_iso_graph <- renderPlotly({
     )
 })
 
+##### When Code
 
+output$ae_department_type_when_filter <- renderUI({
+  
+  AE_When_Departments <- AE_When_Departments %>% 
+    filter(HBName %in% input$HBName_Current_AE_When) %>% 
+    pull(DepartmentType)
+  
+  column(3,
+         div(class = "custom-select",
+             selectInput("When_AE_Department_Type", "Select Department Type", 
+                         choices = unique(AE_When_Departments)))
+  )
+})
+
+
+filtered_when_data <- reactive({
+  When_Source_AE_Final  %>%
+    filter(
+      HBName == input$HBName_Current_AE_When,
+      DepartmentType == input$When_AE_Department_Type
+    )
+})
+
+
+latest_two_months_ae_when <- reactive({
+  filtered_when_data() %>%
+    distinct(Month) %>%
+    arrange(desc(Month)) %>%
+    pull(Month)
+})
+
+this_month_when_ae <- reactive({
+  req(length(latest_two_months_ae_when()) >= 1)
+  filtered_when_data() %>%
+    filter(Month == latest_two_months_ae_when()[1])
+})
+
+last_month_when_ae <- reactive({
+  req(length(latest_two_months_ae_when()) >= 2)
+  filtered_when_data() %>%
+    filter(Month == latest_two_months_ae_when()[2])
+})
+
+output$referral_boxes_when <- renderUI({
+  
+  
+  
+  this_month_when <- this_month_when_ae()
+  last_month_when <- last_month_when_ae()
+  
+  
+  fluidRow(
+    column(3, valueBoxWithChange("Weekday", this_month_when_ae()$'Weekday', calc_change(this_month_when_ae()$'Weekday', last_month_when_ae()$'Weekday'))),
+    column(3, valueBoxWithChange("Weekend", this_month_when_ae()$'Weekend', calc_change(this_month_when_ae()$'Weekend', last_month_when_ae()$'Weekend'))),
+    column(3, valueBoxWithChange("In Hours", this_month_when_ae()$'In Hours', calc_change(this_month_when_ae()$'In Hours', last_month_when_ae()$'In Hours'))),
+    column(3, valueBoxWithChange("Out Hours", this_month_when_ae()$'Out of Hours', calc_change(this_month_when_ae()$'Out of Hours', last_month_when_ae()$'Out of Hours')))
+    
+    
+    
+    
+    
+  )
+  
+})
+
+
+
+output$ae_inout_type_when_filter <- renderUI({
+  
+  AE_When_InOut <- AE_When_InOut %>% 
+    filter(HBName %in% input$HBName_Current_AE_When) %>% 
+    filter(Week %in% input$When_AE_Week) %>% 
+    pull(InOut)
+  
+  column(3,
+         div(class = "custom-select-ae-graph",
+             selectInput("InOut_AE_Week", "Select Out of Hours or In Hours",
+                         choices = unique(AE_When_InOut)))
+         
+         
+    
+         
+  )
+})
+
+
+
+output$ae_ref_when_graph <- renderPlotly({
+  
+  df <- When_Source_AE_Final %>%
+    filter(
+      HBName == input$HBName_Current_AE_When,
+      DepartmentType == input$When_AE_Department_Type
+    ) %>%
+    pivot_longer(
+      cols = c(`In Hours`, `Out of Hours`, `Weekday`, `Weekend`),
+      names_to = "Category",
+      values_to = "NumberOfAttendances"
+    )
+  
+  plot_ly(
+    df,
+    x = ~Month,
+    y = ~NumberOfAttendances,
+    color = ~Category,
+    colors = "Set1",
+    type = 'scatter',
+    mode = 'lines',
+    text = ~paste(
+      "<b>Month:</b>", Month,
+      "<br><b>Health Board:</b>", HBName,
+      "<br><b>Department Type:</b>", DepartmentType,
+      "<br><b>Category:</b>", Category,
+      "<br><b>Number of Attendances:</b>", NumberOfAttendances
+    ),
+    hoverinfo = 'text'
+  ) %>%
+    layout(
+      hovermode = "closest",
+      plot_bgcolor = '#f0f0f0',
+      paper_bgcolor = '#f0f0f0'
+    )
+})
+
+
+output$ae_hour_when_filter <- renderUI({
+  
+ When_Hour_List_AE <- When_Hour_List_AE  %>% 
+    filter(HBName %in% input$HBName_Current_AE_When) %>% 
+    filter(Week %in% input$When_AE_Week) %>% 
+   filter(InOut %in% input$InOut_AE_Week) %>% 
+   pull(Hour)
+ 
+ column(3,
+        div(class = "custom-select-ae-graph",
+        pickerInput(
+          inputId = "hour_input_ae",
+          label = "Select Hours to see",
+          choices = unique( When_Hour_List_AE),
+          selected = head(unique(When_Hour_List_AE), 3), 
+          multiple = TRUE,
+          options = list(
+            `actions-box` = TRUE,
+            `live-search` = TRUE,
+            `selected-text-format` = "count > 3"
+          )
+        )
+ ))
+  
+  # column(3,
+  #        div(class = "custom-select-ae-graph",
+  #            selectInput("hour_input_ae", "Select Hours", 
+  #                        choices = unique(When_Hour_List_AE)))
+  # )
+})
+
+
+
+
+output$ae_ref_hour_graph <- renderPlotly({
+  
+  df <- When_Hour_Data_AE %>%
+    filter(
+      HBName == input$HBName_Current_AE_When,
+      DepartmentType == input$When_AE_Department_Type,
+      Week %in% input$When_AE_Week,
+      InOut %in% input$InOut_AE_Week,
+      Hour %in% input$hour_input_ae
+    )
+  
+  plot_ly(
+    df,
+    x = ~Month,
+    y = ~NumberOfAttendances,
+    color = ~as.factor(Hour),   # each hour gets a different line
+    colors = "Set1",
+    type = 'scatter',
+    mode = 'lines',
+    text = ~paste(
+      "<b>Month:</b>", Month,
+      "<br><b>Health Board:</b>", HBName,
+      "<br><b>Department Type:</b>", DepartmentType,
+      "<br><b>Hour:</b>", Hour,
+      "<br><b>Number of Attendances:</b>", NumberOfAttendances
+    ),
+    hoverinfo = 'text'
+  ) %>%
+    layout(
+      hovermode = "closest",
+      plot_bgcolor = '#f0f0f0',
+      paper_bgcolor = '#f0f0f0',
+      legend = list(title = list(text = "Hour"))
+    )
+})
+
+
+
+output$ae_inout_type_when_filter_bar <- renderUI({
+  
+  AE_When_InOut <- AE_When_InOut %>% 
+    filter(HBName %in% input$HBName_Current_AE_When) %>% 
+    filter(Week %in% input$When_AE_Week_Bar) %>% 
+    pull(InOut)
+  
+  column(3,
+         div(class = "custom-select-ae-graph",
+             selectInput("InOut_AE_Week_Bar", "Select Out of Hours or In Hours",
+                         choices = unique(AE_When_InOut)))
+         
+         
+         
+         
+  )
+})
+
+
+output$ae_month_when_filter_bar <- renderUI({
+  
+  When_Month_List_AE <- When_Hour_List_AE %>%
+    filter(HBName %in% input$HBName_Current_AE_When) %>%
+    filter(Week %in% input$When_AE_Week) %>%
+    filter(InOut %in% input$InOut_AE_Week_Bar) %>%
+    arrange(desc(Month)) %>%      
+    pull(Month) %>%
+    unique()          
+  
+  column(3,
+         div(class = "custom-select-ae-graph",
+             selectInput("month_input_ae_bar", "Select date",
+                         choices = unique(When_Month_List_AE))))
+  
+})
+
+output$ae_hour_when_filter_bar <- renderUI({
+  
+  When_Hour_List_AE <- When_Hour_List_AE  %>%
+    filter(HBName %in% input$HBName_Current_AE_When) %>%
+    filter(Week %in% input$When_AE_Week_Bar) %>%
+    filter(InOut %in% input$InOut_AE_Week_Bar) %>%
+    filter(Month %in% input$month_input_ae_bar) %>%
+    pull(Hour)
+
+  column(3,
+         div(class = "custom-select-ae-graph",
+             pickerInput(
+               inputId = "hour_input_ae_bar",
+               label = "Select Hours to see",
+               choices = unique(When_Hour_List_AE),
+               selected = unique(When_Hour_List_AE),
+               multiple = TRUE,
+               options = list(
+                 `actions-box` = TRUE,
+                 `live-search` = TRUE,
+                 `selected-text-format` = "count > 3"
+               )
+             )
+         ))
+  
+
+})
+
+
+
+
+
+output$ae_hour_when_barplot <- renderPlotly({
+  
+  df <- When_Hour_Data_AE %>%
+    filter(
+      HBName == input$HBName_Current_AE_When,
+      Week %in% input$When_AE_Week_Bar,
+      InOut %in% input$InOut_AE_Week_Bar,
+      Month %in% input$month_input_ae_bar,
+      Hour %in% input$hour_input_ae_bar
+    )
+  
+  plot_ly(
+    df,
+    x = ~Hour,
+    y = ~NumberOfAttendances,
+    type = 'bar',
+    color = ~as.factor(Hour),   # keeps colours per hour
+    colors = "Set1",
+    text = ~paste(
+      "<b>Hour:</b>", Hour,
+      "<br><b>Month:</b>", Month,
+      "<br><b>Health Board:</b>", HBName,
+      "<br><b>Number of Attendances:</b>", NumberOfAttendances
+    ),
+    hoverinfo = 'text'
+  ) %>%
+    layout(
+      barmode = "group",          # group bars side by side
+      xaxis = list(title = "Hour of Day"),
+      yaxis = list(title = "Number of Attendances"),
+      plot_bgcolor = '#f0f0f0',
+      paper_bgcolor = '#f0f0f0',
+      legend = list(title = list(text = "Hour"))
+    )
+})

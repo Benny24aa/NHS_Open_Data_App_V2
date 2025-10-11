@@ -122,3 +122,21 @@
 #dynamic_title_metadata_commentary + p h3 {
   margin-top: 0 !important;
 }
+
+/* Target shinyWidgets pickerInput */
+.custom-select-ae-graph .bootstrap-select .dropdown-toggle {
+  background-color: #cce5ff !important;
+  color: #254a7c !important;
+  font-weight: bold;
+  border: 1px solid #999999;
+  border-radius: 4px;
+}
+
+.custom-select-ae-graph .dropdown-menu {
+  background-color: #ffffff !important;
+}
+
+.custom-select-ae-graph .dropdown-menu .dropdown-item {
+  color: #254a7c !important;
+  font-weight: bold;
+}

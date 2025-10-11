@@ -250,7 +250,7 @@ AE_When_Departments <- When_Source_AE %>%
   unique()
 
 AE_When_InOut <- When_Source_AE %>% 
-  select(InOut) %>% 
+  select(InOut, HBName, Week) %>% 
   distinct()
 
 AE_When_Week <- When_Source_AE %>% 
@@ -290,6 +290,30 @@ When_Source_AE_InOut <- When_Source_AE_InOut %>%
   )
 
 When_Source_AE_Final <- full_join(When_Source_AE_InOut, When_Source_AE_Week, by = c("Month", "DepartmentType", "HBName"))
+
+
+When_Hour_Data_AE <- get_resource(res_id = "022c3b27-6a58-48dc-8038-8f1f93bb0e78") %>% 
+  group_by(Month, HBT, DepartmentType, Hour, Week, InOut) %>% 
+  summarize(
+    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  full_join(HB_Lookup_AE, by = "HBT") %>% 
+  select(-HBT) %>% 
+  mutate(Month = ymd(paste0(Month, "01")))
+
+When_Month_List_AE <- When_Hour_Data_AE %>% 
+  select(Month, InOut, HBName, Week, Hour) %>% 
+  unique()
+  
+
+When_Hour_List_AE <- When_Hour_Data_AE %>% 
+  select(Month, InOut, HBName, Week, Hour) %>% 
+  unique()
+
+AE_When_Week_Bar <- When_Source_AE %>% 
+  select(Week, InOut) %>% 
+  distinct()
 
 
 ##### Box Functions

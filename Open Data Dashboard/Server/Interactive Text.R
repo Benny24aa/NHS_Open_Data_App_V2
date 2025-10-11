@@ -658,3 +658,101 @@ output$discharge_line_graph_title <- renderUI({
     "</div>"
   ))
 })
+
+
+output$currentAEHeadersummaryWhen <- renderUI({
+  
+  week_1 <- format(latest_two_months_ae_when()[1], "%B %Y")
+  week_2 <- format(latest_two_months_ae_when()[2], "%B %Y")
+  
+  
+  DescriptionType <- if (input$When_AE_Department_Type == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$When_AE_Department_Type== "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$When_AE_Department_Type
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Summary of When Accident and Emergency Statistics in", input$HBName_Current_AE_When, "for all attendances comparing months ending", week_1, "and", week_2, "from", DescriptionType),
+    "</div>"
+  ))
+})
+
+
+output$when_ae_title_graph_one <- renderUI({
+  
+  DescriptionType <- if (input$When_AE_Department_Type == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$When_AE_Department_Type== "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$When_AE_Department_Type
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Total number of attendances across", input$HBName_Current_AE_When, "attending", DescriptionType, "broken down by when they attended A&E"),
+    "</div>"
+  ))
+})
+
+
+output$when_ae_title_graph_two <- renderUI({
+  
+  DescriptionType <- if (input$When_AE_Department_Type == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$When_AE_Department_Type== "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$When_AE_Department_Type
+  }
+  
+  DescriptionTypeWeekType <- if (input$When_AE_Week == "Weekday") {
+    "weekdays"
+  } else if (input$When_AE_Week == "Weekend") {
+    "weekends"
+  } 
+  else {
+    input$When_AE_Week
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Total number of attendances across", input$HBName_Current_AE_When, "attending", DescriptionType, "broken down by when they attended A&E based on data collected for", input$InOut_AE_Week, "attendances during", DescriptionTypeWeekType),
+    "</div>"
+  ))
+})
+
+output$when_ae_title_graph_three <- renderUI({
+  
+  DescriptionType <- if (input$When_AE_Department_Type == "Type 1") {
+    "Emergency Departments (Type 1)"
+  } else if (input$When_AE_Department_Type== "Type 3") {
+    "Minor Injury Units (Type 3)"
+  } 
+  else {
+    input$When_AE_Department_Type
+  }
+  
+  
+  DescriptionTypeWeekType <- if (input$When_AE_Week == "Weekday") {
+    "weekdays"
+  } else if (input$When_AE_Week == "Weekend") {
+    "weekends"
+  } 
+  else {
+    input$When_AE_Week
+  }
+  
+  HTML(paste0(
+    paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+          "Total number of attendances across", input$HBName_Current_AE_When, "attending", DescriptionType, "broken down by when they attended A&E based on data collected for", input$InOut_AE_Week, "attendances during", DescriptionTypeWeekType, "on the month commencing", input$month_input_ae_bar),
+    "</div>"
+  ))
+})

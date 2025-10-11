@@ -3,12 +3,14 @@ Cancer_Data_Incidence_HB <- get_resource(res_id = "3aef16b7-8af6-4ce0-a90b-8a29d
 
 Cancer_Data_Mortality_HB <- full_join(Cancer_Data_Mortality_HB, HB_Lookup, by = "HB") %>% 
   mutate(DataType = "Mortality") %>% 
-  rename(GeoCode = HB, GeoName = HBName)
+  rename(GeoCode = HB, GeoName = HBName) %>% 
+  filter(CancerSite != "All cancer types incl NMSC") %>% 
+  mutate(CancerSite = gsub("All cancer types excl NMSC", "All cancer types", CancerSite))
 
 
 Cancer_Data_Mortality_HB<- Cancer_Data_Mortality_HB  %>%
   select(GeoCode, CancerSiteICD10Code, CancerSite, Sex, Year, DeathsAllAges, CrudeRate, EASR, WASR, StandardisedMortalityRatio, GeoName, GeoType, DataType) %>% 
-  rename(AllAges = DeathsAllAges, StandardisedRatio = StandardisedMortalityRatio)
+  rename(AllAges = DeathsAllAges, StandardisedRatio = StandardisedMortalityRatio) 
 
 Cancer_Mortality_HB_Scotland <- Cancer_Data_Mortality_HB %>% 
   mutate(GeoName = "All Scotland Data")
@@ -62,8 +64,10 @@ cancer_types <- bind_rows(cancer_types_all_filtered, cancer_types)
 
 Cancer_HB_ScatterPlot_Incidence <- Cancer_Data_Incidence_HB %>% 
   select(GeoName, GeoCode, CancerSiteICD10Code, CancerSite, Sex, Year, AllAges) %>% 
-  mutate(Data = "Incidence") %>% 
-  mutate(Sex = gsub("Females", "Female", Sex))
+  mutate(Data = "Incidence") 
+
+# %>% 
+#   mutate(Sex = gsub("Females", "Female", Sex))
 
 Cancer_HB_ScatterPlot_Mortality <- Cancer_Data_Mortality_HB %>% 
   rename(DeathsAllAges = AllAges) %>% 
