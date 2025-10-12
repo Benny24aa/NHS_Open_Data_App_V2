@@ -3063,29 +3063,40 @@ output$ae_hour_when_barplot <- renderPlotly({
 observeEvent(
   list(input$HBName_Map_AE, input$AttendanceCategory_Map_AE, input$ae_map_measure_select),
   {
-    # Filter AE data
+    # Filter AE data to latest week
     filtered_data <- WeeklyAE_Healthboard %>%
       filter(
-        # HBName == input$HBName_Map_AE,
         AttendanceCategory == input$AttendanceCategory_Map_AE,
         WeekEndingDate == max(WeekEndingDate, na.rm = TRUE)
       ) %>%
       group_by(HBName) %>%
       summarise(value = sum(.data[[input$ae_map_measure_select]], na.rm = TRUE))
     
+    # Get most recent population estimates
+    latest_pop <- HB_Pop_Diagnostics %>%
+      filter(Year == max(Year, na.rm = TRUE)) %>%
+      select(HBName, Population = AllAges)
+    
+    # Join population to AE data
+    filtered_data <- filtered_data %>%
+      left_join(latest_pop, by = "HBName") %>%
+      mutate(
+        crude_rate = (value / Population) * 100000
+      )
+    
     # Join with shapefile
     map_data <- HealthBoards_shp %>%
       left_join(filtered_data, by = "HBName")
     
     # Define color palette
-    pal <- colorNumeric("YlOrRd", domain = map_data$value, na.color = "transparent")
+    pal <- colorNumeric("YlOrRd", domain = map_data$crude_rate, na.color = "transparent")
     
     # Render leaflet map
     output$ae_leaflet_map <- renderLeaflet({
       leaflet(map_data) %>%
         addProviderTiles(providers$CartoDB.Positron) %>%
         addPolygons(
-          fillColor = ~pal(value),
+          fillColor = ~pal(crude_rate),
           weight = 1,
           opacity = 1,
           color = "white",
@@ -3097,7 +3108,10 @@ observeEvent(
             fillOpacity = 0.7,
             bringToFront = TRUE
           ),
-          label = ~paste0(HBName, ": ", format(value, big.mark = ",")),
+          label = ~paste0(
+            HBName, ": ", 
+            format(round(crude_rate, 1), big.mark = ","), " per 100,000 people"
+          ),
           labelOptions = labelOptions(
             style = list("font-weight" = "normal", padding = "3px 8px"),
             textsize = "15px",
@@ -3106,9 +3120,9 @@ observeEvent(
         ) %>%
         addLegend(
           pal = pal,
-          values = ~value,
+          values = ~crude_rate,
           opacity = 0.7,
-          title = input$ae_map_measure_select,
+          title = paste0(input$ae_map_measure_select, " rate per 100,000"),
           position = "bottomright"
         )
     })
