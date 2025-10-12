@@ -8,10 +8,10 @@ AE_Interactive_Map <- tabPanel(title = "Interactive Map",
                          style = "background-color: #cce5ff; padding: 15px; border-radius: 10px; margin-top: 15px;",
                          
                          fluidRow(
-                           column(3,div(class = "custom-select", selectInput("HBName_Map_AE", "Select Health Board", 
-                                                                             choices = unique(WeeklyAE_Healthboard$HBName)))
-                                  
-                           ),
+                           # column(3,div(class = "custom-select", selectInput("HBName_Map_AE", "Select Health Board", 
+                           #                                                   choices = unique(WeeklyAE_Healthboard$HBName)))
+                           #        
+                           # ),
                            column(3,
                                   div(class = "custom-select",
                                       selectInput("AttendanceCategory_Map_AE", "Select Category", 
@@ -44,7 +44,7 @@ AE_Interactive_Map <- tabPanel(title = "Interactive Map",
 
                          fluidRow(
                            column(12,
-                                  #plotlyOutput("ae_recent_iso_graph", height = "600px")
+                                  leafletOutput("ae_leaflet_map", height = "600px")
                            )
                          )
                        )

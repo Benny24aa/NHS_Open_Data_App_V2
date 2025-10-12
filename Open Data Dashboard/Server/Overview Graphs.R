@@ -3057,3 +3057,59 @@ output$ae_hour_when_barplot <- renderPlotly({
       legend = list(title = list(text = "Hour"))
     )
 })
+
+
+
+observeEvent(
+  list(input$HBName_Map_AE, input$AttendanceCategory_Map_AE, input$ae_map_measure_select),
+  {
+    # Filter AE data
+    filtered_data <- WeeklyAE_Healthboard %>%
+      filter(
+        # HBName == input$HBName_Map_AE,
+        AttendanceCategory == input$AttendanceCategory_Map_AE
+      ) %>%
+      group_by(HBName) %>%
+      summarise(value = sum(.data[[input$ae_map_measure_select]], na.rm = TRUE))
+    
+    # Join with shapefile
+    map_data <- HealthBoards_shp %>%
+      left_join(filtered_data, by = "HBName")
+    
+    # Define color palette
+    pal <- colorNumeric("YlOrRd", domain = map_data$value, na.color = "transparent")
+    
+    # Render leaflet map
+    output$ae_leaflet_map <- renderLeaflet({
+      leaflet(map_data) %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        addPolygons(
+          fillColor = ~pal(value),
+          weight = 1,
+          opacity = 1,
+          color = "white",
+          dashArray = "3",
+          fillOpacity = 0.7,
+          highlight = highlightOptions(
+            weight = 3,
+            color = "#666",
+            fillOpacity = 0.7,
+            bringToFront = TRUE
+          ),
+          label = ~paste0(HBName, ": ", format(value, big.mark = ",")),
+          labelOptions = labelOptions(
+            style = list("font-weight" = "normal", padding = "3px 8px"),
+            textsize = "15px",
+            direction = "auto"
+          )
+        ) %>%
+        addLegend(
+          pal = pal,
+          values = ~value,
+          opacity = 0.7,
+          title = input$ae_map_measure_select,
+          position = "bottomright"
+        )
+    })
+  }
+)
