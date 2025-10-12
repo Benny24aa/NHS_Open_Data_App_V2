@@ -3067,7 +3067,8 @@ observeEvent(
     filtered_data <- WeeklyAE_Healthboard %>%
       filter(
         # HBName == input$HBName_Map_AE,
-        AttendanceCategory == input$AttendanceCategory_Map_AE
+        AttendanceCategory == input$AttendanceCategory_Map_AE,
+        WeekEndingDate == max(WeekEndingDate, na.rm = TRUE)
       ) %>%
       group_by(HBName) %>%
       summarise(value = sum(.data[[input$ae_map_measure_select]], na.rm = TRUE))

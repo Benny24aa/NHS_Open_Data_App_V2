@@ -50,6 +50,8 @@ Cancer_31day_Metadata <- read_csv("Metadata Files/Cancer 31 Day Standard Cancer 
 Cancer_62day_Metadata <- read_csv("Metadata Files/Cancer 62 Day Standard Cancer Metadata.csv")
 
 HealthBoards_shp <- st_read("Scottish Healthboards/SG_NHS_HealthBoards_2019.shp")%>%
+  st_transform(crs = 4326)%>%
+  st_simplify(dTolerance = 2000) %>% 
   mutate(HBName = paste("NHS", HBName))
 
 Populations_Brackets <- get_resource(res_id = "0876fc67-05e6-4e87-bc30-c4b0756fff04") %>% 
