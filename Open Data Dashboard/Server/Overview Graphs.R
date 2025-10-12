@@ -3109,9 +3109,10 @@ observeEvent(
             bringToFront = TRUE
           ),
           label = ~paste0(
-            HBName, ": ", 
-            format(round(crude_rate, 1), big.mark = ","), " per 100,000 people"
-          ),
+            "<strong>Health Board:</strong> ", HBName, "<br/>",
+            "<strong>Attendances:</strong> ", format(value, big.mark = ","), "<br/>",
+            "<strong>Rate:</strong> ", format(round(crude_rate, 1), big.mark = ","), " per 100,000 people"
+          ) %>% lapply(htmltools::HTML),
           labelOptions = labelOptions(
             style = list("font-weight" = "normal", padding = "3px 8px"),
             textsize = "15px",
@@ -3122,7 +3123,7 @@ observeEvent(
           pal = pal,
           values = ~crude_rate,
           opacity = 0.7,
-          title = paste0(input$ae_map_measure_select, " rate per 100,000"),
+          title = paste0(input$ae_map_measure_select, " rate per 100,000 people"),
           position = "bottomright"
         )
     })

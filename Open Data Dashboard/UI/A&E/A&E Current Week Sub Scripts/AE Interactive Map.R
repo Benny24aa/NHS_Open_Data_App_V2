@@ -8,10 +8,7 @@ AE_Interactive_Map <- tabPanel(title = "Interactive Map",
                          style = "background-color: #cce5ff; padding: 15px; border-radius: 10px; margin-top: 15px;",
                          
                          fluidRow(
-                           # column(3,div(class = "custom-select", selectInput("HBName_Map_AE", "Select Health Board", 
-                           #                                                   choices = unique(WeeklyAE_Healthboard$HBName)))
-                           #        
-                           # ),
+                           
                            column(3,
                                   div(class = "custom-select",
                                       selectInput("AttendanceCategory_Map_AE", "Select Category", 
@@ -32,7 +29,11 @@ AE_Interactive_Map <- tabPanel(title = "Interactive Map",
                                     selected = "TotalAttendances"
                                   ))
                            )
+                           
+                           
                          ),
+                         
+                      
                        ), ## end of division
                        br(),
                        
