@@ -39,6 +39,7 @@ source("UI/Diagnostics/Healthboard Overview.R")
 source("UI/Diagnostics/Download Page.R")
 source("UI/A&E/WeeklyAE_UI.R")
 source("UI/A&E/A&E Current Week.R")
+source("UI/A&E/A&E Current Week Sub Scripts/AE Interactive Map.R")
 
 #################################
 navbarPage(id = "maintabid",
@@ -53,7 +54,7 @@ navbarPage(id = "maintabid",
            ##### Tab Panels
            information,
            navbarMenu("Dashboard Information",icon = icon("info"), DashboardUse, Roadmap, Commentary),
-           navbarMenu("A&E Waiting Times", icon = icon("hospital"), CurrentAEUI, WeeklyAEUI ),
+           navbarMenu("A&E Waiting Times", icon = icon("hospital"), CurrentAEUI, WeeklyAEUI, AE_Interactive_Map ),
            navbarMenu("Cancer", icon = icon("disease"), Cancer_UI_Setup, Cancer_Waiting_List),
            Diagnsotics_UI,
            reference_file_download,

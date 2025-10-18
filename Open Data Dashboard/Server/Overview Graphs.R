@@ -3057,3 +3057,77 @@ output$ae_hour_when_barplot <- renderPlotly({
       legend = list(title = list(text = "Hour"))
     )
 })
+
+
+
+observeEvent(
+  list(input$HBName_Map_AE, input$AttendanceCategory_Map_AE, input$ae_map_measure_select, input$Date_Map_AE),
+  {
+    
+    filtered_data <- WeeklyAE_Healthboard %>%
+      filter(
+        AttendanceCategory == input$AttendanceCategory_Map_AE,
+        WeekEndingDate == input$Date_Map_AE
+      ) %>%
+      group_by(HBName, WeekEndingDate) %>%
+      summarise(value = sum(.data[[input$ae_map_measure_select]], na.rm = TRUE))
+
+    
+    # Get most recent population estimates
+    latest_pop <- HB_Pop_Diagnostics %>%
+      filter(Year == max(Year, na.rm = TRUE)) %>%
+      select(HBName, Population = AllAges)
+    
+    # Join population to AE data
+    filtered_data <- filtered_data %>%
+      left_join(latest_pop, by = "HBName") %>%
+      mutate(
+        crude_rate = (value / Population) * 100000
+      )
+    
+    # Join with shapefile
+    map_data <- HealthBoards_shp %>%
+      left_join(filtered_data, by = "HBName")
+    
+    # Define color palette
+    pal <- colorNumeric("YlOrRd", domain = map_data$crude_rate, na.color = "transparent")
+    
+    # Render leaflet map
+    output$ae_leaflet_map <- renderLeaflet({
+      leaflet(map_data) %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        addPolygons(
+          fillColor = ~pal(crude_rate),
+          weight = 1,
+          opacity = 1,
+          color = "white",
+          dashArray = "3",
+          fillOpacity = 0.7,
+          highlight = highlightOptions(
+            weight = 3,
+            color = "#666",
+            fillOpacity = 0.7,
+            bringToFront = TRUE
+          ),
+          label = ~paste0(
+            "<strong>Health Board:</strong> ", HBName, "<br/>",
+            "<strong>Attendances:</strong> ", format(value, big.mark = ","), "<br/>",
+            "<strong>Rate:</strong> ", format(round(crude_rate, 1), big.mark = ","), " per 100,000 people", "<br/>",
+            "<strong>Week Ending:</strong> ", WeekEndingDate
+          ) %>% lapply(htmltools::HTML),
+          labelOptions = labelOptions(
+            style = list("font-weight" = "normal", padding = "3px 8px"),
+            textsize = "15px",
+            direction = "auto"
+          )
+        ) %>%
+        addLegend(
+          pal = pal,
+          values = ~crude_rate,
+          opacity = 0.7,
+          title = paste0(input$ae_map_measure_select, " rate per 100,000 people"),
+          position = "bottomright"
+        )
+    })
+  }
+)
