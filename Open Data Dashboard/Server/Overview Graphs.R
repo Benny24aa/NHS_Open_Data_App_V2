@@ -3061,16 +3061,17 @@ output$ae_hour_when_barplot <- renderPlotly({
 
 
 observeEvent(
-  list(input$HBName_Map_AE, input$AttendanceCategory_Map_AE, input$ae_map_measure_select),
+  list(input$HBName_Map_AE, input$AttendanceCategory_Map_AE, input$ae_map_measure_select, input$Date_Map_AE),
   {
-    # Filter AE data to latest week
+    
     filtered_data <- WeeklyAE_Healthboard %>%
       filter(
         AttendanceCategory == input$AttendanceCategory_Map_AE,
-        WeekEndingDate == max(WeekEndingDate, na.rm = TRUE)
+        WeekEndingDate == input$Date_Map_AE
       ) %>%
       group_by(HBName, WeekEndingDate) %>%
       summarise(value = sum(.data[[input$ae_map_measure_select]], na.rm = TRUE))
+
     
     # Get most recent population estimates
     latest_pop <- HB_Pop_Diagnostics %>%

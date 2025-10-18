@@ -1,7 +1,11 @@
 AE_Interactive_Map <- tabPanel(title = "Interactive Map", 
                        icon = icon("map"),
                        
-                     #  uiOutput("Template"),
+                       HTML(paste0(
+                         paste("<div style='color: #336699; font-size: 24px; font-weight: bold;'>",
+                               "Interactive Map of Accident and Emergency Rates Across Scotland"),
+                         "</div>"
+                       )),
                        
                        # Styled section: filters + value boxes
                        div(
@@ -28,17 +32,22 @@ AE_Interactive_Map <- tabPanel(title = "Interactive Map",
                                     ),
                                     selected = "TotalAttendances"
                                   ))
+                           ),
+                           
+                           column(3,
+                                  div(class = "custom-select",
+                                      selectInput("Date_Map_AE", "Select Date", 
+                                                  choices = unique(Weeks_AE_Map$WeekEndingDate)))
+                           
                            )
-                           
-                           
                          ),
                          
                       
                        ), ## end of division
-                       br(),
+                   
                        
                      #  uiOutput("template"),
-                       br(),
+
                        
                        div(
                          style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
