@@ -3069,7 +3069,7 @@ observeEvent(
         AttendanceCategory == input$AttendanceCategory_Map_AE,
         WeekEndingDate == max(WeekEndingDate, na.rm = TRUE)
       ) %>%
-      group_by(HBName) %>%
+      group_by(HBName, WeekEndingDate) %>%
       summarise(value = sum(.data[[input$ae_map_measure_select]], na.rm = TRUE))
     
     # Get most recent population estimates
@@ -3111,7 +3111,8 @@ observeEvent(
           label = ~paste0(
             "<strong>Health Board:</strong> ", HBName, "<br/>",
             "<strong>Attendances:</strong> ", format(value, big.mark = ","), "<br/>",
-            "<strong>Rate:</strong> ", format(round(crude_rate, 1), big.mark = ","), " per 100,000 people"
+            "<strong>Rate:</strong> ", format(round(crude_rate, 1), big.mark = ","), " per 100,000 people", "<br/>",
+            "<strong>Week Ending:</strong> ", WeekEndingDate
           ) %>% lapply(htmltools::HTML),
           labelOptions = labelOptions(
             style = list("font-weight" = "normal", padding = "3px 8px"),
