@@ -12,7 +12,16 @@ library(ISOweek)
 library(janitor)
 library(sf)
 
+#### Databrick Related Libraries
+library(DBI)
+library(odbc)
+
+jdbc_driver_path <- "Global/DatabricksJDBC.jar.jar"
+
+
 options(httr_config = httr::config(ssl_verifypeer = FALSE))
+
+
 ##### Sourcing Reference Files 
 source("Global/Geo File.R")
 
@@ -28,6 +37,9 @@ source("Global/Diagnostics Waiting Times/Diagnostics.R")
 
 #### Sourcing in Weekly A&E Data
 source("Global/A&E/Weekly A&E/Weekly A&E Data.R")
+
+### Sourcing in AI Workflow Data (External Databricks Pipeline)
+source("Global/AI Workflow/AI Workflow.R")
 
 gender_palette <- c("Male" = "#0078D4",
                     "Female" = "#E1C7DF")
@@ -84,3 +96,5 @@ Populations_Brackets <- get_resource(res_id = "0876fc67-05e6-4e87-bc30-c4b0756ff
     names_to = "Age",
     values_to = "Population"
   )
+
+
