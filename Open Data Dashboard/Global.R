@@ -16,9 +16,6 @@ library(sf)
 library(DBI)
 library(odbc)
 
-jdbc_driver_path <- "Global/DatabricksJDBC.jar.jar"
-
-
 options(httr_config = httr::config(ssl_verifypeer = FALSE))
 
 
