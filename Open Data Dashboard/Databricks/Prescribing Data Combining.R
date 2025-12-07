@@ -14,3 +14,5 @@ library(arrow)
 write_parquet(presdisp, "Databricks/presdisp.parquet")
 
 rm(presdisp)
+
+t <- read_parquet("Databricks/presdisp.parquet")
