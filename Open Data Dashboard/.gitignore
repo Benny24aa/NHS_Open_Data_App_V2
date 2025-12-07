@@ -1,3 +1,5 @@
 rsconnect
 feedback_log.csv
 bug_reports.csv
+brts.csv
+*.parquet
