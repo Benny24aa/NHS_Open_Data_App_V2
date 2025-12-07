@@ -3,6 +3,7 @@
 library(httr)
 library(jsonlite)
 
+source("Global/AI Workflow/Databricks Variables.R") ### This won't appear on the github repo
 
 # ---------------------------
 # Get warehouse status
