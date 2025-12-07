@@ -704,11 +704,7 @@ output$total_weekly_ae_attendance_graph <- renderPlotly({
       TreatmentLocationName %in% input$ae_weekly_hospital_input,
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
-  
-  # Validate there is data
-  validate(
-    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
-  )
+
   
   # Current year(s) average
   avg_attendance <- mean(WeeklyAE_Filtered$NumberOfAttendancesEpisode, na.rm = TRUE)
@@ -868,10 +864,7 @@ output$total_weekly_ae_over_four_hours_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-  # Validate there is data
-  validate(
-    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
-  )
+
   
   # Current year(s) average
   avg_attendance <- mean(WeeklyAE_Filtered$NumberOver4HoursEpisode, na.rm = TRUE)
@@ -1032,10 +1025,7 @@ output$total_weekly_ae_within_four_hours_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-  # Validate there is data
-  validate(
-    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
-  )
+ 
   
   # Current year(s) average
   avg_attendance <- mean(WeeklyAE_Filtered$NumberWithin4HoursEpisode, na.rm = TRUE)
@@ -1197,10 +1187,7 @@ output$total_weekly_ae_within_four_hours_percentage_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-  # Validate there is data
-  validate(
-    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
-  )
+
   
   # Current year(s) average
   avg_attendance <- mean(WeeklyAE_Filtered$PercentageWithin4HoursEpisode, na.rm = TRUE)
@@ -1361,10 +1348,8 @@ output$total_weekly_ae_over_eight_hours_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-  # Validate there is data
-  validate(
-    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
-  )
+
+
   
   # Current year(s) average
   avg_attendance <- mean(WeeklyAE_Filtered$NumberOver8HoursEpisode, na.rm = TRUE)
@@ -1525,10 +1510,7 @@ output$total_weekly_ae_over_eight_hours_percentage_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-  # Validate there is data
-  validate(
-    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
-  )
+
   
   # Current year(s) average
   avg_attendance <- mean(WeeklyAE_Filtered$PercentageOver8HoursEpisode, na.rm = TRUE)
@@ -1689,10 +1671,7 @@ output$total_weekly_ae_over_twelve_hours_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-  # Validate there is data
-  validate(
-    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
-  )
+
   
   # Current year(s) average
   avg_attendance <- mean(WeeklyAE_Filtered$NumberOver12HoursEpisode, na.rm = TRUE)
@@ -1852,10 +1831,7 @@ output$total_weekly_ae_over_twelve_hours_percentage_graph <- renderPlotly({
       lubridate::year(WeekEndingDate) %in% input$ae_year_input
     )
   
-  # Validate there is data
-  validate(
-    need(nrow(WeeklyAE_Filtered) > 0, "No data available for selected filters")
-  )
+
   
   # Current year(s) average
   avg_attendance <- mean(WeeklyAE_Filtered$PercentageOver12HoursEpisode, na.rm = TRUE)
