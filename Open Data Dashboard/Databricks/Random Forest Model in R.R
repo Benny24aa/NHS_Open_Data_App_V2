@@ -5,6 +5,8 @@ library(dplyr)
 library(lubridate)
 library(ranger)        # Much faster alternative to randomForest
 library(arrow)
+library(glue)
+
 
 # --- Load main prescribing dataset ---
 df <- read_parquet("Databricks/presdisp.parquet")
@@ -111,12 +113,21 @@ setDT(df)
 # --- Train fast random forest model (ranger) ---
 set.seed(123)
 
+# "none"	No variable importance computed (fastest).
+# "impurity"	Gini impurity decrease (classification) or variance decrease (regression). Fast, but biased toward variables with many categories.
+# "impurity_corrected"	Bias-corrected impurity importance. Slower but more reliable than plain impurity.
+# "permutation"	Permutation importance. Measures drop in prediction accuracy when a variable is permuted. Reliable but slower.
+# "permutation_unscaled"	Permutation importance without scaling by standard errors.
+
+importance_type <- "none"
+
+tree_number <- 10
 
 rf_model <- ranger(
   NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB + PrescriberLocation + DispenserLocation,
   data = df,
-  num.trees = 10,                     # fewer trees for speed; increase if needed
-  importance = "permutation",
+  num.trees = tree_number,                     # fewer trees for speed; increase if needed
+  importance = importance_type,
   num.threads = parallel::detectCores() - 1
 )
 
@@ -174,4 +185,9 @@ cat("Number of outliers:", sum(df$Outlier), "of", nrow(df), "records\n")
 # View top 10 most extreme outliers
 head(test_Df[order(-AbsResidual)], 10)
 
-write_parquet(test_Df, "Databricks/result.parquet")
+test_Df <- test_Df %>% 
+  mutate(Importance = importance_type, Number_of_trees = tree_number)
+
+file_name <- glue("Databricks/result_{importance_type}_{tree_number}.parquet")
+
+write_parquet(test_Df, file_name)
