@@ -28,6 +28,8 @@ start_warehouse_if_needed <- function(databricks_host, warehouse_id, token) {
 }
 
 execute_query <- function(sql, databricks_host, warehouse_id, token) {
+  
+  # Submit statement
   res <- POST(
     paste0("https://", databricks_host, "/api/2.0/sql/statements"),
     add_headers(
@@ -35,32 +37,60 @@ execute_query <- function(sql, databricks_host, warehouse_id, token) {
       `Content-Type` = "application/json"
     ),
     body = toJSON(
-      list(warehouse_id = warehouse_id, statement = sql),
+      list(
+        warehouse_id = warehouse_id,
+        statement = sql
+      ),
       auto_unbox = TRUE
     )
   )
   
-  if (status_code(res) != 200) stop("Failed to submit SQL query")
+  if (status_code(res) != 200)
+    stop("Failed to submit SQL query")
   
   statement_id <- content(res)$statement_id
   
+  # Poll until complete
   repeat {
     Sys.sleep(2)
     status_res <- GET(
-      paste0("https://", databricks_host, "/api/2.0/sql/statements/", statement_id),
+      paste0(
+        "https://",
+        databricks_host,
+        "/api/2.0/sql/statements/",
+        statement_id
+      ),
       add_headers(Authorization = paste("Bearer", token))
     )
+    
     state <- content(status_res)$status$state
-    if (!(state %in% c("PENDING", "QUEUED", "RUNNING"))) break
+    if (!state %in% c("PENDING", "QUEUED", "RUNNING")) break
   }
   
-  if (state != "SUCCEEDED") stop("Query failed")
+  if (state != "SUCCEEDED")
+    stop("Query failed")
   
-  result <- content(status_res)$result
-  if (is.null(result$data)) return(data.frame())
+  response <- content(status_res)
   
-  df <- as.data.frame(do.call(rbind, result$data))
-  names(df) <- sapply(result$metadata, `[[`, "name")
+  # Handle empty result set
+  if (is.null(response$result$data_array))
+    return(data.frame())
+  
+  # Extract column names (CORRECT LOCATION)
+  col_names <- vapply(
+    response$manifest$schema$columns,
+    function(x) x$name,
+    character(1)
+  )
+  
+  # Build data frame
+  df <- as.data.frame(
+    do.call(rbind, response$result$data_array),
+    stringsAsFactors = FALSE
+  )
+  
+  colnames(df) <- col_names
+  
   df
 }
 
