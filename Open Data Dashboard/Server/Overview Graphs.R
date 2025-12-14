@@ -3107,3 +3107,39 @@ observeEvent(
     })
   }
 )
+
+############################ Machine Learning Model Based Graphs
+
+
+ai_tab_initialized <- reactiveVal(FALSE)
+
+observeEvent(input$run_anomaly, {
+  
+  cat("RUN BUTTON CLICKED\n")
+  
+  if (!ai_tab_initialized()) {
+    cat("Initialising Databricks\n")
+    
+    source("Global/AI Workflow/Databricks Variables.R")
+    source("Server/databricks_helpers.R")
+    
+    start_warehouse_if_needed(
+      databricks_host,
+      warehouse_id,
+      token
+    )
+    
+    ai_tab_initialized(TRUE)
+  }
+  
+  cat("Submitting query...\n")
+  
+  df <- execute_query(
+    "SELECT * FROM nhs_waiting_times_dashboard.default.hospital_list",
+    databricks_host,
+    warehouse_id,
+    token
+  )
+  
+  output$anomaly_table <- renderTable(df)
+})
