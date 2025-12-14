@@ -36,8 +36,17 @@ function(input, output, session) {
     source(file.path("Server/Download Diagnostics Data.R"), local = TRUE)$value
     
     
-  
     
+    databricks_loaded <- reactiveVal(FALSE)
+    
+    observeEvent(input$main_nav, {
+      if (input$main_nav == "ai_page" && !databricks_loaded()) {
+        
+        source("Global/AI Workflow/Databricks Variables.R")
+        source("R/databricks_helpers.R")
+        
+        databricks_loaded(TRUE)    }
+    })
  
 
   }# End of Server
