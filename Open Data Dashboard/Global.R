@@ -12,7 +12,7 @@ library(ISOweek)
 library(janitor)
 library(sf)
 library(shiny)
-
+library(glue)
 #### Databrick Related Libraries
 library(DBI)
 library(odbc)
@@ -37,7 +37,7 @@ source("Global/Diagnostics Waiting Times/Diagnostics.R")
 source("Global/A&E/Weekly A&E/Weekly A&E Data.R")
 
 ### Sourcing in AI Workflow Data (External Databricks Pipeline)
-source("Global/AI Workflow/AI Workflow.R")
+# source("Global/AI Workflow/AI Workflow.R")
 
 gender_palette <- c("Male" = "#0078D4",
                     "Female" = "#E1C7DF")
@@ -95,4 +95,8 @@ Populations_Brackets <- get_resource(res_id = "0876fc67-05e6-4e87-bc30-c4b0756ff
     values_to = "Population"
   )
 
+##### AI Model Inputs
+
+# Random_Forest_Model_Inputs <- c("none", "impurity", "impurity_corrected", "permutation")
+# Random_Forest_Model_Inputs <- data.frame(Random_Forest_Model_Inputs)
 

@@ -36,9 +36,7 @@ function(input, output, session) {
     source(file.path("Server/Download Diagnostics Data.R"), local = TRUE)$value
     
     
-  
-    
- 
+
 
   }# End of Server
 
