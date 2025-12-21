@@ -3148,11 +3148,27 @@ observeEvent(input$run_anomaly, {
         Importance,
         Number_of_trees
       FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
-      WHERE MonthNum = {input$AI_Model_Month}
-        AND Importance = '{input$AI_Model_Type}'
+      WHERE Importance = '{input$AI_Model_Type}'
         AND Number_of_trees = {input$AI_Model_Trees}
         AND HBName = '{input$AI_Model_Healthboard}'
     ")
+    
+    # glue("
+    #   SELECT
+    #     PaidDateMonth,
+    #     HB,
+    #     HBName,
+    #     NumberOfPaidItems,
+    #     Predicted,
+    #     Outlier,
+    #     Importance,
+    #     Number_of_trees
+    #   FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
+    #   WHERE MonthNum = {input$AI_Model_Month}
+    #     AND Importance = '{input$AI_Model_Type}'
+    #     AND Number_of_trees = {input$AI_Model_Trees}
+    #     AND HBName = '{input$AI_Model_Healthboard}'
+    # ")
   })
 
   df <- reactive({
