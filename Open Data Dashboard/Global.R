@@ -54,6 +54,9 @@ diagnostics_dashboard_list <- c("Landing Page" = "Diagnostics_Landing_Page", "Ov
 ae_recent_list <- c("Weekly Waiting Times" = "Recent_AE_Tab",  "Demographics" = "Recent_AE_Demographic_Tab", "Referral Source" = "Recent_AE_Referral_Tab", "Discharge" = "Recent_AE_Discharge_Tab", "When" = "Recent_AE_When_Tab")
 ### Commentary and Metadata data files
 
+random_forest_list <- c("Outliers" = "Outlier_Tab_RF", "Prediction Tab" = "Predition_Tab_RF", "Error Count Interactive Map" = "Error_Count_Map_Tab_RF")
+
+
 Cancer_Metadata_Mortality <- read_csv("Metadata Files/Cancer Mortality Metadata.csv")
 Cancer_Metadata_Incidence <- read_csv("Metadata Files/Cancer Incidence Metadata.csv")
 Cancer_31day_Metadata <- read_csv("Metadata Files/Cancer 31 Day Standard Cancer Metadata.csv")
