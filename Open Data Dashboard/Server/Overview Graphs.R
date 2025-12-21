@@ -3134,12 +3134,61 @@ observeEvent(input$run_anomaly, {
   
   cat("Submitting query...\n")
   
-  df <- execute_query(
-    "SELECT * FROM nhs_waiting_times_dashboard.default.hospital_list",
-    databricks_host,
-    warehouse_id,
-    token
-  )
+  sql_query <- reactive({
+    req(input$AI_Model_Healthboard)
+    
+    glue("
+      SELECT
+        PaidDateMonth,
+        HB,
+        HBName,
+        NumberOfPaidItems,
+        Predicted,
+        Outlier,
+        Importance,
+        Number_of_trees
+      FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
+      WHERE MonthNum = {input$AI_Model_Month}
+        AND Importance = '{input$AI_Model_Type}'
+        AND Number_of_trees = {input$AI_Model_Trees}
+        AND HBName = '{input$AI_Model_Healthboard}'
+    ")
+  })
+
+  df <- reactive({
+    execute_query(
+      sql_query(),
+      databricks_host,
+      warehouse_id,
+      token
+    )
+  })
   
   output$anomaly_table <- renderTable(df)
+  
+  output$predicted_vs_paid_plot <- renderPlotly({
+  
+    
+    plot_ly(
+      data = df(),
+      x = ~NumberOfPaidItems,
+      y = ~Predicted,
+      color = ~Outlier,
+      type = "scatter",
+      mode = "markers",
+      marker = list(size = 8, opacity = 0.7),
+      text = ~paste(
+        "HB:", HBName,
+        "<br>Number of Paid Items:", NumberOfPaidItems,
+        "<br>Predicted:", Predicted
+      ),
+      hoverinfo = "text"
+    ) %>%
+      layout(
+        title = "Prescribed vs Number of Paid Items",
+        xaxis = list(title = "Number of Paid Items"),
+        yaxis = list(title = "Predicted")
+      )
+  })
+  
 })
