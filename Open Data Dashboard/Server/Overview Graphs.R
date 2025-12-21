@@ -3212,6 +3212,20 @@ observeEvent(input$run_anomaly, {
       )
   })
   
+  output$ai_model_gp_cluster_filter <- renderUI({
+    
+
+
+    GPCluster_List <- df () %>%
+      pull(GPCluster)
+
+    column(3,
+           div(class = "custom-select",
+               selectInput("RF_GPCluster_List", "Select GP Cluster", 
+                           choices = unique(GPCluster_List)))
+    )
+  })
+  
   
   output$anomaly_ready <- reactive({
     !is.null(df())
