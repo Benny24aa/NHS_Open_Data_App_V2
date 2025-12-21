@@ -3138,15 +3138,7 @@ observeEvent(input$run_anomaly, {
     req(input$AI_Model_Healthboard)
     
     glue("
-      SELECT
-        PaidDateMonth,
-        HB,
-        HBName,
-        NumberOfPaidItems,
-        Predicted,
-        Outlier,
-        Importance,
-        Number_of_trees
+      SELECT *
       FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
       WHERE Importance = '{input$AI_Model_Type}'
         AND Number_of_trees = {input$AI_Model_Trees}
@@ -3184,9 +3176,11 @@ observeEvent(input$run_anomaly, {
   
   output$predicted_vs_paid_plot <- renderPlotly({
   
+    df_month <- df() %>%
+      dplyr::filter(MonthNum == as.integer(input$AI_Model_Month))
     
     plot_ly(
-      data = df(),
+      data = df_month,
       x = ~NumberOfPaidItems,
       y = ~Predicted,
       color = ~Outlier,
