@@ -117,18 +117,18 @@ set.seed(123)
 # "impurity"	Gini impurity decrease (classification) or variance decrease (regression). Fast, but biased toward variables with many categories.
 # "impurity_corrected"	Bias-corrected impurity importance. Slower but more reliable than plain impurity.
 # "permutation"	Permutation importance. Measures drop in prediction accuracy when a variable is permuted. Reliable but slower.
-# "permutation_unscaled"	Permutation importance without scaling by standard errors.
 
-importance_type <- "none"
+importance_type <- "impurity_corrected"
 
-tree_number <- 10
+tree_number <- 100
 
 rf_model <- ranger(
   NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB + PrescriberLocation + DispenserLocation,
   data = df,
   num.trees = tree_number,                     # fewer trees for speed; increase if needed
   importance = importance_type,
-  num.threads = parallel::detectCores() - 1
+  num.threads = 2
+  # num.threads = parallel::detectCores() - 1
 )
 
 test_Df <- get_resource(res_id = "a203c8fc-c19d-451c-b637-781ea7c2066c")
@@ -191,3 +191,45 @@ test_Df <- test_Df %>%
 file_name <- glue("Databricks/result_{importance_type}_{tree_number}.parquet")
 
 write_parquet(test_Df, file_name)
+
+
+
+library(arrow)
+library(dplyr)
+library(purrr)
+
+# ---- paths ----
+input_dir  <- "Databricks/Combine/"
+output_file <- file.path(input_dir, "results_all_combined.parquet")
+
+# ---- list parquet files ----
+files <- list.files(
+  path = input_dir,
+  pattern = "\\.parquet$",
+  full.names = TRUE
+)
+
+# ---- read & combine ----
+results_all <- map_dfr(files, read_parquet)
+
+# ---- optional sanity checks ----
+print(nrow(results_all))
+print(names(results_all))
+
+# ---- write combined parquet ----
+write_parquet(results_all, output_file)
+
+message("Combined parquet written to: ", output_file)
+
+input_dir  <- "Databricks/Combine/"
+output_file <- file.path(input_dir, "results_all_combined.parquet")
+
+library(arrow)
+test <- read_parquet(output_file)
+
+test_final <- left_join(HB_Lookup, test, by = 'HB')
+
+test_final <- test_final %>% 
+  select(-GeoType)
+
+write_parquet(test_final, output_file)
