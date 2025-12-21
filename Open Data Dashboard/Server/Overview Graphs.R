@@ -3138,7 +3138,17 @@ observeEvent(input$run_anomaly, {
     req(input$AI_Model_Healthboard)
     
     glue("
-      SELECT *
+      SELECT 
+              PaidDateMonth,
+        HB,
+        HBName,
+        NumberOfPaidItems,
+        Predicted,
+        Outlier,
+        Importance,
+        Number_of_trees,
+        GPCluster,
+        MonthNum
       FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
       WHERE Importance = '{input$AI_Model_Type}'
         AND Number_of_trees = {input$AI_Model_Trees}
@@ -3147,14 +3157,14 @@ observeEvent(input$run_anomaly, {
     
     # glue("
     #   SELECT
-    #     PaidDateMonth,
-    #     HB,
-    #     HBName,
-    #     NumberOfPaidItems,
-    #     Predicted,
-    #     Outlier,
-    #     Importance,
-    #     Number_of_trees
+        # PaidDateMonth,
+        # HB,
+        # HBName,
+        # NumberOfPaidItems,
+        # Predicted,
+        # Outlier,
+        # Importance,
+        # Number_of_trees
     #   FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
     #   WHERE MonthNum = {input$AI_Model_Month}
     #     AND Importance = '{input$AI_Model_Type}'
@@ -3172,8 +3182,9 @@ observeEvent(input$run_anomaly, {
     )
   })
   
-  output$anomaly_table <- renderTable(df)
+  #output$anomaly_table <- renderTable(df)
   
+
   output$predicted_vs_paid_plot <- renderPlotly({
   
     df_month <- df() %>%
@@ -3200,5 +3211,11 @@ observeEvent(input$run_anomaly, {
         yaxis = list(title = "Predicted")
       )
   })
+  
+  
+  output$anomaly_ready <- reactive({
+    !is.null(df())
+  })
+  outputOptions(output, "anomaly_ready", suspendWhenHidden = FALSE)
   
 })
