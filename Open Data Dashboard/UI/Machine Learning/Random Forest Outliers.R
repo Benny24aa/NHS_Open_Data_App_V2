@@ -40,7 +40,10 @@ Random_Forest_UI <- tabPanel(
   
   br(),
   actionButton("run_anomaly", "Run anomaly detection"),
-  br(),
+ 
+  conditionalPanel(
+    condition = "input.run_anomaly > 0",
+   br(),
     br(),
     radioGroupButtons(
       inputId = "machine_model_select_id",
@@ -51,7 +54,7 @@ Random_Forest_UI <- tabPanel(
       size = "lg" 
     ),
     br(),
-  Random_Forest_Outlier_UI
+  Random_Forest_Outlier_UI)
                         
                         
 ) #End of TabPanel
