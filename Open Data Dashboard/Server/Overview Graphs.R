@@ -3148,7 +3148,9 @@ observeEvent(input$run_anomaly, {
         Importance,
         Number_of_trees,
         GPCluster,
-        MonthNum
+        MonthNum,
+        PrescriberLocation,
+        DispenserLocation
       FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
       WHERE Importance = '{input$AI_Model_Type}'
         AND Number_of_trees = {input$AI_Model_Trees}
@@ -3177,13 +3179,44 @@ observeEvent(input$run_anomaly, {
         HBName,
         NumberOfPaidItems,
         Predicted,
-        Outlier
+        Outlier, ,
+        PrescriberLocation,
+        DispenserLocation
       ) %>%  
       dplyr::mutate(
         NumberOfPaidItems = as.numeric(NumberOfPaidItems),
         Predicted = as.numeric(Predicted),
         Outlier = as.logical(Outlier),
-        HBName = as.character(HBName)
+        HBName = as.character(HBName),
+        PrescriberLocation = as.numeric(PrescriberLocation),
+        DispenserLocation = as.numeric(DispenserLocation)
+      ) %>% 
+      dplyr::mutate(
+        Predicted = round(Predicted, 0),
+        Residual = NumberOfPaidItems - Predicted,
+          FitDirection = dplyr::case_when(
+            Residual > 0  ~ "Underfitting",
+            Residual < 0  ~ "Overfitting",
+            Residual == 0 ~ "Perfect fit"
+          ),
+       AbsResidual = abs(Residual),
+       TenPercentValue = NumberOfPaidItems/100 * 10,
+       WithinTenPercent = TenPercentValue > AbsResidual,
+       FinalFit = dplyr::if_else(
+         WithinTenPercent,
+         "Perfect Fit",
+         FitDirection
+       )
+       ) %>% 
+      dplyr::select(
+        HBName,
+        NumberOfPaidItems,
+        Predicted,
+        Residual,
+        AbsResidual,
+        FinalFit,
+        PrescriberLocation,
+        DispenserLocation
       )
     
     DT::datatable(df_month, style = 'bootstrap',
