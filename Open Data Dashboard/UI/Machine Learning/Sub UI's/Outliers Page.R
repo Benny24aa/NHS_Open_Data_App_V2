@@ -23,9 +23,27 @@ Random_Forest_Outlier_UI  <- conditionalPanel(
     
     
   ),
+  br(),
   
-  # actionButton("run_anomaly", "Run anomaly detection"),
-  plotlyOutput("predicted_vs_paid_plot")
+  div(
+    style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
+    
+    fluidRow(
+      column(12,
+             plotlyOutput("predicted_vs_paid_plot", height = "600px")
+      )
+    )
+  ),
+  
+  br(),
+  div(
+    style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
+  fluidRow(
+    column(12,
+           DT::DTOutput("predicted_vs_paid_table")
+    )
+  )
+)
   
   
 )

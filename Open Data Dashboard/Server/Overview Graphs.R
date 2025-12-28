@@ -3154,23 +3154,7 @@ observeEvent(input$run_anomaly, {
         AND Number_of_trees = {input$AI_Model_Trees}
         AND HBName = '{input$AI_Model_Healthboard}'
     ")
-    
-    # glue("
-    #   SELECT
-        # PaidDateMonth,
-        # HB,
-        # HBName,
-        # NumberOfPaidItems,
-        # Predicted,
-        # Outlier,
-        # Importance,
-        # Number_of_trees
-    #   FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
-    #   WHERE MonthNum = {input$AI_Model_Month}
-    #     AND Importance = '{input$AI_Model_Type}'
-    #     AND Number_of_trees = {input$AI_Model_Trees}
-    #     AND HBName = '{input$AI_Model_Healthboard}'
-    # ")
+
   })
 
   df <- reactive({
@@ -3182,8 +3166,39 @@ observeEvent(input$run_anomaly, {
     )
   })
   
-  #output$anomaly_table <- renderTable(df)
+  output$predicted_vs_paid_table <- DT::renderDT({
+    
+    df_month <- df() %>%
+      dplyr::filter(
+        MonthNum == as.integer(input$AI_Model_Month),
+        GPCluster == input$RF_GPCluster_List
+      ) %>%
+      dplyr::select(
+        HBName,
+        NumberOfPaidItems,
+        Predicted,
+        Outlier
+      ) %>%  
+      dplyr::mutate(
+        NumberOfPaidItems = as.numeric(NumberOfPaidItems),
+        Predicted = as.numeric(Predicted),
+        Outlier = as.logical(Outlier),
+        HBName = as.character(HBName)
+      )
+    
+    DT::datatable(df_month, style = 'bootstrap',
+                  class = 'table-bordered table-condensed',
+                  rownames = FALSE,
+                  options = list(pageLength = 20,
+                                 dom = 'tip',
+                                 autoWidth = TRUE),
+                  filter = "top")
+    
+  })
   
+
+  
+
 
   output$predicted_vs_paid_plot <- renderPlotly({
   
@@ -3206,9 +3221,10 @@ observeEvent(input$run_anomaly, {
       hoverinfo = "text"
     ) %>%
       layout(
-        title = "Prescribed vs Number of Paid Items",
         xaxis = list(title = "Number of Paid Items"),
-        yaxis = list(title = "Predicted")
+        yaxis = list(title = "Predicted"), 
+        plot_bgcolor = '#f0f0f0',
+        paper_bgcolor = '#f0f0f0'
       )
   })
   
