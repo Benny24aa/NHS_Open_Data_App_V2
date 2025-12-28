@@ -3188,7 +3188,7 @@ observeEvent(input$run_anomaly, {
   output$predicted_vs_paid_plot <- renderPlotly({
   
     df_month <- df() %>%
-      dplyr::filter(MonthNum == as.integer(input$AI_Model_Month))
+      dplyr::filter(MonthNum == as.integer(input$AI_Model_Month), GPCluster == input$RF_GPCluster_List)
     
     plot_ly(
       data = df_month,
