@@ -3261,7 +3261,51 @@ observeEvent(input$run_anomaly, {
       )
   })
   
-  output$ai_model_gp_cluster_filter <- renderUI({
+  output$actual_against_predicted_plot <- renderPlotly({
+    req(df(), input$RF_GPCluster_List)
+    
+    df_monthly <- df() %>%
+      dplyr::filter(GPCluster == input$RF_GPCluster_List) %>%
+      dplyr::mutate(
+        PaidDateMonth = as.Date(as.character(unlist(PaidDateMonth))), ### Databrick thing
+        NumberOfPaidItems = as.numeric(unlist(NumberOfPaidItems)),
+        Predicted = as.numeric(unlist(Predicted))
+      ) %>%
+      dplyr::group_by(PaidDateMonth) %>%
+      dplyr::summarise(
+        Actual = sum(NumberOfPaidItems, na.rm = TRUE),
+        Predicted = sum(Predicted, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      dplyr::arrange(PaidDateMonth)
+    
+    plot_ly() %>%
+      add_lines(
+        data = df_monthly,
+        x = ~PaidDateMonth,
+        y = ~Actual,
+        name = "Actual",
+        line = list(width = 3)
+      ) %>%
+      add_lines(
+        data = df_monthly,
+        x = ~PaidDateMonth,
+        y = ~Predicted,
+        name = "Predicted",
+        line = list(width = 3, dash = "dash")
+      ) %>%
+      layout(
+        title = paste(
+          "Actual vs Predicted – GP Cluster",
+          input$RF_GPCluster_List
+        ),
+        xaxis = list(title = "Month"),
+        yaxis = list(title = "Number of Paid Items"),
+        hovermode = "x unified"
+      )
+  })
+ 
+   output$ai_model_gp_cluster_filter <- renderUI({
     
 
 
