@@ -756,3 +756,25 @@ output$when_ae_title_graph_three <- renderUI({
     "</div>"
   ))
 })
+
+output$model_information <- renderUI({
+  
+  
+  Description <- if (input$AI_Model_Version == "Alpha_Model") {
+    "The Alpha Model uses historical prescribing data and practice characteristics (such as practice size, population age profile, location, and time of year) to estimate how many items a GP practice would normally be expected to prescribe. It then compares these expected values with what actually happened, highlighting practices where the difference is unusually large.
+Results show that most practices behave as expected, forming a clear central group, while a small number stand out with much higher or lower activity than predicted. These outliers are flagged for further review and provide an early warning signal rather than evidence of inappropriate prescribing."
+  } else if (input$AI_Model_Version == "Beta_Model") {
+    "The Beta Model uses historical prescribing data and practice characteristics (such as practice size, population age profile, location, and time of year) and also includes a much wider range of practice-level identifiers, such as individual practice codes, addresses, and postcodes, which makes the model overly complex. This over-factoring means the model focuses too heavily on exact identifiers rather than general prescribing patterns, leading it to under-estimate activity for some practices. As a result, the Beta Model shows more under-fitting than the Alpha Model and its outputs should be treated as exploratory while the feature set is refined."
+  } 
+  else {
+    input$AI_Model_Version
+  }
+  
+  
+  
+  HTML(paste0(
+    paste(h4(
+      Description)),
+    "</div>"
+  ))
+})

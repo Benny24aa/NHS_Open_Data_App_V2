@@ -3346,6 +3346,8 @@ observeEvent(input$run_anomaly, {
                             choices = unique(GPCluster_List)))
      )
    })
+   
+   
   
   
   output$anomaly_ready <- reactive({

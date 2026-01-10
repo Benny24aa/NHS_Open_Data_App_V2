@@ -13,7 +13,7 @@ Random_Forest_UI <- tabPanel(
              h2("Machine Learning - Prescribing and Dispensing Random Forest Outlier Detection", style = "color: #336699; font-weight: 600"))
     ),
     
-    h4("Placeholder"),
+  uiOutput("model_information"),
   
     fluidRow(
       column(3, selectInput("AI_Model_Healthboard", "Select Health Board", 
