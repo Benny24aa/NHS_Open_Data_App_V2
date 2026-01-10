@@ -3274,10 +3274,10 @@ observeEvent(input$run_anomaly, {
   })
   
   output$actual_against_predicted_plot <- renderPlotly({
-    req(df(), input$RF_GPCluster_List)
+    req(df(), input$RF_GPCluster_List_Prediction)
     
     df_monthly <- df() %>%
-      dplyr::filter(GPCluster == input$RF_GPCluster_List) %>%
+      dplyr::filter(GPCluster == input$RF_GPCluster_List_Prediction) %>%
       dplyr::mutate(
         PaidDateMonth = as.Date(as.character(unlist(PaidDateMonth))), ### Databrick thing
         NumberOfPaidItems = as.numeric(unlist(NumberOfPaidItems)),
@@ -3309,11 +3309,13 @@ observeEvent(input$run_anomaly, {
       layout(
         title = paste(
           "Actual vs Predicted – GP Cluster",
-          input$RF_GPCluster_List
+          input$RF_GPCluster_List_Prediction
         ),
         xaxis = list(title = "Month"),
         yaxis = list(title = "Number of Paid Items"),
-        hovermode = "x unified"
+        hovermode = "x unified", 
+        plot_bgcolor = '#f0f0f0',
+        paper_bgcolor = '#f0f0f0'
       )
   })
  
@@ -3330,6 +3332,20 @@ observeEvent(input$run_anomaly, {
                            choices = unique(GPCluster_List)))
     )
   })
+   
+   output$ai_model_gp_cluster_filter_prediction <- renderUI({
+     
+     
+     
+     GPCluster_List <- df () %>%
+       pull(GPCluster)
+     
+     column(3,
+            div(class = "custom-select",
+                selectInput("RF_GPCluster_List_Prediction", "Select GP Cluster", 
+                            choices = unique(GPCluster_List)))
+     )
+   })
   
   
   output$anomaly_ready <- reactive({

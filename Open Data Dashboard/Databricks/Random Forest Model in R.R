@@ -73,8 +73,8 @@ df <- df %>% filter(!is.na(HB))
 
 set.seed(123)
 
-tree_number <- 5
-importance_type <- "permutation"
+tree_number <- 20
+importance_type <- "impurity_corrected"
 
 df[, c("GPCluster", "HSCP", "HB") := lapply(.SD, as.factor), .SDcols = c("GPCluster", "HSCP", "HB")]
 
@@ -221,44 +221,44 @@ df_test_threshold <- test_Df %>%
     ))
 
 
-# 
-# 
-# library(arrow)
-# library(dplyr)
-# library(purrr)
-# 
-# # ---- paths ----
-# input_dir  <- "Databricks/Combine/"
-# output_file <- file.path(input_dir, "results_all_combined.parquet")
-# 
-# # ---- list parquet files ----
-# files <- list.files(
-#   path = input_dir,
-#   pattern = "\\.parquet$",
-#   full.names = TRUE
-# )
-# 
-# # ---- read & combine ----
-# results_all <- map_dfr(files, read_parquet)
-# 
-# # ---- optional sanity checks ----
-# print(nrow(results_all))
-# print(names(results_all))
-# 
-# # ---- write combined parquet ----
-# write_parquet(results_all, output_file)
-# 
-# message("Combined parquet written to: ", output_file)
-# 
-# input_dir  <- "Databricks/Combine/"
-# output_file <- file.path(input_dir, "results_all_combined.parquet")
-# 
-# library(arrow)
-# test <- read_parquet(output_file)
-# 
-# test_final <- left_join(HB_Lookup, test, by = 'HB')
-# 
-# test_final <- test_final %>% 
-#   select(-GeoType)
-# 
-# write_parquet(test_final, output_file)
+
+
+library(arrow)
+library(dplyr)
+library(purrr)
+
+# ---- paths ----
+input_dir  <- "Databricks/Combine/"
+output_file <- file.path(input_dir, "results_all_combined.parquet")
+
+# ---- list parquet files ----
+files <- list.files(
+  path = input_dir,
+  pattern = "\\.parquet$",
+  full.names = TRUE
+)
+
+# ---- read & combine ----
+results_all <- map_dfr(files, read_parquet)
+
+# ---- optional sanity checks ----
+print(nrow(results_all))
+print(names(results_all))
+
+# ---- write combined parquet ----
+write_parquet(results_all, output_file)
+
+message("Combined parquet written to: ", output_file)
+
+input_dir  <- "Databricks/Combine/"
+output_file <- file.path(input_dir, "results_all_combined.parquet")
+
+library(arrow)
+test <- read_parquet(output_file)
+
+test_final <- left_join(HB_Lookup, test, by = 'HB')
+
+test_final <- test_final %>%
+  select(-GeoType)
+
+write_parquet(test_final, output_file)

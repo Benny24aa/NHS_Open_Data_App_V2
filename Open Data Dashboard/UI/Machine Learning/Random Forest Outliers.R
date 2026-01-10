@@ -1,4 +1,5 @@
 source("UI/Machine Learning/Sub UI's/Outliers Page.R")
+source("UI/Machine Learning/Sub UI's/Prediction Page.R")
 
 Random_Forest_UI <- tabPanel(
   title = "Random Forest - Anomaly Detection",
@@ -9,7 +10,7 @@ Random_Forest_UI <- tabPanel(
     # Header (stays outside the blue box)
     fluidRow(
       column(6,
-             h2("Machine Learning - Prescribing and Dispensing Random Forest Outlier Detction", style = "color: #336699; font-weight: 600"))
+             h2("Machine Learning - Prescribing and Dispensing Random Forest Outlier Detection", style = "color: #336699; font-weight: 600"))
     ),
     
     h4("Placeholder"),
@@ -60,7 +61,8 @@ Random_Forest_UI <- tabPanel(
       size = "lg" 
     ),
     br(),
-  Random_Forest_Outlier_UI)
+  Random_Forest_Outlier_UI,
+  Random_Forest_Prediction_UI)
                         
                         
 ) #End of TabPanel
