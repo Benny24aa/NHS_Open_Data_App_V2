@@ -15,17 +15,23 @@ Random_Forest_UI <- tabPanel(
     h4("Placeholder"),
   
     fluidRow(
-      column(4, selectInput("AI_Model_Healthboard", "Select Health Board", 
+      column(3, selectInput("AI_Model_Healthboard", "Select Health Board", 
                                                         choices = unique(WeeklyAE_Healthboard$HBName))),
       
-      column(4,selectInput("AI_Model_Type", "Select Model Type", 
+      column(3,selectInput("AI_Model_Type", "Select Model Type", 
                                                         choices = c(
                                                           "Impurity"               = "impurity",
                                                           "Impurity (Corrected)"   = "impurity_corrected",
                                                           "Permutation Importance" = "permutation"
                                                         ))),
       
-      column(4, selectInput("AI_Model_Trees", "Select Number of Trees", 
+      column(3,selectInput("AI_Model_Version", "Select Model Version", 
+                           choices = c(
+                             "Alpha Model"    = "Alpha_Model",
+                             "Beta Model"   = "Beta_Model"
+                           ))),
+      
+      column(3, selectInput("AI_Model_Trees", "Select Number of Trees", 
                                                         choices = c(
                                                           "5 trees"               = 5,
                                                           "10 trees"     = 10,
