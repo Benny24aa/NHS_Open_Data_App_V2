@@ -3134,9 +3134,21 @@ observeEvent(input$run_anomaly, {
   
   cat("Submitting query...\n")
   
+  model_table <- reactive({
+    if (input$AI_Model_Version == "Alpha_Model") {
+      "nhs_waiting_times_dashboard.default.Random_Forest_Final"
+    } else {
+      "nhs_waiting_times_dashboard.default.Random_Forest_Beta"
+    }
+  })
+  
+  
   sql_query <- reactive({
     req(input$AI_Model_Healthboard)
     
+    
+    ###### nhs_waiting_times_dashboard.default.Random_Forest_Final is Alpha
+    ###### nhs_waiting_times_dashboard.default.Random_Forest_Beta is Beta
     glue("
       SELECT 
               PaidDateMonth,
@@ -3151,7 +3163,7 @@ observeEvent(input$run_anomaly, {
         MonthNum,
         PrescriberLocation,
         DispenserLocation
-      FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
+         FROM {model_table()}
       WHERE Importance = '{input$AI_Model_Type}'
         AND Number_of_trees = {input$AI_Model_Trees}
         AND HBName = '{input$AI_Model_Healthboard}'
