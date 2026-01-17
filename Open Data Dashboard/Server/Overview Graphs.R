@@ -3228,7 +3228,8 @@ observeEvent(input$run_anomaly, {
         AbsResidual,
         FinalFit,
         PrescriberLocation,
-        DispenserLocation
+        DispenserLocation, 
+        Outlier
       )
     
     DT::datatable(df_month, style = 'bootstrap',
@@ -3261,7 +3262,9 @@ observeEvent(input$run_anomaly, {
       text = ~paste(
         "HB:", HBName,
         "<br>Number of Paid Items:", NumberOfPaidItems,
-        "<br>Predicted:", Predicted
+        "<br>Predicted:", Predicted,
+        "<br>Prescriber Location:", PrescriberLocation,
+        "<br>Dispensed Location:", DispenserLocation
       ),
       hoverinfo = "text"
     ) %>%
