@@ -123,9 +123,9 @@ set.seed(123)
 # "impurity_corrected"	Bias-corrected impurity importance. Slower but more reliable than plain impurity.
 # "permutation"	Permutation importance. Measures drop in prediction accuracy when a variable is permuted. Reliable but slower.
 
-importance_type <- "impurity"
+importance_type <- "impurity_corrected"
 
-tree_number <- 100
+tree_number <- 20
 
 rf_model <- ranger(
   NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB  + PrescriberType,
