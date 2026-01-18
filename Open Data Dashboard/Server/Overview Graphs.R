@@ -3140,7 +3140,7 @@ observeEvent(input$run_anomaly, {
     } else if (input$AI_Model_Version == "Beta_Model") {
       "nhs_open_data_ai.default.Random_Forest_Beta"
     } else {
-      "nhs_open_data_ai.default.Random_Forest_Alpha"
+      "nhs_open_data_ai.default.Random_Forest_Delta"
     }
   })
   
@@ -3249,7 +3249,11 @@ observeEvent(input$run_anomaly, {
   output$predicted_vs_paid_plot <- renderPlotly({
   
     df_month <- df() %>%
-      dplyr::filter(MonthNum == as.integer(input$AI_Model_Month), GPCluster == input$RF_GPCluster_List)
+      dplyr::filter(MonthNum == as.integer(input$AI_Model_Month), GPCluster == input$RF_GPCluster_List) %>%
+      dplyr::mutate(
+        PrescriberLocation = as.character(as.integer(PrescriberLocation)),
+        DispenserLocation  = as.character(as.integer(DispenserLocation))
+      )
     
     plot_ly(
       data = df_month,
@@ -3280,7 +3284,13 @@ observeEvent(input$run_anomaly, {
     req(df(), input$RF_GPCluster_List_Prediction)
     
     df_monthly <- df() %>%
-      dplyr::filter(GPCluster == input$RF_GPCluster_List_Prediction) %>%
+      {
+        if (input$RF_GPCluster_List_Prediction != "All") {
+          dplyr::filter(., GPCluster == input$RF_GPCluster_List_Prediction)
+        } else {
+          .
+        }
+      } %>%
       dplyr::mutate(
         PaidDateMonth = as.Date(as.character(unlist(PaidDateMonth))), ### Databrick thing
         NumberOfPaidItems = as.numeric(unlist(NumberOfPaidItems)),
@@ -3339,14 +3349,20 @@ observeEvent(input$run_anomaly, {
    output$ai_model_gp_cluster_filter_prediction <- renderUI({
      
      
+     GPCluster_List <- df() %>%
+       dplyr::pull(GPCluster)
      
-     GPCluster_List <- df () %>%
-       pull(GPCluster)
-     
-     column(3,
-            div(class = "custom-select",
-                selectInput("RF_GPCluster_List_Prediction", "Select GP Cluster", 
-                            choices = unique(GPCluster_List)))
+     column(
+       3,
+       div(
+         class = "custom-select",
+         selectInput(
+           inputId = "RF_GPCluster_List_Prediction",
+           label   = "Select GP Cluster",
+           choices = c("All", unique(GPCluster_List)),
+           selected = "All"
+         )
+       )
      )
    })
    
@@ -3360,28 +3376,47 @@ observeEvent(input$run_anomaly, {
   
 })
 
-observeEvent(input$AI_Model_Version, {
-  
-  if (input$AI_Model_Version == "Beta_Model") {
-    tree_choices <- c(
-      "5 trees"  = 5,
-      "10 trees" = 10,
-      "20 trees" = 20
+observeEvent(
+  list(input$AI_Model_Version, input$AI_Model_Type),
+  {
+    
+    if (input$AI_Model_Version == "Beta_Model") {
+      
+      # Beta model: up to 20 trees
+      tree_choices <- c(
+        "5 trees"  = 5,
+        "10 trees" = 10,
+        "20 trees" = 20
+      )
+      
+    } else if (input$AI_Model_Type == "impurity_corrected") {
+      
+      # Impurity (Corrected): up to 50 trees
+      tree_choices <- c(
+        "5 trees"  = 5,
+        "10 trees" = 10,
+        "20 trees" = 20,
+        "50 trees" = 50
+      )
+      
+    } else {
+      
+      # All other cases: up to 100 trees
+      tree_choices <- c(
+        "5 trees"   = 5,
+        "10 trees"  = 10,
+        "20 trees"  = 20,
+        "50 trees"  = 50,
+        "100 trees" = 100
+      )
+    }
+    
+    updateSelectInput(
+      session,
+      "AI_Model_Trees",
+      choices  = tree_choices,
+      selected = min(as.numeric(tree_choices))
     )
-  } else {
-    tree_choices <- c(
-      "5 trees"   = 5,
-      "10 trees"  = 10,
-      "20 trees"  = 20,
-      "50 trees"  = 50,
-      "100 trees" = 100
-    )
-  }
-  
-  updateSelectInput(
-    session,
-    "AI_Model_Trees",
-    choices = tree_choices,
-    selected = min(as.numeric(tree_choices))
-  )
-})
+  },
+  ignoreInit = TRUE
+)
