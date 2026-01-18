@@ -76,7 +76,7 @@ gp_further_info <- gp_further_info %>%
 
 
 gp_list <- left_join(gp_list, gp_further_info, by = "PrescriberLocation" )
-  
+
 
 df <- df %>%
   filter(PrescriberLocationType == "GP PRACTICE") %>% 
@@ -88,7 +88,7 @@ df <- left_join(gp_list, df, by = "PrescriberLocation")
 df <- df %>%
   select(PaidDateMonth, PrescriberLocation, PrescriberLocationType,
          DispenserLocation, DispenserLocationType, NumberOfPaidItems,
-         HB, HSCP, DataZone, GPCluster, PracticeListSize, age_0_19, age_20_29, age_30_65, age_65_plus)
+         HB, HSCP, DataZone, GPCluster, PracticeListSize, age_0_19, age_20_29, age_30_65, age_65_plus, PrescriberType)
 
 
 
@@ -100,13 +100,18 @@ df <- df %>%
     Year = lubridate::year(PaidDateMonth)
   )
 
+df <- df %>% filter(!is.na(PrescriberType))
+
+df <- df %>%  filter(Year != 2025)
 
 
+factor_vars <- c("HB", "HSCP", "GPCluster", "PrescriberType")
 
 
 # --- Convert to data.table for speed ---
 setDT(df)
 
+df[, (factor_vars) := lapply(.SD, as.factor), .SDcols = factor_vars]
 
 
 
@@ -120,10 +125,10 @@ set.seed(123)
 
 importance_type <- "impurity_corrected"
 
-tree_number <- 100
+tree_number <- 20
 
 rf_model <- ranger(
-  NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB + PrescriberLocation + DispenserLocation,
+  NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB  + PrescriberType,
   data = df,
   num.trees = tree_number,                     # fewer trees for speed; increase if needed
   importance = importance_type,
@@ -140,7 +145,7 @@ test_Df$PrescriberLocation <- as.numeric(test_Df$PrescriberLocation)
 # Keep only GP practices
 test_Df <- test_Df %>%
   filter(PrescriberLocationType == "GP PRACTICE")%>% 
-  filter(DispenserLocationType == "COMMUNITY PHARMACY")
+  filter(DispenserLocationType == "COMMUNITY PHARMACY") 
 
 # Join to GP metadata
 test_Df <- left_join(gp_list, test_Df, by = "PrescriberLocation")
@@ -150,7 +155,7 @@ test_Df <- left_join(gp_list, test_Df, by = "PrescriberLocation")
 test_Df <- test_Df %>%
   select(PaidDateMonth, PrescriberLocation, PrescriberLocationType,
          DispenserLocation, DispenserLocationType, NumberOfPaidItems,
-         HB, HSCP, DataZone, GPCluster, PracticeListSize, age_0_19, age_20_29, age_30_65, age_65_plus)
+         HB, HSCP, DataZone, GPCluster, PracticeListSize, age_0_19, age_20_29, age_30_65, age_65_plus, PrescriberType)
 
 
 
@@ -162,10 +167,12 @@ test_Df <- test_Df %>%
     Year = lubridate::year(PaidDateMonth)
   )
 
+test_Df <- test_Df %>% filter(!is.na(PrescriberType))
 
 # --- Convert to data.table for speed ---
 setDT(test_Df)
 
+test_Df[, (factor_vars) := lapply(.SD, as.factor), .SDcols = factor_vars]
 
 # --- Generate predictions and residuals ---
 test_Df[, Predicted := predict(rf_model, test_Df)$predictions]
@@ -188,48 +195,79 @@ head(test_Df[order(-AbsResidual)], 10)
 test_Df <- test_Df %>% 
   mutate(Importance = importance_type, Number_of_trees = tree_number)
 
-file_name <- glue("Databricks/result_{importance_type}_{tree_number}.parquet")
+rf_model$variable.importance
+
+library(plotly)
+
+# Convert to data frame
+var_imp_df <- data.frame(
+  Variable = names(rf_model$variable.importance),
+  Importance = as.numeric(rf_model$variable.importance)
+)
+
+# Sort decreasing for nicer visualization
+var_imp_df <- var_imp_df[order(var_imp_df$Importance, decreasing = TRUE), ]
+
+# Plotly bar chart
+fig <- plot_ly(
+  data = var_imp_df,
+  x = ~Importance,
+  y = ~reorder(Variable, Importance),
+  type = 'bar',
+  orientation = 'h',   # horizontal bars
+  marker = list(color = 'steelblue')
+) %>%
+  layout(
+    title = "Random Forest Variable Importance",
+    xaxis = list(title = "Importance"),
+    yaxis = list(title = "Variable")
+  )
+
+fig
+
+file_name <- glue("Databricks/Combine/result_{importance_type}_{tree_number}.parquet")
 
 write_parquet(test_Df, file_name)
 
-
-
-library(arrow)
-library(dplyr)
-library(purrr)
-
-# ---- paths ----
-input_dir  <- "Databricks/Combine/"
-output_file <- file.path(input_dir, "results_all_combined.parquet")
-
-# ---- list parquet files ----
-files <- list.files(
-  path = input_dir,
-  pattern = "\\.parquet$",
-  full.names = TRUE
-)
-
-# ---- read & combine ----
-results_all <- map_dfr(files, read_parquet)
-
-# ---- optional sanity checks ----
-print(nrow(results_all))
-print(names(results_all))
-
-# ---- write combined parquet ----
-write_parquet(results_all, output_file)
-
-message("Combined parquet written to: ", output_file)
-
-input_dir  <- "Databricks/Combine/"
-output_file <- file.path(input_dir, "results_all_combined.parquet")
-
-library(arrow)
-test <- read_parquet(output_file)
-
-test_final <- left_join(HB_Lookup, test, by = 'HB')
-
-test_final <- test_final %>% 
-  select(-GeoType)
-
-write_parquet(test_final, output_file)
+# 
+# 
+# library(arrow)
+# library(dplyr)
+# library(purrr)
+# 
+# # ---- paths ----
+# input_dir  <- "Databricks/Combine/"
+# output_file <- file.path(input_dir, "results_all_combined.parquet")
+# output_file_final <- file.path(input_dir, "results_all_combined_cleaned.parquet")
+# 
+# 
+# # ---- list parquet files ----
+# files <- list.files(
+#   path = input_dir,
+#   pattern = "\\.parquet$",
+#   full.names = TRUE
+# )
+# 
+# # ---- read & combine ----
+# results_all <- map_dfr(files, read_parquet)
+# 
+# # ---- optional sanity checks ----
+# print(nrow(results_all))
+# print(names(results_all))
+# 
+# # ---- write combined parquet ----
+# write_parquet(results_all, output_file)
+# 
+# message("Combined parquet written to: ", output_file)
+# 
+# 
+# library(arrow)
+# test <- read_parquet(output_file)
+# 
+# test_final <- left_join(HB_Lookup, test, by = 'HB')
+# 
+# test_final <- test_final %>%
+#   select(-GeoType)
+# 
+# write_parquet(test_final, output_file_final)
+# 

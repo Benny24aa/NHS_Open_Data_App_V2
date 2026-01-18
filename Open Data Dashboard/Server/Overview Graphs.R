@@ -3134,25 +3134,41 @@ observeEvent(input$run_anomaly, {
   
   cat("Submitting query...\n")
   
+  model_table <- reactive({
+    if (input$AI_Model_Version == "Alpha_Model") {
+      "nhs_open_data_ai.default.Random_Forest_Alpha"
+    } else if (input$AI_Model_Version == "Beta_Model") {
+      "nhs_open_data_ai.default.Random_Forest_Beta"
+    } else {
+      "nhs_open_data_ai.default.Random_Forest_Alpha"
+    }
+  })
+  
+  
   sql_query <- reactive({
     req(input$AI_Model_Healthboard)
     
+
     glue("
-      SELECT
-        PaidDateMonth,
+      SELECT 
+              PaidDateMonth,
         HB,
         HBName,
         NumberOfPaidItems,
         Predicted,
         Outlier,
         Importance,
-        Number_of_trees
-      FROM nhs_waiting_times_dashboard.default.Random_Forest_Final
-      WHERE MonthNum = {input$AI_Model_Month}
-        AND Importance = '{input$AI_Model_Type}'
+        Number_of_trees,
+        GPCluster,
+        MonthNum,
+        PrescriberLocation,
+        DispenserLocation
+         FROM {model_table()}
+      WHERE Importance = '{input$AI_Model_Type}'
         AND Number_of_trees = {input$AI_Model_Trees}
         AND HBName = '{input$AI_Model_Healthboard}'
     ")
+
   })
 
   df <- reactive({
@@ -3164,13 +3180,79 @@ observeEvent(input$run_anomaly, {
     )
   })
   
-  output$anomaly_table <- renderTable(df)
+  output$predicted_vs_paid_table <- DT::renderDT({
+    
+    df_month <- df() %>%
+      dplyr::filter(
+        MonthNum == as.integer(input$AI_Model_Month),
+        GPCluster == input$RF_GPCluster_List
+      ) %>%
+      dplyr::select(
+        HBName,
+        NumberOfPaidItems,
+        Predicted,
+        Outlier, ,
+        PrescriberLocation,
+        DispenserLocation
+      ) %>%  
+      dplyr::mutate(
+        NumberOfPaidItems = as.numeric(NumberOfPaidItems),
+        Predicted = as.numeric(Predicted),
+        Outlier = as.logical(Outlier),
+        HBName = as.character(HBName),
+        PrescriberLocation = as.numeric(PrescriberLocation),
+        DispenserLocation = as.numeric(DispenserLocation)
+      ) %>% 
+      dplyr::mutate(
+        Predicted = round(Predicted, 0),
+        Residual = NumberOfPaidItems - Predicted,
+          FitDirection = dplyr::case_when(
+            Residual > 0  ~ "Underfitting",
+            Residual < 0  ~ "Overfitting",
+            Residual == 0 ~ "Perfect fit"
+          ),
+       AbsResidual = abs(Residual),
+       TenPercentValue = NumberOfPaidItems/100 * 10,
+       WithinTenPercent = TenPercentValue > AbsResidual,
+       FinalFit = dplyr::if_else(
+         WithinTenPercent,
+         "Perfect Fit",
+         FitDirection
+       )
+       ) %>% 
+      dplyr::select(
+        HBName,
+        NumberOfPaidItems,
+        Predicted,
+        Residual,
+        AbsResidual,
+        FinalFit,
+        PrescriberLocation,
+        DispenserLocation, 
+        Outlier
+      )
+    
+    DT::datatable(df_month, style = 'bootstrap',
+                  class = 'table-bordered table-condensed',
+                  rownames = FALSE,
+                  options = list(pageLength = 20,
+                                 dom = 'tip',
+                                 autoWidth = TRUE),
+                  filter = "top")
+    
+  })
   
+
+  
+
+
   output$predicted_vs_paid_plot <- renderPlotly({
   
+    df_month <- df() %>%
+      dplyr::filter(MonthNum == as.integer(input$AI_Model_Month), GPCluster == input$RF_GPCluster_List)
     
     plot_ly(
-      data = df(),
+      data = df_month,
       x = ~NumberOfPaidItems,
       y = ~Predicted,
       color = ~Outlier,
@@ -3180,15 +3262,100 @@ observeEvent(input$run_anomaly, {
       text = ~paste(
         "HB:", HBName,
         "<br>Number of Paid Items:", NumberOfPaidItems,
-        "<br>Predicted:", Predicted
+        "<br>Predicted:", Predicted,
+        "<br>Prescriber Location:", PrescriberLocation,
+        "<br>Dispensed Location:", DispenserLocation
       ),
       hoverinfo = "text"
     ) %>%
       layout(
-        title = "Prescribed vs Number of Paid Items",
         xaxis = list(title = "Number of Paid Items"),
-        yaxis = list(title = "Predicted")
+        yaxis = list(title = "Predicted"), 
+        plot_bgcolor = '#f0f0f0',
+        paper_bgcolor = '#f0f0f0'
       )
   })
+  
+  output$actual_against_predicted_plot <- renderPlotly({
+    req(df(), input$RF_GPCluster_List_Prediction)
+    
+    df_monthly <- df() %>%
+      dplyr::filter(GPCluster == input$RF_GPCluster_List_Prediction) %>%
+      dplyr::mutate(
+        PaidDateMonth = as.Date(as.character(unlist(PaidDateMonth))), ### Databrick thing
+        NumberOfPaidItems = as.numeric(unlist(NumberOfPaidItems)),
+        Predicted = as.numeric(unlist(Predicted))
+      ) %>%
+      dplyr::group_by(PaidDateMonth) %>%
+      dplyr::summarise(
+        Actual = sum(NumberOfPaidItems, na.rm = TRUE),
+        Predicted = sum(Predicted, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      dplyr::arrange(PaidDateMonth)
+    
+    plot_ly() %>%
+      add_lines(
+        data = df_monthly,
+        x = ~PaidDateMonth,
+        y = ~Actual,
+        name = "Actual",
+        line = list(width = 3)
+      ) %>%
+      add_lines(
+        data = df_monthly,
+        x = ~PaidDateMonth,
+        y = ~Predicted,
+        name = "Predicted",
+        line = list(width = 3, dash = "dash")
+      ) %>%
+      layout(
+        title = paste(
+          "Actual vs Predicted – GP Cluster",
+          input$RF_GPCluster_List_Prediction
+        ),
+        xaxis = list(title = "Month"),
+        yaxis = list(title = "Number of Paid Items"),
+        hovermode = "x unified", 
+        plot_bgcolor = '#f0f0f0',
+        paper_bgcolor = '#f0f0f0'
+      )
+  })
+ 
+   output$ai_model_gp_cluster_filter <- renderUI({
+    
+
+
+    GPCluster_List <- df () %>%
+      pull(GPCluster)
+
+    column(3,
+           div(class = "custom-select",
+               selectInput("RF_GPCluster_List", "Select GP Cluster", 
+                           choices = unique(GPCluster_List)))
+    )
+  })
+   
+   output$ai_model_gp_cluster_filter_prediction <- renderUI({
+     
+     
+     
+     GPCluster_List <- df () %>%
+       pull(GPCluster)
+     
+     column(3,
+            div(class = "custom-select",
+                selectInput("RF_GPCluster_List_Prediction", "Select GP Cluster", 
+                            choices = unique(GPCluster_List)))
+     )
+   })
+   
+   
+  
+  
+  output$anomaly_ready <- reactive({
+    !is.null(df())
+  })
+  outputOptions(output, "anomaly_ready", suspendWhenHidden = FALSE)
   
 })
