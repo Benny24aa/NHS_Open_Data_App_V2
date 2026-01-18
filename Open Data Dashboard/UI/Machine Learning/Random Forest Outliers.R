@@ -28,6 +28,7 @@ Random_Forest_UI <- tabPanel(
       
       column(3,selectInput("AI_Model_Version", "Select Model Version", 
                            choices = c(
+                             "Main Model" = "Main_Model",
                              "Alpha Model"    = "Alpha_Model",
                              "Beta Model"   = "Beta_Model"
                            ))),
