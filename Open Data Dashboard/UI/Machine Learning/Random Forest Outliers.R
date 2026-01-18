@@ -9,8 +9,8 @@ Random_Forest_UI <- tabPanel(
   
     # Header (stays outside the blue box)
     fluidRow(
-      column(6,
-             h2("Machine Learning - Prescribing and Dispensing Random Forest Outlier Detection", style = "color: #336699; font-weight: 600"))
+      column(8,
+             h2("Prescribing and Dispensing Random Forest Outlier Detection - Beta Stage", style = "color: #336699; font-weight: 600"))
     ),
     
   uiOutput("model_information"),
@@ -28,9 +28,10 @@ Random_Forest_UI <- tabPanel(
       
       column(3,selectInput("AI_Model_Version", "Select Model Version", 
                            choices = c(
-                             "Main Model" = "Main_Model",
+                       
                              "Alpha Model"    = "Alpha_Model",
-                             "Beta Model"   = "Beta_Model"
+                             "Beta Model"   = "Beta_Model",
+                             "Delta Modal" = "Main_Model"
                            ))),
       
       column(3, selectInput("AI_Model_Trees", "Select Number of Trees", 
