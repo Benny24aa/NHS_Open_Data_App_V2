@@ -80,8 +80,7 @@ gp_list <- left_join(gp_list, gp_further_info, by = "PrescriberLocation" )
 
 df <- df %>%
   filter(PrescriberLocationType == "GP PRACTICE") %>% 
-  filter(DispenserLocationType == "COMMUNITY PHARMACY") %>% 
-  filter(PrescriberType == "NURSE")
+  filter(DispenserLocationType == "COMMUNITY PHARMACY")
 
 # Join to GP metadata
 df <- left_join(gp_list, df, by = "PrescriberLocation")
@@ -124,9 +123,9 @@ set.seed(123)
 # "impurity_corrected"	Bias-corrected impurity importance. Slower but more reliable than plain impurity.
 # "permutation"	Permutation importance. Measures drop in prediction accuracy when a variable is permuted. Reliable but slower.
 
-importance_type <- "permutation"
+importance_type <- "impurity"
 
-tree_number <- 1000
+tree_number <- 100
 
 rf_model <- ranger(
   NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB  + PrescriberType,
@@ -146,8 +145,7 @@ test_Df$PrescriberLocation <- as.numeric(test_Df$PrescriberLocation)
 # Keep only GP practices
 test_Df <- test_Df %>%
   filter(PrescriberLocationType == "GP PRACTICE")%>% 
-  filter(DispenserLocationType == "COMMUNITY PHARMACY") %>% 
-  filter(PrescriberType == "NURSE")
+  filter(DispenserLocationType == "COMMUNITY PHARMACY") 
 
 # Join to GP metadata
 test_Df <- left_join(gp_list, test_Df, by = "PrescriberLocation")
@@ -227,49 +225,49 @@ fig <- plot_ly(
 
 fig
 
-file_name <- glue("Databricks/result_{importance_type}_{tree_number}.parquet")
+file_name <- glue("Databricks/Combine/result_{importance_type}_{tree_number}.parquet")
 
 write_parquet(test_Df, file_name)
 
-
-
-library(arrow)
-library(dplyr)
-library(purrr)
-
-# ---- paths ----
-input_dir  <- "Databricks/Combine/"
-output_file <- file.path(input_dir, "results_all_combined.parquet")
-output_file_final <- file.path(input_dir, "results_all_combined_cleaned.parquet")
-
-
-# ---- list parquet files ----
-files <- list.files(
-  path = input_dir,
-  pattern = "\\.parquet$",
-  full.names = TRUE
-)
-
-# ---- read & combine ----
-results_all <- map_dfr(files, read_parquet)
-
-# ---- optional sanity checks ----
-print(nrow(results_all))
-print(names(results_all))
-
-# ---- write combined parquet ----
-write_parquet(results_all, output_file)
-
-message("Combined parquet written to: ", output_file)
-
-
-library(arrow)
-test <- read_parquet(output_file)
-
-test_final <- left_join(HB_Lookup, test, by = 'HB')
-
-test_final <- test_final %>%
-  select(-GeoType)
-
-write_parquet(test_final, output_file_final)
-
+# 
+# 
+# library(arrow)
+# library(dplyr)
+# library(purrr)
+# 
+# # ---- paths ----
+# input_dir  <- "Databricks/Combine/"
+# output_file <- file.path(input_dir, "results_all_combined.parquet")
+# output_file_final <- file.path(input_dir, "results_all_combined_cleaned.parquet")
+# 
+# 
+# # ---- list parquet files ----
+# files <- list.files(
+#   path = input_dir,
+#   pattern = "\\.parquet$",
+#   full.names = TRUE
+# )
+# 
+# # ---- read & combine ----
+# results_all <- map_dfr(files, read_parquet)
+# 
+# # ---- optional sanity checks ----
+# print(nrow(results_all))
+# print(names(results_all))
+# 
+# # ---- write combined parquet ----
+# write_parquet(results_all, output_file)
+# 
+# message("Combined parquet written to: ", output_file)
+# 
+# 
+# library(arrow)
+# test <- read_parquet(output_file)
+# 
+# test_final <- left_join(HB_Lookup, test, by = 'HB')
+# 
+# test_final <- test_final %>%
+#   select(-GeoType)
+# 
+# write_parquet(test_final, output_file_final)
+# 
