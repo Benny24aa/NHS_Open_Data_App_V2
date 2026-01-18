@@ -3359,3 +3359,29 @@ observeEvent(input$run_anomaly, {
   outputOptions(output, "anomaly_ready", suspendWhenHidden = FALSE)
   
 })
+
+observeEvent(input$AI_Model_Version, {
+  
+  if (input$AI_Model_Version == "Beta_Model") {
+    tree_choices <- c(
+      "5 trees"  = 5,
+      "10 trees" = 10,
+      "20 trees" = 20
+    )
+  } else {
+    tree_choices <- c(
+      "5 trees"   = 5,
+      "10 trees"  = 10,
+      "20 trees"  = 20,
+      "50 trees"  = 50,
+      "100 trees" = 100
+    )
+  }
+  
+  updateSelectInput(
+    session,
+    "AI_Model_Trees",
+    choices = tree_choices,
+    selected = min(as.numeric(tree_choices))
+  )
+})
