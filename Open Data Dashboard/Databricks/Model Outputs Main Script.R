@@ -109,19 +109,11 @@ if (model_type == "Beta") {
   )
 }
 
-if (model_type == "Charlie") {
+if (model_type %in% c("Charlie", "Delta")) {
   df <- df %>%
     select(PaidDateMonth, PrescriberLocation, PrescriberLocationType,
            DispenserLocation, DispenserLocationType, NumberOfPaidItems,
            HB, HSCP, DataZone, GPCluster, PracticeListSize, age_0_19, age_20_29, age_30_65, age_65_plus, PrescriberType)
-}
-
-if (model_type == "Delta") {
-  df <- df %>%
-    select(PaidDateMonth, PrescriberLocation, PrescriberLocationType,
-           DispenserLocation, DispenserLocationType, NumberOfPaidItems,
-           HB, HSCP, DataZone, GPCluster, PracticeListSize, age_0_19, age_20_29, age_30_65, age_65_plus, PrescriberType)
-  
 }
 
 df <- df %>%
