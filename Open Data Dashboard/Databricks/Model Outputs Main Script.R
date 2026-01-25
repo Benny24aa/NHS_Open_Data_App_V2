@@ -130,7 +130,10 @@ if (model_type == "Beta") {
     mutate(log_items = log1p(NumberOfPaidItems))
 }
 
+# --- Convert to data.table for speed ---
+setDT(df)
 
-
+# --- Train fast random forest model (ranger) ---
+set.seed(123)
 
 }
