@@ -30,7 +30,9 @@ importance_type <- "impurity_corrected"
 
 tree_number <- 100
 
+##### Decide if you want to save the output of the model you have ran.
 
+save_output <- "No"
 
 if (train_data_exist == "No") {
 
