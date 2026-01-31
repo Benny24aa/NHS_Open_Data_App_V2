@@ -24,15 +24,17 @@ train_data_exist <- "No" ## Note some models have slightly different cleaning pr
 # "impurity_corrected"	Bias-corrected impurity importance. Slower but more reliable than plain impurity.
 # "permutation"	Permutation importance. Measures drop in prediction accuracy when a variable is permuted. Reliable but slower.
 
-importance_type <- "impurity_corrected"
+importance_type <- "impurity"
 
 # We look at 5, 10, 20, 50 and 100 for the number of trees
 
-tree_number <- 100
+tree_number <- 5
 
 ##### Decide if you want to save the output of the model you have ran.
 
 save_output <- "No"
+
+
 
 if (train_data_exist == "No") {
 
@@ -92,8 +94,12 @@ df <- df %>%
   filter(
     PrescriberLocationType == "GP PRACTICE",
     DispenserLocationType == "COMMUNITY PHARMACY"
-  ) %>%
-  left_join(gp_list, by = "PrescriberLocation") 
+  )
+
+  # Join to GP metadata
+  df <- left_join(gp_list, df, by = "PrescriberLocation")
+
+########################
 
 if (model_type == "Alpha") {
    df <- df %>%
@@ -130,10 +136,99 @@ if (model_type == "Beta") {
     mutate(log_items = log1p(NumberOfPaidItems))
 }
 
-# --- Convert to data.table for speed ---
-setDT(df)
 
-# --- Train fast random forest model (ranger) ---
-set.seed(123)
 
+
+
+
+if (model_type != "Delta") {
+ # --- Convert to data.table for speed ---
+    setDT(df)
+
+  # --- Train fast random forest model (ranger) ---
+  set.seed(123)
+}
+
+if (model_type == "Delta") {
+  
+  factor_vars <- c("HB", "HSCP", "GPCluster", "PrescriberType")
+  
+  
+  # --- Convert to data.table for speed ---
+  setDT(df)
+  
+  df[, (factor_vars) := lapply(.SD, as.factor), .SDcols = factor_vars]
+}
+
+if (model_type == "Beta") {
+  ##### Needs cleaned up
+  
+  df[, c("GPCluster", "HSCP", "HB") := lapply(.SD, as.factor), .SDcols = c("GPCluster", "HSCP", "HB")]
+  
+  df$PrescriberLocation <- factor(df$PrescriberLocation)
+  df$DispenserLocation  <- factor(df$DispenserLocation)
+  df$MonthNum  <- factor(df$MonthNum)
+  df$GPPracticeName <- factor(df$GPPracticeName)
+  df$AddressLine1 <- factor(df$AddressLine1)
+  df$AddressLine2 <- factor(df$AddressLine2)
+  df$AddressLine3 <- factor(df$AddressLine3)
+  df$Postcode <- factor(df$Postcode)
+  df$PracticeType <- factor(df$PracticeType)
+  df$PrescriberType <- factor(df$PrescriberType)
+  
+}
+
+}
+
+##### Data Cleaning Section Done
+
+if (model_type == "Alpha") {
+  rf_model <- ranger(
+    NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB + PrescriberLocation + DispenserLocation,
+    data = df,
+    num.trees = tree_number,                     # fewer trees for speed; increase if needed
+    importance = importance_type,
+    num.threads = 2
+    # num.threads = parallel::detectCores() - 1
+  )
+}
+
+if (model_type == "Beta") { 
+  
+  rf_model <- ranger(
+    log_items ~
+      MonthNum +
+      PracticeListSize +
+      age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + HB +
+      PrescriberLocation + DispenserLocation + GPPracticeName + AddressLine1 + AddressLine2 + AddressLine3 + Postcode + PracticeType + PrescriberType,
+    data = df,
+    num.trees = tree_number,
+    min.node.size = 1,
+    max.depth = 30,
+    mtry = 7,
+    importance = importance_type,
+    num.threads = 2
+  )}
+
+if (model_type == "Charlie") {
+  
+  rf_model <- ranger(
+    NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB + PrescriberLocation + DispenserLocation + PrescriberType,
+    data = df,
+    num.trees = tree_number,                     # fewer trees for speed; increase if needed
+    importance = importance_type,
+    num.threads = 2
+    # num.threads = parallel::detectCores() - 1
+  )
+}
+
+if (model_type == "Delta") {
+  rf_model <- ranger(
+    NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB  + PrescriberType,
+    data = df,
+    num.trees = tree_number,                     # fewer trees for speed; increase if needed
+    importance = importance_type,
+    num.threads = 2
+    # num.threads = parallel::detectCores() - 1
+  )
 }
