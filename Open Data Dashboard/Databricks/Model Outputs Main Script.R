@@ -13,11 +13,11 @@ library(glue)
 
 ###### Define the type of model you wish to run, this could be Alpha, Beta, Charlie, or Delta.
 
-model_type <- "Beta"
+model_type <- "Alpha"
 
 ##### Yes or No to this question - If you have ran the data cleaning process before, press Yes so you don't have to go through it again for the training data
 
-train_data_exist <- "No" ## Note some models have slightly different cleaning processes, so only say yes if you want to run the same model twice with other hyper parameters 
+train_data_in_environment <- "No" ## Note some models have slightly different cleaning processes, so only say yes if you want to run the same model twice with other hyper parameters 
 
 # "none"	No variable importance computed (fastest).
 # "impurity"	Gini impurity decrease (classification) or variance decrease (regression). Fast, but biased toward variables with many categories.
@@ -36,7 +36,42 @@ save_output <- "No"
 
 
 
-if (train_data_exist == "No") {
+
+file_path <- "Databricks/presdisp.parquet"
+
+needs_refresh <- TRUE
+
+if (file.exists(file_path)) {
+  
+  file_age_days <- as.numeric(
+    difftime(Sys.time(), file.info(file_path)$mtime, units = "days")
+  )
+  
+  print(file_age_days)  # <- keep this while debugging
+  
+  if (file_age_days < 7) {
+    needs_refresh <- FALSE
+    message("Parquet file is current — no refresh needed.")
+  }
+}
+
+if (needs_refresh) {
+  
+  message("Refreshing prescribed-dispensed dataset...")
+  
+  presdisp <- get_dataset("prescribed-dispensed", include_context = TRUE) %>% 
+    filter(ResID != "31576bf0-fc05-49ff-a99a-2c253a0c3342") %>% 
+    select(-ResName, -ResID, -ResCreatedDate, -ResModifiedDate)
+  
+  write_parquet(presdisp, file_path)
+  
+  message("Dataset refreshed and saved.")
+}
+
+
+
+
+if (train_data_in_environment == "No") {
 
 ####### Preparing Data for Random Forest Model of Choice
 
