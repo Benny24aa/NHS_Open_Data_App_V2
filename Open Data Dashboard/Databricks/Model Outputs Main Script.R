@@ -35,8 +35,6 @@ tree_number <- 5
 save_output <- "No"
 
 
-
-
 file_path <- "Databricks/presdisp.parquet"
 
 needs_refresh <- TRUE
@@ -67,8 +65,6 @@ if (needs_refresh) {
   
   message("Dataset refreshed and saved.")
 }
-
-
 
 
 if (train_data_in_environment == "No") {
@@ -196,20 +192,16 @@ if (model_type == "Delta") {
 }
 
 if (model_type == "Beta") {
-  ##### Needs cleaned up
+  factor_vars <- c(
+    "GPCluster", "HSCP", "HB",
+    "PrescriberLocation", "DispenserLocation",
+    "MonthNum", "GPPracticeName",
+    "AddressLine1", "AddressLine2", "AddressLine3",
+    "Postcode", "PracticeType", "PrescriberType"
+  )
   
-  df[, c("GPCluster", "HSCP", "HB") := lapply(.SD, as.factor), .SDcols = c("GPCluster", "HSCP", "HB")]
-  
-  df$PrescriberLocation <- factor(df$PrescriberLocation)
-  df$DispenserLocation  <- factor(df$DispenserLocation)
-  df$MonthNum  <- factor(df$MonthNum)
-  df$GPPracticeName <- factor(df$GPPracticeName)
-  df$AddressLine1 <- factor(df$AddressLine1)
-  df$AddressLine2 <- factor(df$AddressLine2)
-  df$AddressLine3 <- factor(df$AddressLine3)
-  df$Postcode <- factor(df$Postcode)
-  df$PracticeType <- factor(df$PracticeType)
-  df$PrescriberType <- factor(df$PrescriberType)
+  # Convert all in one go
+  df[, (factor_vars) := lapply(.SD, as.factor), .SDcols = factor_vars]
   
 }
 
@@ -217,16 +209,8 @@ if (model_type == "Beta") {
 
 ##### Data Cleaning Section Done
 
-if (model_type == "Alpha") {
-  rf_model <- ranger(
-    NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB + PrescriberLocation + DispenserLocation,
-    data = df,
-    num.trees = tree_number,                     # fewer trees for speed; increase if needed
-    importance = importance_type,
-    num.threads = 2
-    # num.threads = parallel::detectCores() - 1
-  )
-}
+
+##### Modelling Starts
 
 if (model_type == "Beta") { 
   
@@ -243,27 +227,35 @@ if (model_type == "Beta") {
     mtry = 7,
     importance = importance_type,
     num.threads = 2
-  )}
-
-if (model_type == "Charlie") {
-  
-  rf_model <- ranger(
-    NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB + PrescriberLocation + DispenserLocation + PrescriberType,
-    data = df,
-    num.trees = tree_number,                     # fewer trees for speed; increase if needed
-    importance = importance_type,
-    num.threads = 2
-    # num.threads = parallel::detectCores() - 1
   )
-}
-
-if (model_type == "Delta") {
+  
+} else if (model_type %in% c("Alpha", "Charlie", "Delta")) {
+  
+  # Define predictors for each model
+  predictors <- switch(model_type,
+                       Alpha   = c("MonthNum", "PaidDateMonth", "PracticeListSize",
+                                   "age_0_19", "age_20_29", "age_30_65", "age_65_plus",
+                                   "GPCluster", "HSCP", "DataZone", "HB",
+                                   "PrescriberLocation", "DispenserLocation"),
+                       Charlie = c("MonthNum", "PaidDateMonth", "PracticeListSize",
+                                   "age_0_19", "age_20_29", "age_30_65", "age_65_plus",
+                                   "GPCluster", "HSCP", "DataZone", "HB",
+                                   "PrescriberLocation", "DispenserLocation", "PrescriberType"),
+                       Delta   = c("MonthNum", "PaidDateMonth", "PracticeListSize",
+                                   "age_0_19", "age_20_29", "age_30_65", "age_65_plus",
+                                   "GPCluster", "HSCP", "DataZone", "HB",
+                                   "PrescriberType")
+  )
+  
+  # Build formula dynamically
+  rf_formula <- as.formula(paste("NumberOfPaidItems ~", paste(predictors, collapse = " + ")))
+  
+  # Run ranger
   rf_model <- ranger(
-    NumberOfPaidItems ~ MonthNum + PaidDateMonth + PracticeListSize + age_0_19 + age_20_29 + age_30_65 + age_65_plus + GPCluster + HSCP + DataZone + HB  + PrescriberType,
+    formula = rf_formula,
     data = df,
-    num.trees = tree_number,                     # fewer trees for speed; increase if needed
+    num.trees = tree_number,
     importance = importance_type,
     num.threads = 2
-    # num.threads = parallel::detectCores() - 1
   )
 }
