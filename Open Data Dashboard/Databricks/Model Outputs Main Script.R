@@ -13,7 +13,7 @@ library(glue)
 
 ###### Define the type of model you wish to run, this could be Alpha, Beta, Charlie, or Delta.
 
-model_type <- "Alpha"
+model_type <- "Delta"
 
 ##### Yes or No to this question - If you have ran the data cleaning process before, press Yes so you don't have to go through it again for the training data
 
@@ -73,6 +73,8 @@ if (train_data_in_environment == "No") {
 
 # --- Load main prescribing dataset ---
 df <- read_parquet("Databricks/presdisp.parquet")
+
+
 # Convert PrescriberLocation to numeric
 df$PrescriberLocation <- as.numeric(df$PrescriberLocation)
 
@@ -162,12 +164,11 @@ df <- df %>%
     Year = lubridate::year(PaidDateMonth)
   )
 
+
 if (model_type == "Beta") {
   df <- df %>%
     mutate(log_items = log1p(NumberOfPaidItems))
 }
-
-
 
 
 
@@ -191,6 +192,9 @@ if (model_type == "Delta") {
   df[, (factor_vars) := lapply(.SD, as.factor), .SDcols = factor_vars]
 }
 
+
+
+
 if (model_type == "Beta") {
   factor_vars <- c(
     "GPCluster", "HSCP", "HB",
@@ -204,6 +208,14 @@ if (model_type == "Beta") {
   df[, (factor_vars) := lapply(.SD, as.factor), .SDcols = factor_vars]
   
 }
+
+#### Breaking Test Data and Main Data up
+
+test_Df <- df %>% 
+  filter(PaidDateMonth >= ym("2025-01"))
+
+df <- df %>%
+  filter(PaidDateMonth < ym("2025-01"))
 
 }
 
@@ -258,4 +270,46 @@ if (model_type == "Beta") {
     importance = importance_type,
     num.threads = 2
   )
+}
+
+if (model_type == "Alpha") {
+  test_Df <- test_Df %>%
+    select(PaidDateMonth, PrescriberLocation, PrescriberLocationType,
+           DispenserLocation, DispenserLocationType, NumberOfPaidItems,
+           HB, HSCP, DataZone, GPCluster, PracticeListSize, age_0_19, age_20_29, age_30_65, age_65_plus, Year, MonthNum)
+}
+
+if (model_type == "Beta") {
+  test_Df <- test_Df %>% 
+  select(
+    PaidDateMonth, PrescriberLocation, NumberOfPaidItems,
+    HB, HSCP, GPCluster, PracticeListSize, DispenserLocation,
+    age_0_19, age_20_29, age_30_65, age_65_plus, GPPracticeName, AddressLine1, AddressLine2, AddressLine3, Postcode, PracticeType, PrescriberType, Year, MonthNum
+  ) 
+}
+
+if (model_type %in% c("Charlie", "Delta")) {
+  test_Df <- test_Df %>%
+    select(PaidDateMonth, PrescriberLocation, PrescriberLocationType,
+           DispenserLocation, DispenserLocationType, NumberOfPaidItems,
+           HB, HSCP, DataZone, GPCluster, PracticeListSize, age_0_19, age_20_29, age_30_65, age_65_plus, PrescriberType, Year, MonthNum)
+}
+
+if (model_type != "Beta") {
+  # --- Generate predictions and residuals ---
+  test_Df[, Predicted := predict(rf_model, test_Df)$predictions]
+  test_Df[, Residual := NumberOfPaidItems - Predicted]
+  test_Df[, AbsResidual := abs(Residual)]
+  
+}
+
+
+if (model_type == "Beta") {
+  
+  test_Df[, Predicted :=
+            expm1(predict(rf_model, test_Df)$predictions)
+  ]
+  
+  test_Df[, Residual := NumberOfPaidItems - Predicted]
+  test_Df[, AbsResidual := abs(Residual)]
 }
