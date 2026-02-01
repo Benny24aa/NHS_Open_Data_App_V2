@@ -30,10 +30,19 @@ importance_type <- "impurity"
 
 tree_number <- 5
 
-##### Decide if you want to save the output of the model you have ran.
+##### Decide if you want to save the output of the model you have ran. No or Yes
 
-save_output <- "No"
+save_output <- "Yes"
 
+##### Decide if you want to merge the outputs together so you can place them onto databricks - note you have to move the files yourself 
+
+merge_outputs <- "No"
+
+#### This creates plotly graphs and soon a rmarkdown to look at model quality metrics
+
+further_analytics <- "Yes"
+
+###### Data extraction started
 
 file_path <- "Databricks/presdisp.parquet"
 
@@ -309,7 +318,115 @@ if (model_type == "Beta") {
   test_Df[, Predicted :=
             expm1(predict(rf_model, test_Df)$predictions)
   ]
-  
   test_Df[, Residual := NumberOfPaidItems - Predicted]
   test_Df[, AbsResidual := abs(Residual)]
+}
+
+
+# --- Identify outliers (top 5% by absolute residual) ---
+threshold <- quantile(test_Df$AbsResidual, 0.95)
+test_Df[, Outlier := AbsResidual > threshold]
+
+
+# --- Optional: Summary outputs ---
+cat("Outlier threshold:", round(threshold, 2), "\n")
+cat("Number of outliers:", sum(df$Outlier), "of", nrow(df), "records\n")
+
+# View top 10 most extreme outliers
+head(test_Df[order(-AbsResidual)], 10)
+
+if (save_output == "Yes") {
+  
+  test_Df <- test_Df %>% 
+    mutate(Importance = importance_type, Number_of_trees = tree_number)
+  
+  HB_Lookup <- get_resource(res_id = "652ff726-e676-4a20-abda-435b98dd7bdc")
+  
+  HB_Lookup <- HB_Lookup |>
+    select(-Country,-HBDateEnacted)|>
+    filter(is.na(HBDateArchived))|>
+    select(-HBDateArchived) %>% 
+    mutate(GeoType = "Health Board") 
+  
+  file_name <- glue(
+    "Databricks/result_{importance_type}_{tree_number}_{model_type}_{Sys.Date()}.parquet"
+  )
+  
+  test_final <- left_join(HB_Lookup, test_Df, by = 'HB')
+  
+  test_final <- test_final %>%
+    select(-GeoType)
+  
+  write_parquet(test_final, file_name)
+  
+}
+
+
+if (merge_outputs == "Yes") {
+  
+  #### YOU MUST MOVE ALL THE FILES YOURSELF INTO THE COMBINED FOLDER SO THIS WORKS
+  # ---- paths ----
+  input_dir  <- "Databricks/Combine/"
+  output_file <- file.path(input_dir, "results_all_combined.parquet")
+  output_file_final <- file.path(input_dir, "results_all_combined_cleaned.parquet")
+  
+  
+  # ---- list parquet files ----
+  files <- list.files(
+    path = input_dir,
+    pattern = "\\.parquet$",
+    full.names = TRUE
+  )
+  
+  # ---- read & combine ----
+  results_all <- map_dfr(files, read_parquet)
+  
+  # ---- optional sanity checks ----
+  print(nrow(results_all))
+  print(names(results_all))
+  
+  # ---- write combined parquet ----
+  write_parquet(results_all, output_file)
+  
+  message("Combined parquet written to: ", output_file)
+}
+
+#### End of Generic Model Output
+
+#### Model Quality Control Pipeline
+
+if (further_analytics == "Yes") {
+  
+  #### Shows Variable Importance Figures in  Console
+  rf_model$variable.importance
+  library(plotly)
+  
+  # Convert to data frame
+  var_imp_df <- data.frame(
+    Variable = names(rf_model$variable.importance),
+    Importance = as.numeric(rf_model$variable.importance)
+  )
+  
+  # Sort decreasing for nicer visualization
+  var_imp_df <- var_imp_df[order(var_imp_df$Importance, decreasing = TRUE), ]
+  
+  # Plotly bar chart
+  fig <- plot_ly(
+    data = var_imp_df,
+    x = ~Importance,
+    y = ~reorder(Variable, Importance),
+    type = 'bar',
+    orientation = 'h',   # horizontal bars
+    marker = list(color = 'steelblue')
+  ) %>%
+    layout(
+      title = "Random Forest Variable Importance",
+      xaxis = list(title = "Importance"),
+      yaxis = list(title = "Variable")
+    )
+  
+  fig
+  
+  #### This section will grow in size soon.
+  
 }
