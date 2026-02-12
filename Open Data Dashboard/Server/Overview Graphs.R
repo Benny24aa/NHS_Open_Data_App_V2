@@ -3136,14 +3136,18 @@ observeEvent(input$run_anomaly, {
   
   model_table <- reactive({
     if (input$AI_Model_Version == "Alpha_Model") {
-      "nhs_open_data_ai.default.Random_Forest_Alpha"
+      "nhs_open_data_ai.default.random_forest_alpha"
     } else if (input$AI_Model_Version == "Beta_Model") {
-      "nhs_open_data_ai.default.Random_Forest_Beta"
-    } else {
-      "nhs_open_data_ai.default.Random_Forest_Delta"
+      "nhs_open_data_ai.default.random_forest_beta"
+    } else if (input$AI_Model_Version == "Main_Model"){
+      "nhs_open_data_ai.default.random_forest_delta"
     }
   })
+  ######################################################
+  ################## QUERIES SECTION ###################
+  ######################################################
   
+  ####### Query for dataframes
   
   sql_query <- reactive({
     req(input$AI_Model_Healthboard)
@@ -3179,6 +3183,61 @@ observeEvent(input$run_anomaly, {
       token
     )
   })
+  
+  ####### Table Last Altered - Refresh Times
+
+  model_table_query <- reactive({
+
+    glue("
+   SELECT last_altered
+   FROM nhs_open_data_ai.default.random_forest_refresh_dates
+   WHERE table_name = '{model_table()}'
+  ")
+  })
+
+  random_forest_model_table <- reactive({
+    execute_query(
+      model_table_query(),
+      databricks_host,
+      warehouse_id,
+      token
+    )
+  })
+
+  output$model_last_fresh_date_outlier_1 <- renderUI({
+    df <- random_forest_model_table()
+    last_updated <- df$last_altered[1]
+
+    if (is.na(last_updated)) {
+      HTML("Model update time not available.")
+    } else {
+      HTML(paste0("<b>The model was last updated on</b> ", last_updated))
+    }
+  })
+
+  output$model_last_fresh_date_outlier_2 <- renderUI({
+    df <- random_forest_model_table()
+    last_updated <- df$last_altered[1]
+
+    if (is.na(last_updated)) {
+      HTML("Model update time not available.")
+    } else {
+      HTML(paste0("<b>The model was last updated on</b> ", last_updated))
+    }
+  })
+
+  output$model_last_fresh_date_prediction_1 <- renderUI({
+    df <- random_forest_model_table()
+    last_updated <- df$last_altered[1]
+
+    if (is.na(last_updated)) {
+      HTML("Model update time not available.")
+    } else {
+      HTML(paste0("<b>The model was last updated on</b> ", last_updated))
+    }
+  })
+  
+  
   
   output$predicted_vs_paid_table <- DT::renderDT({
     
