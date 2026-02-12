@@ -32,7 +32,9 @@ Random_Forest_Outlier_UI  <- conditionalPanel(
       column(12,
              plotlyOutput("predicted_vs_paid_plot", height = "600px")
       )
-    )
+    ),
+    
+    uiOutput("model_last_fresh_date_outlier_1")
   ),
   
   br(),
@@ -42,7 +44,9 @@ Random_Forest_Outlier_UI  <- conditionalPanel(
     column(12,
            DT::DTOutput("predicted_vs_paid_table")
     )
-  )
+  ),
+
+  uiOutput("model_last_fresh_date_outlier_2")
 )
   
   
