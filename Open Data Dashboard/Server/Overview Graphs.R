@@ -3237,6 +3237,67 @@ observeEvent(input$run_anomaly, {
     }
   })
   
+  output$RFModelBoxes <- renderUI({
+
+    ModelBoxed_DF <- df() %>%
+      dplyr::filter(
+        MonthNum == as.integer(input$AI_Model_Month),
+        GPCluster == input$RF_GPCluster_List
+      ) %>%
+  mutate(
+    NumberOfPaidItems = as.numeric(as.character(NumberOfPaidItems)),
+    Predicted = as.numeric(as.character(Predicted))
+  )
+    
+    num_outliers <- ModelBoxed_DF %>%
+      dplyr::select(
+        Outlier
+      ) %>%
+      dplyr::summarise(count = sum(Outlier == TRUE, na.rm = TRUE)) %>%
+      dplyr::pull(count)
+    
+    value_calc <- ModelBoxed_DF %>%
+      dplyr::select(GPCluster, NumberOfPaidItems, Predicted) %>%
+      group_by(GPCluster) %>%
+      summarise(
+        MSE  = mean((NumberOfPaidItems - Predicted)^2, na.rm = TRUE),
+        RMSE = sqrt(MSE),
+        MAE  = mean(abs(NumberOfPaidItems - Predicted), na.rm = TRUE),
+        
+        SMAPE = mean(
+          2 * abs(Predicted - NumberOfPaidItems) /
+            (abs(Predicted) + abs(NumberOfPaidItems)),
+          na.rm = TRUE
+        ) * 100,
+        
+        SMAPE = smape(NumberOfPaidItems, Predicted)*100,
+        
+        OutliersGP = sum(
+          abs(NumberOfPaidItems - Predicted) >
+            3 * sd(NumberOfPaidItems - Predicted, na.rm = TRUE),
+          na.rm = TRUE
+        ),
+        
+        R2 = 1 - sum((NumberOfPaidItems - Predicted)^2, na.rm = TRUE) /
+          sum((NumberOfPaidItems - mean(NumberOfPaidItems))^2, na.rm = TRUE)
+      ) %>%
+      ungroup()
+      
+        
+      
+    fluidRow(
+      column(2, RFValueBox(
+        "Number of Outliers (All Data)", 
+        sum(abs(ModelBoxed_DF$NumberOfPaidItems - ModelBoxed_DF$Predicted) > 2*sd(ModelBoxed_DF$NumberOfPaidItems - ModelBoxed_DF$Predicted)), 
+        icon_name = "exclamation-triangle"
+      )),
+      column(2, RFValueBox("Number of Outliers (GP Cluster)", round(value_calc$OutliersGP, 2),  icon_name = "exclamation-triangle")),
+      column(2, RFValueBox("Root Mean Squared Error (RMSE)", round(value_calc$RMSE, 2), icon_name = "square-check")),
+      column(2, RFValueBox("Mean Absolute Error (MAE)", round(value_calc$MAE, 2), icon_name = "square-minus")),
+      column(2, RFValueBox("Symmetric Mean Absolute Percentage Error", round(value_calc$SMAPE, 2), icon_name = "bookmark")),
+      column(2, RFValueBox("Coefficient of Determination (R²)", round(value_calc$R2, 2), icon_name = "arrow-trend-up"))
+    )
+  })
   
   
   output$predicted_vs_paid_table <- DT::renderDT({
