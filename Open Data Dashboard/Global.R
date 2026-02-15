@@ -16,6 +16,7 @@ library(glue)
 #### Databrick Related Libraries
 library(DBI)
 library(odbc)
+library(Metrics)
 
 options(httr_config = httr::config(ssl_verifypeer = FALSE))
 
@@ -103,3 +104,31 @@ Populations_Brackets <- get_resource(res_id = "0876fc67-05e6-4e87-bc30-c4b0756ff
 # Random_Forest_Model_Inputs <- c("none", "impurity", "impurity_corrected", "permutation")
 # Random_Forest_Model_Inputs <- data.frame(Random_Forest_Model_Inputs)
 
+######################### Plain Value Boxes
+
+RFValueBox <- function(title, value, box_color = "blue", icon_name = "chart-line") {
+  div(
+    style = paste0("background-color: ", box_color, "; padding: 10px; border-radius: 8px; height: 210px;"),
+    valueBox(
+      value = HTML(paste0(
+        "<div style='color: white;'>",
+        format(value, big.mark = ","),
+        "</div>"
+      )),
+      subtitle = tags$span(style = "color: white;", title),
+      color = box_color,
+      icon = icon(icon_name, class = "white-icon")
+    ),
+    tags$style(HTML("
+      /* Force text and icon white */
+      .small-box-footer,
+      .small-box h3,
+      .small-box p {
+        color: white !important;
+      }
+      .white-icon {
+        color: white !important;
+      }
+    "))
+  )
+}
