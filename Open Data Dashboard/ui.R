@@ -59,10 +59,10 @@ navbarPage(id = "maintabid",
            ##### Tab Panels
            information,
            navbarMenu("Dashboard Information",icon = icon("info"), DashboardUse, Roadmap, Commentary),
+           navbarMenu("Machine Learning", icon = icon("brain"), Random_Forest_UI, XGBoost_UI),
            navbarMenu("A&E Waiting Times", icon = icon("hospital"), CurrentAEUI, WeeklyAEUI, AE_Interactive_Map ),
            navbarMenu("Cancer", icon = icon("disease"), Cancer_UI_Setup, Cancer_Waiting_List),
            Diagnsotics_UI,
-           navbarMenu("Machine Learning", icon = icon("brain"), Random_Forest_UI, XGBoost_UI),
            reference_file_download,
            navbarMenu("Contact and Feedback", icon = icon("envelope"),Feedback,Report_Bug )
            ##### more soon
