@@ -3250,11 +3250,8 @@ observeEvent(input$run_anomaly, {
   )
     
     num_outliers <- ModelBoxed_DF %>%
-      dplyr::select(
-        Outlier
-      ) %>%
-      dplyr::summarise(count = sum(Outlier == TRUE, na.rm = TRUE)) %>%
-      dplyr::pull(count)
+      dplyr::filter(Outlier == TRUE) %>% 
+      nrow()
     
     value_calc <- ModelBoxed_DF %>%
       dplyr::select(GPCluster, NumberOfPaidItems, Predicted) %>%
@@ -3288,7 +3285,7 @@ observeEvent(input$run_anomaly, {
     fluidRow(
       column(2, RFValueBox(
         "Number of Outliers (All Data)", 
-        sum(abs(ModelBoxed_DF$NumberOfPaidItems - ModelBoxed_DF$Predicted) > 2*sd(ModelBoxed_DF$NumberOfPaidItems - ModelBoxed_DF$Predicted)), 
+        num_outliers, 
         icon_name = "exclamation-triangle"
       )),
       column(2, RFValueBox("Number of Outliers (GP Cluster)", round(value_calc$OutliersGP, 2),  icon_name = "exclamation-triangle")),
@@ -3302,6 +3299,7 @@ observeEvent(input$run_anomaly, {
   
   output$predicted_vs_paid_table <- DT::renderDT({
     
+    
     df_month <- df() %>%
       dplyr::filter(
         MonthNum == as.integer(input$AI_Model_Month),
@@ -3311,7 +3309,7 @@ observeEvent(input$run_anomaly, {
         HBName,
         NumberOfPaidItems,
         Predicted,
-        Outlier, ,
+        Outlier, 
         PrescriberLocation,
         DispenserLocation
       ) %>%  
@@ -3342,6 +3340,49 @@ observeEvent(input$run_anomaly, {
        ) %>% 
       dplyr::select(
         HBName,
+        NumberOfPaidItems,
+        Predicted,
+        Residual,
+        AbsResidual,
+        FinalFit,
+        PrescriberLocation,
+        DispenserLocation, 
+        Outlier
+      )
+    
+    df_month <- df_month %>%
+      dplyr::mutate(
+        PrescriberLocation = as.character(as.integer(PrescriberLocation)),
+        DispenserLocation  = as.character(as.integer(DispenserLocation))
+      )
+    
+    gp_practice_data <- gp_practice_data %>% 
+      mutate(PracticeCode = as.character(as.integer(PracticeCode))) %>% 
+      select(PracticeCode, GPPracticeName)
+    
+    df_month <- left_join(df_month, gp_practice_data, by = c("PrescriberLocation" = "PracticeCode")
+    ) %>%
+      mutate(
+        GPPracticeName = replace_na(GPPracticeName, "Other")
+      )
+    
+    disp_data <- disp_data %>% 
+      select(DispCode, DispLocationName) %>% 
+      mutate(DispCode = as.character(as.integer(DispCode)))
+    
+    df_month <- left_join(df_month, disp_data, by = c("DispenserLocation" = "DispCode")
+    ) %>%
+      mutate(
+        DispLocationName = replace_na(DispLocationName, "Other")
+      ) %>% 
+      mutate(
+        DispLocationName = tools::toTitleCase(tolower(DispLocationName)))
+  
+      df_month <- df_month %>% 
+      dplyr::select(
+        HBName,
+        GPPracticeName,
+        DispLocationName,
         NumberOfPaidItems,
         Predicted,
         Residual,
