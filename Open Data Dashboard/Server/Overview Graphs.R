@@ -3375,6 +3375,28 @@ observeEvent(input$run_anomaly, {
         DispenserLocation  = as.character(as.integer(DispenserLocation))
       )
     
+    gp_practice_data <- gp_practice_data %>% 
+      mutate(PracticeCode = as.character(as.integer(PracticeCode))) %>% 
+      select(PracticeCode, GPPracticeName)
+    
+    df_month <- left_join(df_month, gp_practice_data, by = c("PrescriberLocation" = "PracticeCode")
+      ) %>%
+      mutate(
+        GPPracticeName = replace_na(GPPracticeName, "Other")
+      )
+    
+    disp_data <- disp_data %>% 
+      select(DispCode, DispLocationName) %>% 
+      mutate(DispCode = as.character(as.integer(DispCode)))
+    
+    df_month <- left_join(df_month, disp_data, by = c("DispenserLocation" = "DispCode")
+    ) %>%
+      mutate(
+        DispLocationName = replace_na(DispLocationName, "Other")
+      ) %>% 
+      mutate(
+        DispLocationName = tools::toTitleCase(tolower(DispLocationName)))
+    
     plot_ly(
       data = df_month,
       x = ~NumberOfPaidItems,
@@ -3388,7 +3410,9 @@ observeEvent(input$run_anomaly, {
         "<br>Number of Paid Items:", NumberOfPaidItems,
         "<br>Predicted:", Predicted,
         "<br>Prescriber Location:", PrescriberLocation,
-        "<br>Dispensed Location:", DispenserLocation
+        "<br>Dispensed Location:", DispenserLocation,
+        "<br>GP Location Name:", GPPracticeName,
+        "<br>Dispenser Name:", DispLocationName
       ),
       hoverinfo = "text"
     ) %>%
