@@ -17,7 +17,7 @@ library(glue)
 library(DBI)
 library(odbc)
 library(Metrics)
-
+library(jsonlite)
 options(httr_config = httr::config(ssl_verifypeer = FALSE))
 
 
