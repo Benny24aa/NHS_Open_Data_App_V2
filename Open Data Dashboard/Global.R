@@ -132,3 +132,53 @@ RFValueBox <- function(title, value, box_color = "blue", icon_name = "chart-line
     "))
   )
 }
+
+##### Loading in most recent GP Data into dashboard
+
+# CKAN base
+ckan_base <- "https://www.opendata.nhs.scot/api/3/action"
+
+# Package ID: GP Practice Contact Details and List Sizes
+pkg_id <- "f23655c3-6e23-4103-a511-a80d998adb90"
+
+# Get dataset metadata
+pkg <- fromJSON(
+  content(
+    GET(paste0(ckan_base, "/package_show?id=", pkg_id)),
+    "text",
+    encoding = "UTF-8"
+  )
+)
+
+# Find latest CSV resource
+latest_resource <- pkg$result$resources %>%
+  filter(grepl("csv", format, ignore.case = TRUE)) %>%
+  mutate(last_mod = as.POSIXct(last_modified)) %>%
+  arrange(desc(last_mod)) %>%
+  slice(1)
+
+# Reads this into from CKAN
+gp_practice_data <- read.csv(latest_resource$url, stringsAsFactors = FALSE)
+
+#### For most recent dispenser Data
+
+pkg_id_disp <- "a30fde16-1226-49b3-b13d-eb90e39c2058"
+
+# Get dataset metadata
+pkg_disp <- fromJSON(
+  content(
+    GET(paste0(ckan_base, "/package_show?id=", pkg_id_disp)),
+    "text",
+    encoding = "UTF-8"
+  )
+)
+
+# Find latest CSV resource
+latest_resource_disp <- pkg_disp$result$resources %>%
+  filter(grepl("csv", format, ignore.case = TRUE)) %>%
+  mutate(last_mod = as.POSIXct(last_modified)) %>%
+  arrange(desc(last_mod)) %>%
+  slice(1)
+
+# Reads this into from CKAN
+disp_data <- read.csv(latest_resource_disp$url, stringsAsFactors = FALSE)
