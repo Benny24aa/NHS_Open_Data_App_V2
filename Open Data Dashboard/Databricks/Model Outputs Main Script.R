@@ -243,7 +243,7 @@ data_list <- purrr::compact(data_list)
 # ---- Combine all GP lists ----
 all_gp_data <- dplyr::bind_rows(data_list)
 
-cat("Final combined GP list rows:", nrow(big_gp_list), "\n")
+cat("Final combined GP list rows:", nrow(all_gp_data), "\n")
 
 
 if ("PracticeListSize" %in% names(all_gp_data)) {
@@ -274,7 +274,9 @@ all_gp_data_cleaned <- all_gp_data %>%
     Quarter = quarter(date)
   ) %>% 
   rename(Year = year, PrescriberLocation = PracticeCode) %>% 
-  select(-month,-date)
+  select(-month,-date) %>%
+  filter(!is.na(PracticeListSize)) %>% 
+  filter(PracticeListSize != 0)
 
 
 if (model_type != "Beta") {
@@ -418,6 +420,7 @@ if (model_type == "Beta") {
   df[, (factor_vars) := lapply(.SD, as.factor), .SDcols = factor_vars]
   
 }
+
 
 #### Breaking Test Data and Main Data up
 
