@@ -286,7 +286,9 @@ df <- df %>%
   )
 
   # Join to GP metadata
-  df <- left_join(gp_list, df, by = "PrescriberLocation")
+  df <- left_join(gp_list, df, by = "PrescriberLocation") ### This reduces the training data to OPEN locations
+  
+  ######## Will join on practicelistsize here for all gps
 
 ########################
 
