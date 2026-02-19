@@ -28,4 +28,13 @@ SELECT
         AND Number_of_trees = {input$AI_Model_Trees}
         AND HBName = '{input$AI_Model_Healthboard}'
         
-        
+#### Querying Table Related Dates
+
+model_table_query <- reactive({
+
+    glue("
+   SELECT last_altered
+   FROM nhs_open_data_ai.default.random_forest_refresh_dates
+   WHERE table_name = '{model_table()}'
+  ")
+  })

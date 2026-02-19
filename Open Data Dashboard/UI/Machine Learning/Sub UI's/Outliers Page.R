@@ -21,9 +21,10 @@ Random_Forest_Outlier_UI  <- conditionalPanel(
       
     ),
     
+    br(),
+    uiOutput("RFModelBoxes"),
     
   ),
-  br(),
   
   div(
     style = "background-color: #f0f0f0; padding: 20px; border-radius: 10px;",
@@ -32,7 +33,9 @@ Random_Forest_Outlier_UI  <- conditionalPanel(
       column(12,
              plotlyOutput("predicted_vs_paid_plot", height = "600px")
       )
-    )
+    ),
+    
+    uiOutput("model_last_fresh_date_outlier_1")
   ),
   
   br(),
@@ -42,7 +45,9 @@ Random_Forest_Outlier_UI  <- conditionalPanel(
     column(12,
            DT::DTOutput("predicted_vs_paid_table")
     )
-  )
+  ),
+
+  uiOutput("model_last_fresh_date_outlier_2")
 )
   
   

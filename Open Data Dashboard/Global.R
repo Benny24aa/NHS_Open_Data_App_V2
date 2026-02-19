@@ -16,7 +16,8 @@ library(glue)
 #### Databrick Related Libraries
 library(DBI)
 library(odbc)
-
+library(Metrics)
+library(jsonlite)
 options(httr_config = httr::config(ssl_verifypeer = FALSE))
 
 
@@ -103,3 +104,81 @@ Populations_Brackets <- get_resource(res_id = "0876fc67-05e6-4e87-bc30-c4b0756ff
 # Random_Forest_Model_Inputs <- c("none", "impurity", "impurity_corrected", "permutation")
 # Random_Forest_Model_Inputs <- data.frame(Random_Forest_Model_Inputs)
 
+######################### Plain Value Boxes
+
+RFValueBox <- function(title, value, box_color = "blue", icon_name = "chart-line") {
+  div(
+    style = paste0("background-color: ", box_color, "; padding: 10px; border-radius: 8px; height: 210px;"),
+    valueBox(
+      value = HTML(paste0(
+        "<div style='color: white;'>",
+        format(value, big.mark = ","),
+        "</div>"
+      )),
+      subtitle = tags$span(style = "color: white;", title),
+      color = box_color,
+      icon = icon(icon_name, class = "white-icon")
+    ),
+    tags$style(HTML("
+      /* Force text and icon white */
+      .small-box-footer,
+      .small-box h3,
+      .small-box p {
+        color: white !important;
+      }
+      .white-icon {
+        color: white !important;
+      }
+    "))
+  )
+}
+
+##### Loading in most recent GP Data into dashboard
+
+# CKAN base
+ckan_base <- "https://www.opendata.nhs.scot/api/3/action"
+
+# Package ID: GP Practice Contact Details and List Sizes
+pkg_id <- "f23655c3-6e23-4103-a511-a80d998adb90"
+
+# Get dataset metadata
+pkg <- fromJSON(
+  content(
+    GET(paste0(ckan_base, "/package_show?id=", pkg_id)),
+    "text",
+    encoding = "UTF-8"
+  )
+)
+
+# Find latest CSV resource
+latest_resource <- pkg$result$resources %>%
+  filter(grepl("csv", format, ignore.case = TRUE)) %>%
+  mutate(last_mod = as.POSIXct(last_modified)) %>%
+  arrange(desc(last_mod)) %>%
+  slice(1)
+
+# Reads this into from CKAN
+gp_practice_data <- read.csv(latest_resource$url, stringsAsFactors = FALSE)
+
+#### For most recent dispenser Data
+
+pkg_id_disp <- "a30fde16-1226-49b3-b13d-eb90e39c2058"
+
+# Get dataset metadata
+pkg_disp <- fromJSON(
+  content(
+    GET(paste0(ckan_base, "/package_show?id=", pkg_id_disp)),
+    "text",
+    encoding = "UTF-8"
+  )
+)
+
+# Find latest CSV resource
+latest_resource_disp <- pkg_disp$result$resources %>%
+  filter(grepl("csv", format, ignore.case = TRUE)) %>%
+  mutate(last_mod = as.POSIXct(last_modified)) %>%
+  arrange(desc(last_mod)) %>%
+  slice(1)
+
+# Reads this into from CKAN
+disp_data <- read.csv(latest_resource_disp$url, stringsAsFactors = FALSE)

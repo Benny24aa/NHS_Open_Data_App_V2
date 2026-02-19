@@ -3136,14 +3136,18 @@ observeEvent(input$run_anomaly, {
   
   model_table <- reactive({
     if (input$AI_Model_Version == "Alpha_Model") {
-      "nhs_open_data_ai.default.Random_Forest_Alpha"
+      "nhs_open_data_ai.default.random_forest_alpha"
     } else if (input$AI_Model_Version == "Beta_Model") {
-      "nhs_open_data_ai.default.Random_Forest_Beta"
-    } else {
-      "nhs_open_data_ai.default.Random_Forest_Alpha"
+      "nhs_open_data_ai.default.random_forest_beta"
+    } else if (input$AI_Model_Version == "Main_Model"){
+      "nhs_open_data_ai.default.random_forest_delta"
     }
   })
+  ######################################################
+  ################## QUERIES SECTION ###################
+  ######################################################
   
+  ####### Query for dataframes
   
   sql_query <- reactive({
     req(input$AI_Model_Healthboard)
@@ -3180,7 +3184,121 @@ observeEvent(input$run_anomaly, {
     )
   })
   
+  ####### Table Last Altered - Refresh Times
+
+  model_table_query <- reactive({
+
+    glue("
+   SELECT last_altered
+   FROM nhs_open_data_ai.default.random_forest_refresh_dates
+   WHERE table_name = '{model_table()}'
+  ")
+  })
+
+  random_forest_model_table <- reactive({
+    execute_query(
+      model_table_query(),
+      databricks_host,
+      warehouse_id,
+      token
+    )
+  })
+
+  output$model_last_fresh_date_outlier_1 <- renderUI({
+    df <- random_forest_model_table()
+    last_updated <- df$last_altered[1]
+
+    if (is.na(last_updated)) {
+      HTML("Model update time not available.")
+    } else {
+      HTML(paste0("<b>The model was last updated on</b> ", last_updated))
+    }
+  })
+
+  output$model_last_fresh_date_outlier_2 <- renderUI({
+    df <- random_forest_model_table()
+    last_updated <- df$last_altered[1]
+
+    if (is.na(last_updated)) {
+      HTML("Model update time not available.")
+    } else {
+      HTML(paste0("<b>The model was last updated on</b> ", last_updated))
+    }
+  })
+
+  output$model_last_fresh_date_prediction_1 <- renderUI({
+    df <- random_forest_model_table()
+    last_updated <- df$last_altered[1]
+
+    if (is.na(last_updated)) {
+      HTML("Model update time not available.")
+    } else {
+      HTML(paste0("<b>The model was last updated on</b> ", last_updated))
+    }
+  })
+  
+  output$RFModelBoxes <- renderUI({
+
+    ModelBoxed_DF <- df() %>%
+      dplyr::filter(
+        MonthNum == as.integer(input$AI_Model_Month),
+        GPCluster == input$RF_GPCluster_List
+      ) %>%
+  mutate(
+    NumberOfPaidItems = as.numeric(as.character(NumberOfPaidItems)),
+    Predicted = as.numeric(as.character(Predicted))
+  )
+    
+    num_outliers <- ModelBoxed_DF %>%
+      dplyr::filter(Outlier == TRUE) %>% 
+      nrow()
+    
+    value_calc <- ModelBoxed_DF %>%
+      dplyr::select(GPCluster, NumberOfPaidItems, Predicted) %>%
+      group_by(GPCluster) %>%
+      summarise(
+        MSE  = mean((NumberOfPaidItems - Predicted)^2, na.rm = TRUE),
+        RMSE = sqrt(MSE),
+        MAE  = mean(abs(NumberOfPaidItems - Predicted), na.rm = TRUE),
+        
+        SMAPE = mean(
+          2 * abs(Predicted - NumberOfPaidItems) /
+            (abs(Predicted) + abs(NumberOfPaidItems)),
+          na.rm = TRUE
+        ) * 100,
+        
+        SMAPE = smape(NumberOfPaidItems, Predicted)*100,
+        
+        OutliersGP = sum(
+          abs(NumberOfPaidItems - Predicted) >
+            3 * sd(NumberOfPaidItems - Predicted, na.rm = TRUE),
+          na.rm = TRUE
+        ),
+        
+        R2 = 1 - sum((NumberOfPaidItems - Predicted)^2, na.rm = TRUE) /
+          sum((NumberOfPaidItems - mean(NumberOfPaidItems))^2, na.rm = TRUE)
+      ) %>%
+      ungroup()
+      
+        
+      
+    fluidRow(
+      column(2, RFValueBox(
+        "Number of Outliers (All Data)", 
+        num_outliers, 
+        icon_name = "exclamation-triangle"
+      )),
+      column(2, RFValueBox("Number of Outliers (GP Cluster)", round(value_calc$OutliersGP, 2),  icon_name = "exclamation-triangle")),
+      column(2, RFValueBox("Root Mean Squared Error (RMSE)", round(value_calc$RMSE, 2), icon_name = "square-check")),
+      column(2, RFValueBox("Mean Absolute Error (MAE)", round(value_calc$MAE, 2), icon_name = "square-minus")),
+      column(2, RFValueBox("Symmetric Mean Absolute Percentage Error", round(value_calc$SMAPE, 2), icon_name = "bookmark")),
+      column(2, RFValueBox("Coefficient of Determination (R²)", round(value_calc$R2, 2), icon_name = "arrow-trend-up"))
+    )
+  })
+  
+  
   output$predicted_vs_paid_table <- DT::renderDT({
+    
     
     df_month <- df() %>%
       dplyr::filter(
@@ -3191,7 +3309,7 @@ observeEvent(input$run_anomaly, {
         HBName,
         NumberOfPaidItems,
         Predicted,
-        Outlier, ,
+        Outlier, 
         PrescriberLocation,
         DispenserLocation
       ) %>%  
@@ -3232,6 +3350,49 @@ observeEvent(input$run_anomaly, {
         Outlier
       )
     
+    df_month <- df_month %>%
+      dplyr::mutate(
+        PrescriberLocation = as.character(as.integer(PrescriberLocation)),
+        DispenserLocation  = as.character(as.integer(DispenserLocation))
+      )
+    
+    gp_practice_data <- gp_practice_data %>% 
+      mutate(PracticeCode = as.character(as.integer(PracticeCode))) %>% 
+      select(PracticeCode, GPPracticeName)
+    
+    df_month <- left_join(df_month, gp_practice_data, by = c("PrescriberLocation" = "PracticeCode")
+    ) %>%
+      mutate(
+        GPPracticeName = replace_na(GPPracticeName, "Other")
+      )
+    
+    disp_data <- disp_data %>% 
+      select(DispCode, DispLocationName) %>% 
+      mutate(DispCode = as.character(as.integer(DispCode)))
+    
+    df_month <- left_join(df_month, disp_data, by = c("DispenserLocation" = "DispCode")
+    ) %>%
+      mutate(
+        DispLocationName = replace_na(DispLocationName, "Other")
+      ) %>% 
+      mutate(
+        DispLocationName = tools::toTitleCase(tolower(DispLocationName)))
+  
+      df_month <- df_month %>% 
+      dplyr::select(
+        HBName,
+        GPPracticeName,
+        DispLocationName,
+        NumberOfPaidItems,
+        Predicted,
+        Residual,
+        AbsResidual,
+        FinalFit,
+        PrescriberLocation,
+        DispenserLocation, 
+        Outlier
+      )
+    
     DT::datatable(df_month, style = 'bootstrap',
                   class = 'table-bordered table-condensed',
                   rownames = FALSE,
@@ -3249,7 +3410,33 @@ observeEvent(input$run_anomaly, {
   output$predicted_vs_paid_plot <- renderPlotly({
   
     df_month <- df() %>%
-      dplyr::filter(MonthNum == as.integer(input$AI_Model_Month), GPCluster == input$RF_GPCluster_List)
+      dplyr::filter(MonthNum == as.integer(input$AI_Model_Month), GPCluster == input$RF_GPCluster_List) %>%
+      dplyr::mutate(
+        PrescriberLocation = as.character(as.integer(PrescriberLocation)),
+        DispenserLocation  = as.character(as.integer(DispenserLocation))
+      )
+    
+    gp_practice_data <- gp_practice_data %>% 
+      mutate(PracticeCode = as.character(as.integer(PracticeCode))) %>% 
+      select(PracticeCode, GPPracticeName)
+    
+    df_month <- left_join(df_month, gp_practice_data, by = c("PrescriberLocation" = "PracticeCode")
+      ) %>%
+      mutate(
+        GPPracticeName = replace_na(GPPracticeName, "Other")
+      )
+    
+    disp_data <- disp_data %>% 
+      select(DispCode, DispLocationName) %>% 
+      mutate(DispCode = as.character(as.integer(DispCode)))
+    
+    df_month <- left_join(df_month, disp_data, by = c("DispenserLocation" = "DispCode")
+    ) %>%
+      mutate(
+        DispLocationName = replace_na(DispLocationName, "Other")
+      ) %>% 
+      mutate(
+        DispLocationName = tools::toTitleCase(tolower(DispLocationName)))
     
     plot_ly(
       data = df_month,
@@ -3264,7 +3451,9 @@ observeEvent(input$run_anomaly, {
         "<br>Number of Paid Items:", NumberOfPaidItems,
         "<br>Predicted:", Predicted,
         "<br>Prescriber Location:", PrescriberLocation,
-        "<br>Dispensed Location:", DispenserLocation
+        "<br>Dispensed Location:", DispenserLocation,
+        "<br>GP Location Name:", GPPracticeName,
+        "<br>Dispenser Name:", DispLocationName
       ),
       hoverinfo = "text"
     ) %>%
@@ -3280,7 +3469,13 @@ observeEvent(input$run_anomaly, {
     req(df(), input$RF_GPCluster_List_Prediction)
     
     df_monthly <- df() %>%
-      dplyr::filter(GPCluster == input$RF_GPCluster_List_Prediction) %>%
+      {
+        if (input$RF_GPCluster_List_Prediction != "All") {
+          dplyr::filter(., GPCluster == input$RF_GPCluster_List_Prediction)
+        } else {
+          .
+        }
+      } %>%
       dplyr::mutate(
         PaidDateMonth = as.Date(as.character(unlist(PaidDateMonth))), ### Databrick thing
         NumberOfPaidItems = as.numeric(unlist(NumberOfPaidItems)),
@@ -3339,14 +3534,20 @@ observeEvent(input$run_anomaly, {
    output$ai_model_gp_cluster_filter_prediction <- renderUI({
      
      
+     GPCluster_List <- df() %>%
+       dplyr::pull(GPCluster)
      
-     GPCluster_List <- df () %>%
-       pull(GPCluster)
-     
-     column(3,
-            div(class = "custom-select",
-                selectInput("RF_GPCluster_List_Prediction", "Select GP Cluster", 
-                            choices = unique(GPCluster_List)))
+     column(
+       3,
+       div(
+         class = "custom-select",
+         selectInput(
+           inputId = "RF_GPCluster_List_Prediction",
+           label   = "Select GP Cluster",
+           choices = c("All", unique(GPCluster_List)),
+           selected = "All"
+         )
+       )
      )
    })
    
@@ -3359,3 +3560,48 @@ observeEvent(input$run_anomaly, {
   outputOptions(output, "anomaly_ready", suspendWhenHidden = FALSE)
   
 })
+
+observeEvent(
+  list(input$AI_Model_Version, input$AI_Model_Type),
+  {
+    
+    if (input$AI_Model_Version == "Beta_Model") {
+      
+      # Beta model: up to 20 trees
+      tree_choices <- c(
+        "5 trees"  = 5,
+        "10 trees" = 10,
+        "20 trees" = 20
+      )
+      
+    } else if (input$AI_Model_Type == "impurity_corrected") {
+      
+      # Impurity (Corrected): up to 50 trees
+      tree_choices <- c(
+        "5 trees"  = 5,
+        "10 trees" = 10,
+        "20 trees" = 20,
+        "50 trees" = 50
+      )
+      
+    } else {
+      
+      # All other cases: up to 100 trees
+      tree_choices <- c(
+        "5 trees"   = 5,
+        "10 trees"  = 10,
+        "20 trees"  = 20,
+        "50 trees"  = 50,
+        "100 trees" = 100
+      )
+    }
+    
+    updateSelectInput(
+      session,
+      "AI_Model_Trees",
+      choices  = tree_choices,
+      selected = min(as.numeric(tree_choices))
+    )
+  },
+  ignoreInit = TRUE
+)

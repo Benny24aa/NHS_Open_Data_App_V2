@@ -19,5 +19,6 @@ Random_Forest_Prediction_UI  <- conditionalPanel(
       column(12,
              plotlyOutput("actual_against_predicted_plot", height = "600px")
       )
-    )
+    ),
+    uiOutput("model_last_fresh_date_prediction_1") 
   ))
