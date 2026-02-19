@@ -12,7 +12,10 @@ library(glue)
 library(httr)
 library(jsonlite)
 library(readr)
-
+library(httr)
+library(purrr)
+library(stringr)
+library(tidyr)
 ###### Define the type of model you wish to run, this could be Alpha, Beta, Charlie, or Delta.
 
 model_type <- "Alpha"
@@ -138,7 +141,6 @@ gp_list <- read_csv(latest_csv$url) ### This is now the most recent gp list on t
 
 ##### Big GP list - Bringing in all PracticeSizeLists over the years.
 
-
 dataset_id <- "f23655c3-6e23-4103-a511-a80d998adb90"
 
 api_url <- paste0(
@@ -146,33 +148,37 @@ api_url <- paste0(
   dataset_id
 )
 
-res <- GET(api_url)
-stop_for_status(res)
+# ---- Fetch metadata ----
+res <- httr::GET(api_url)
+httr::stop_for_status(res)
 
-meta <- content(res, as = "text", encoding = "UTF-8") |>
-  fromJSON(flatten = TRUE)
+meta <- httr::content(res, as = "text", encoding = "UTF-8") |>
+  jsonlite::fromJSON(flatten = TRUE)
 
 resources <- meta$result$resources
 
+# ---- Keep only GP CSV files ----
 csv_resources <- resources |>
-  filter(grepl("csv", format, ignore.case = TRUE)) |>
-  filter(grepl("GP", name, ignore.case = TRUE))
+  dplyr::filter(grepl("csv", format, ignore.case = TRUE)) |>
+  dplyr::filter(grepl("GP", name, ignore.case = TRUE))
 
-
+# ---- Extract Month + Year from file name ----
 extract_date_info <- function(name) {
   
-  match <- str_extract(
+  match <- stringr::str_extract(
     name,
     "(January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{4}"
   )
   
   if (is.na(match)) {
-    return(tibble(month = NA_character_,
-                  year  = NA_integer_,
-                  date  = as.Date(NA)))
+    return(tibble(
+      month = NA_character_,
+      year  = NA_integer_,
+      date  = as.Date(NA)
+    ))
   }
   
-  date_parsed <- my(match)
+  date_parsed <- lubridate::my(match)
   
   tibble(
     month = month(date_parsed, label = TRUE, abbr = FALSE),
@@ -182,30 +188,62 @@ extract_date_info <- function(name) {
 }
 
 csv_resources <- csv_resources |>
-  mutate(date_info = map(name, extract_date_info)) |>
+  mutate(date_info = purrr::map(name, extract_date_info)) |>
   unnest(date_info) |>
   filter(!is.na(date)) |>
   arrange(date)
 
 
-data_list <- map2(
+cat("Number of GP files to download:", nrow(csv_resources), "\n")
+
+# ---- Safe downloader using httr ----
+safe_read_csv <- function(url) {
+  
+  tryCatch({
+    
+    response <- httr::GET(url)
+    httr::stop_for_status(response)
+    
+    readr::read_csv(
+      httr::content(response, as = "raw"),
+      col_types = cols(.default = col_character()),
+      show_col_types = FALSE
+    )
+    
+  }, error = function(e) {
+    
+    message("Failed to download: ", url)
+    return(NULL)
+    
+  })
+}
+
+# ---- Download all files safely ----
+data_list <- purrr::map2(
   csv_resources$url,
   csv_resources$date,
-  ~ read_csv(
-    .x,
-    col_types = cols(.default = col_character()),  # <-- KEY FIX
-    show_col_types = FALSE
-  ) |>
-    mutate(
-      month = month(.y, label = TRUE, abbr = FALSE),
-      year  = year(.y),
-      date  = .y
-    )
+  function(url, date_value) {
+    
+    df_temp <- safe_read_csv(url)
+    
+    if (is.null(df_temp)) return(NULL)
+    
+    df_temp |>
+      mutate(
+        month = month(date_value, label = TRUE, abbr = FALSE),
+        year  = year(date_value),
+        date  = date_value
+      )
+  }
 )
 
+# ---- Remove failed downloads ----
+data_list <- purrr::compact(data_list)
 
+# ---- Combine all GP lists ----
+all_gp_data <- dplyr::bind_rows(data_list)
 
-all_gp_data <- bind_rows(data_list)
+cat("Final combined GP list rows:", nrow(big_gp_list), "\n")
 
 
 if ("PracticeListSize" %in% names(all_gp_data)) {
@@ -218,7 +256,7 @@ if ("PracticeListSize" %in% names(all_gp_data)) {
 all_gp_data <- all_gp_data |>
   arrange(date)
 
-all_gp_data <- all_gp_data %>% 
+all_gp_data <- all_gp_data %>%
   select(PracticeCode, PracticeListSize, Listsize, month, year, date )
 
 all_gp_data <- all_gp_data %>%
@@ -227,10 +265,10 @@ all_gp_data <- all_gp_data %>%
       readr::parse_number(as.character(PracticeListSize)),
       readr::parse_number(as.character(Listsize))
     )
-  ) 
+  )
 
-all_gp_data_cleaned <- all_gp_data %>% 
-  select(-Listsize) %>% 
+all_gp_data_cleaned <- all_gp_data %>%
+  select(-Listsize) %>%
   mutate(PracticeCode = as.numeric(PracticeCode))
 
 
@@ -328,7 +366,7 @@ if (model_type == "Beta") {
     mutate(log_items = log1p(NumberOfPaidItems))
 }
 
-
+##### BUILD CODE HERE FOR GP PRACTICES AND LISTSIZES
 
 
 if (model_type != "Delta") {
