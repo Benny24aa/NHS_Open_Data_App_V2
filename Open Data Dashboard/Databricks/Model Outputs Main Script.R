@@ -9,11 +9,13 @@ library(lubridate)
 library(ranger)        # Much faster alternative to randomForest
 library(arrow)
 library(glue)
-
+library(httr)
+library(jsonlite)
+library(readr)
 
 ###### Define the type of model you wish to run, this could be Alpha, Beta, Charlie, or Delta.
 
-model_type <- "Delta"
+model_type <- "Alpha"
 
 ##### Yes or No to this question - If you have ran the data cleaning process before, press Yes so you don't have to go through it again for the training data
 
@@ -56,7 +58,7 @@ if (file.exists(file_path)) {
   
   print(file_age_days)  # <- keep this while debugging
   
-  if (file_age_days < 7) {
+  if (file_age_days < 28) {
     needs_refresh <- FALSE
     message("Parquet file is current — no refresh needed.")
   }
@@ -67,7 +69,7 @@ if (needs_refresh) {
   message("Refreshing prescribed-dispensed dataset...")
   
   presdisp <- get_dataset("prescribed-dispensed", include_context = TRUE) %>% 
-    filter(ResID != "31576bf0-fc05-49ff-a99a-2c253a0c3342") %>% 
+    filter(ResID != "31576bf0-fc05-49ff-a99a-2c253a0c3342") %>% ### Most recent quarter data is in here, this is removed to avoid duplicates with current years data
     select(-ResName, -ResID, -ResCreatedDate, -ResModifiedDate)
   
   write_parquet(presdisp, file_path)
@@ -87,16 +89,63 @@ df <- read_parquet("Databricks/presdisp.parquet")
 # Convert PrescriberLocation to numeric
 df$PrescriberLocation <- as.numeric(df$PrescriberLocation)
 
+##### Gathering most recent GP Practice Data 
+
+
+# GP Practice Contact Details and List Sizes
+dataset_id <- "f23655c3-6e23-4103-a511-a80d998adb90"
+
+api_url <- paste0(
+  "https://www.opendata.nhs.scot/api/3/action/package_show?id=",
+  dataset_id
+)
+
+# Fetch metadata
+res <- GET(api_url)
+stop_for_status(res)
+
+meta <- content(res, as = "text", encoding = "UTF-8") |>
+  fromJSON(flatten = TRUE)
+
+resources <- meta$result$resources
+
+# Keep only CSV files
+csv_resources <- resources |>
+  filter(grepl("csv", format, ignore.case = TRUE))
+
+# Convert created timestamp to datetime and arrange newest first
+csv_resources <- csv_resources |>
+  mutate(created = as.POSIXct(created, tz = "UTC")) |>
+  arrange(desc(created))
+
+if (nrow(csv_resources) == 0) {
+  stop("No CSV resources found.")
+}
+
+# Select most recent CSV
+latest_csv <- csv_resources[1, ]
+
+### For my own use - Testing
+cat("Latest dataset detected:\n")
+cat("Name:", latest_csv$name, "\n")
+cat("Created:", latest_csv$created, "\n")
+cat("URL:", latest_csv$url, "\n\n")
+
+# Load into R
+gp_list <- read_csv(latest_csv$url) ### This is now the most recent gp list on the NHS Open Data Website.
+
+###### This part allows for only OPEN locations to be in the model. So the model will only run for sites that are still open today using the last 8 years worth of train data.
+
 if (model_type != "Beta") {
 # --- Load GP practice list and join ---
-gp_list <- get_resource(res_id = "30b06220-17ad-44e8-b6c5-658d41ec1ea5") %>%
+gp_list <- gp_list %>%
   select(PracticeCode, HB, HSCP, DataZone, GPCluster, PracticeListSize) %>%
   distinct() %>%
   rename(PrescriberLocation = PracticeCode) }
 
 if (model_type == "Beta") {
   # --- Load GP practice list ---
-  gp_list <- get_resource(res_id = "30b06220-17ad-44e8-b6c5-658d41ec1ea5") %>%
+  gp_list <- gp_list %>% 
     select(PracticeCode, HB, HSCP, DataZone, GPCluster, PracticeListSize, GPPracticeName, AddressLine1, AddressLine2, AddressLine3, Postcode, PracticeType) %>%
     distinct() %>%
     rename(PrescriberLocation = PracticeCode)
