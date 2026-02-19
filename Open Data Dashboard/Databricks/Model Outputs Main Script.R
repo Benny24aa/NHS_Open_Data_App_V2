@@ -29,7 +29,7 @@ train_data_in_environment <- "No" ## Note some models have slightly different cl
 # "impurity_corrected"	Bias-corrected impurity importance. Slower but more reliable than plain impurity.
 # "permutation"	Permutation importance. Measures drop in prediction accuracy when a variable is permuted. Reliable but slower.
 
-importance_type <- "impurity"
+importance_type <- "permutation"
 
 # We look at 5, 10, 20, 50 and 100 for the number of trees
 
@@ -269,7 +269,12 @@ all_gp_data <- all_gp_data %>%
 
 all_gp_data_cleaned <- all_gp_data %>%
   select(-Listsize) %>%
-  mutate(PracticeCode = as.numeric(PracticeCode))
+  mutate(
+    PracticeCode = as.numeric(PracticeCode),
+    Quarter = quarter(date)
+  ) %>% 
+  rename(Year = year, PrescriberLocation = PracticeCode) %>% 
+  select(-month,-date)
 
 
 if (model_type != "Beta") {
@@ -326,8 +331,10 @@ df <- df %>%
   # Join to GP metadata
   df <- left_join(gp_list, df, by = "PrescriberLocation") ### This reduces the training data to OPEN locations
   
-  ######## Will join on practicelistsize here for all gps
 
+
+ 
+  
 ########################
 
 if (model_type == "Alpha") {
@@ -367,6 +374,13 @@ if (model_type == "Beta") {
 }
 
 ##### BUILD CODE HERE FOR GP PRACTICES AND LISTSIZES
+
+df <- df %>% 
+  mutate(Quarter = quarter(PaidDateMonth)) %>% 
+  select(-PracticeListSize)
+
+df <- left_join(df, all_gp_data_cleaned, by = c("PrescriberLocation", "Year", "Quarter")) %>% 
+  select(-Quarter)
 
 
 if (model_type != "Delta") {
