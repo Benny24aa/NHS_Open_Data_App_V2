@@ -90,6 +90,7 @@ df <- read_parquet("Databricks/presdisp.parquet")
 df$PrescriberLocation <- as.numeric(df$PrescriberLocation)
 
 ##### Gathering most recent GP Practice Data 
+###### This part allows for only OPEN locations to be in the model. So the model will only run for sites that are still open today using the last 8 years worth of train data.
 
 
 # GP Practice Contact Details and List Sizes
@@ -134,7 +135,103 @@ cat("URL:", latest_csv$url, "\n\n")
 # Load into R
 gp_list <- read_csv(latest_csv$url) ### This is now the most recent gp list on the NHS Open Data Website.
 
-###### This part allows for only OPEN locations to be in the model. So the model will only run for sites that are still open today using the last 8 years worth of train data.
+
+##### Big GP list - Bringing in all PracticeSizeLists over the years.
+
+
+dataset_id <- "f23655c3-6e23-4103-a511-a80d998adb90"
+
+api_url <- paste0(
+  "https://www.opendata.nhs.scot/api/3/action/package_show?id=",
+  dataset_id
+)
+
+res <- GET(api_url)
+stop_for_status(res)
+
+meta <- content(res, as = "text", encoding = "UTF-8") |>
+  fromJSON(flatten = TRUE)
+
+resources <- meta$result$resources
+
+csv_resources <- resources |>
+  filter(grepl("csv", format, ignore.case = TRUE)) |>
+  filter(grepl("GP", name, ignore.case = TRUE))
+
+
+extract_date_info <- function(name) {
+  
+  match <- str_extract(
+    name,
+    "(January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{4}"
+  )
+  
+  if (is.na(match)) {
+    return(tibble(month = NA_character_,
+                  year  = NA_integer_,
+                  date  = as.Date(NA)))
+  }
+  
+  date_parsed <- my(match)
+  
+  tibble(
+    month = month(date_parsed, label = TRUE, abbr = FALSE),
+    year  = year(date_parsed),
+    date  = date_parsed
+  )
+}
+
+csv_resources <- csv_resources |>
+  mutate(date_info = map(name, extract_date_info)) |>
+  unnest(date_info) |>
+  filter(!is.na(date)) |>
+  arrange(date)
+
+
+data_list <- map2(
+  csv_resources$url,
+  csv_resources$date,
+  ~ read_csv(
+    .x,
+    col_types = cols(.default = col_character()),  # <-- KEY FIX
+    show_col_types = FALSE
+  ) |>
+    mutate(
+      month = month(.y, label = TRUE, abbr = FALSE),
+      year  = year(.y),
+      date  = .y
+    )
+)
+
+
+
+all_gp_data <- bind_rows(data_list)
+
+
+if ("PracticeListSize" %in% names(all_gp_data)) {
+  all_gp_data <- all_gp_data |>
+    mutate(
+      PracticeListSize = parse_number(PracticeListSize)
+    )
+}
+
+all_gp_data <- all_gp_data |>
+  arrange(date)
+
+all_gp_data <- all_gp_data %>% 
+  select(PracticeCode, PracticeListSize, Listsize, month, year, date )
+
+all_gp_data <- all_gp_data %>%
+  mutate(
+    PracticeListSize = coalesce(
+      readr::parse_number(as.character(PracticeListSize)),
+      readr::parse_number(as.character(Listsize))
+    )
+  ) 
+
+all_gp_data_cleaned <- all_gp_data %>% 
+  select(-Listsize)
+
 
 if (model_type != "Beta") {
 # --- Load GP practice list and join ---
