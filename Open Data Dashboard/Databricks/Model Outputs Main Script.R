@@ -230,7 +230,8 @@ all_gp_data <- all_gp_data %>%
   ) 
 
 all_gp_data_cleaned <- all_gp_data %>% 
-  select(-Listsize)
+  select(-Listsize) %>% 
+  mutate(PracticeCode = as.numeric(PracticeCode))
 
 
 if (model_type != "Beta") {
