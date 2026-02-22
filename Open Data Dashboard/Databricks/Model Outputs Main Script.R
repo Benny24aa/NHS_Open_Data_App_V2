@@ -385,6 +385,7 @@ df <- left_join(df, all_gp_data_cleaned, by = c("PrescriberLocation", "Year", "Q
   select(-Quarter)
 
 
+
 if (model_type != "Delta") {
  # --- Convert to data.table for speed ---
     setDT(df)
