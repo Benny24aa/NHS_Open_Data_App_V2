@@ -9,11 +9,16 @@ library(lubridate)
 library(ranger)        # Much faster alternative to randomForest
 library(arrow)
 library(glue)
-
-
+library(httr)
+library(jsonlite)
+library(readr)
+library(httr)
+library(purrr)
+library(stringr)
+library(tidyr)
 ###### Define the type of model you wish to run, this could be Alpha, Beta, Charlie, or Delta.
 
-model_type <- "Delta"
+model_type <- "Alpha"
 
 ##### Yes or No to this question - If you have ran the data cleaning process before, press Yes so you don't have to go through it again for the training data
 
@@ -24,7 +29,7 @@ train_data_in_environment <- "No" ## Note some models have slightly different cl
 # "impurity_corrected"	Bias-corrected impurity importance. Slower but more reliable than plain impurity.
 # "permutation"	Permutation importance. Measures drop in prediction accuracy when a variable is permuted. Reliable but slower.
 
-importance_type <- "impurity"
+importance_type <- "permutation"
 
 # We look at 5, 10, 20, 50 and 100 for the number of trees
 
@@ -56,7 +61,7 @@ if (file.exists(file_path)) {
   
   print(file_age_days)  # <- keep this while debugging
   
-  if (file_age_days < 7) {
+  if (file_age_days < 28) {
     needs_refresh <- FALSE
     message("Parquet file is current — no refresh needed.")
   }
@@ -67,7 +72,7 @@ if (needs_refresh) {
   message("Refreshing prescribed-dispensed dataset...")
   
   presdisp <- get_dataset("prescribed-dispensed", include_context = TRUE) %>% 
-    filter(ResID != "31576bf0-fc05-49ff-a99a-2c253a0c3342") %>% 
+    filter(ResID != "31576bf0-fc05-49ff-a99a-2c253a0c3342") %>% ### Most recent quarter data is in here, this is removed to avoid duplicates with current years data
     select(-ResName, -ResID, -ResCreatedDate, -ResModifiedDate)
   
   write_parquet(presdisp, file_path)
@@ -87,16 +92,203 @@ df <- read_parquet("Databricks/presdisp.parquet")
 # Convert PrescriberLocation to numeric
 df$PrescriberLocation <- as.numeric(df$PrescriberLocation)
 
+##### Gathering most recent GP Practice Data 
+###### This part allows for only OPEN locations to be in the model. So the model will only run for sites that are still open today using the last 8 years worth of train data.
+
+
+# GP Practice Contact Details and List Sizes
+dataset_id <- "f23655c3-6e23-4103-a511-a80d998adb90"
+
+api_url <- paste0(
+  "https://www.opendata.nhs.scot/api/3/action/package_show?id=",
+  dataset_id
+)
+
+# Fetch metadata
+res <- GET(api_url)
+stop_for_status(res)
+
+meta <- content(res, as = "text", encoding = "UTF-8") |>
+  fromJSON(flatten = TRUE)
+
+resources <- meta$result$resources
+
+# Keep only CSV files
+csv_resources <- resources |>
+  filter(grepl("csv", format, ignore.case = TRUE))
+
+# Convert created timestamp to datetime and arrange newest first
+csv_resources <- csv_resources |>
+  mutate(created = as.POSIXct(created, tz = "UTC")) |>
+  arrange(desc(created))
+
+if (nrow(csv_resources) == 0) {
+  stop("No CSV resources found.")
+}
+
+# Select most recent CSV
+latest_csv <- csv_resources[1, ]
+
+### For my own use - Testing
+cat("Latest dataset detected:\n")
+cat("Name:", latest_csv$name, "\n")
+cat("Created:", latest_csv$created, "\n")
+cat("URL:", latest_csv$url, "\n\n")
+
+# Load into R
+gp_list <- read_csv(latest_csv$url) ### This is now the most recent gp list on the NHS Open Data Website.
+
+
+##### Big GP list - Bringing in all PracticeSizeLists over the years.
+
+dataset_id <- "f23655c3-6e23-4103-a511-a80d998adb90"
+
+api_url <- paste0(
+  "https://www.opendata.nhs.scot/api/3/action/package_show?id=",
+  dataset_id
+)
+
+# ---- Fetch metadata ----
+res <- httr::GET(api_url)
+httr::stop_for_status(res)
+
+meta <- httr::content(res, as = "text", encoding = "UTF-8") |>
+  jsonlite::fromJSON(flatten = TRUE)
+
+resources <- meta$result$resources
+
+# ---- Keep only GP CSV files ----
+csv_resources <- resources |>
+  dplyr::filter(grepl("csv", format, ignore.case = TRUE)) |>
+  dplyr::filter(grepl("GP", name, ignore.case = TRUE))
+
+# ---- Extract Month + Year from file name ----
+extract_date_info <- function(name) {
+  
+  match <- stringr::str_extract(
+    name,
+    "(January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{4}"
+  )
+  
+  if (is.na(match)) {
+    return(tibble(
+      month = NA_character_,
+      year  = NA_integer_,
+      date  = as.Date(NA)
+    ))
+  }
+  
+  date_parsed <- lubridate::my(match)
+  
+  tibble(
+    month = month(date_parsed, label = TRUE, abbr = FALSE),
+    year  = year(date_parsed),
+    date  = date_parsed
+  )
+}
+
+csv_resources <- csv_resources |>
+  mutate(date_info = purrr::map(name, extract_date_info)) |>
+  unnest(date_info) |>
+  filter(!is.na(date)) |>
+  arrange(date)
+
+
+cat("Number of GP files to download:", nrow(csv_resources), "\n")
+
+# ---- Safe downloader using httr ----
+safe_read_csv <- function(url) {
+  
+  tryCatch({
+    
+    response <- httr::GET(url)
+    httr::stop_for_status(response)
+    
+    readr::read_csv(
+      httr::content(response, as = "raw"),
+      col_types = cols(.default = col_character()),
+      show_col_types = FALSE
+    )
+    
+  }, error = function(e) {
+    
+    message("Failed to download: ", url)
+    return(NULL)
+    
+  })
+}
+
+# ---- Download all files safely ----
+data_list <- purrr::map2(
+  csv_resources$url,
+  csv_resources$date,
+  function(url, date_value) {
+    
+    df_temp <- safe_read_csv(url)
+    
+    if (is.null(df_temp)) return(NULL)
+    
+    df_temp |>
+      mutate(
+        month = month(date_value, label = TRUE, abbr = FALSE),
+        year  = year(date_value),
+        date  = date_value
+      )
+  }
+)
+
+# ---- Remove failed downloads ----
+data_list <- purrr::compact(data_list)
+
+# ---- Combine all GP lists ----
+all_gp_data <- dplyr::bind_rows(data_list)
+
+cat("Final combined GP list rows:", nrow(all_gp_data), "\n")
+
+
+if ("PracticeListSize" %in% names(all_gp_data)) {
+  all_gp_data <- all_gp_data |>
+    mutate(
+      PracticeListSize = parse_number(PracticeListSize)
+    )
+}
+
+all_gp_data <- all_gp_data |>
+  arrange(date)
+
+all_gp_data <- all_gp_data %>%
+  select(PracticeCode, PracticeListSize, Listsize, month, year, date )
+
+all_gp_data <- all_gp_data %>%
+  mutate(
+    PracticeListSize = coalesce(
+      readr::parse_number(as.character(PracticeListSize)),
+      readr::parse_number(as.character(Listsize))
+    )
+  )
+
+all_gp_data_cleaned <- all_gp_data %>%
+  select(-Listsize) %>%
+  mutate(
+    PracticeCode = as.numeric(PracticeCode),
+    Quarter = quarter(date)
+  ) %>% 
+  rename(Year = year, PrescriberLocation = PracticeCode) %>% 
+  select(-month,-date) %>%
+  filter(!is.na(PracticeListSize)) %>% 
+  filter(PracticeListSize != 0)
+
+
 if (model_type != "Beta") {
 # --- Load GP practice list and join ---
-gp_list <- get_resource(res_id = "30b06220-17ad-44e8-b6c5-658d41ec1ea5") %>%
+gp_list <- gp_list %>%
   select(PracticeCode, HB, HSCP, DataZone, GPCluster, PracticeListSize) %>%
   distinct() %>%
   rename(PrescriberLocation = PracticeCode) }
 
 if (model_type == "Beta") {
   # --- Load GP practice list ---
-  gp_list <- get_resource(res_id = "30b06220-17ad-44e8-b6c5-658d41ec1ea5") %>%
+  gp_list <- gp_list %>% 
     select(PracticeCode, HB, HSCP, DataZone, GPCluster, PracticeListSize, GPPracticeName, AddressLine1, AddressLine2, AddressLine3, Postcode, PracticeType) %>%
     distinct() %>%
     rename(PrescriberLocation = PracticeCode)
@@ -139,8 +331,12 @@ df <- df %>%
   )
 
   # Join to GP metadata
-  df <- left_join(gp_list, df, by = "PrescriberLocation")
+  df <- left_join(gp_list, df, by = "PrescriberLocation") ### This reduces the training data to OPEN locations
+  
 
+
+ 
+  
 ########################
 
 if (model_type == "Alpha") {
@@ -179,7 +375,14 @@ if (model_type == "Beta") {
     mutate(log_items = log1p(NumberOfPaidItems))
 }
 
+##### BUILD CODE HERE FOR GP PRACTICES AND LISTSIZES
 
+df <- df %>% 
+  mutate(Quarter = quarter(PaidDateMonth)) %>% 
+  select(-PracticeListSize)
+
+df <- left_join(df, all_gp_data_cleaned, by = c("PrescriberLocation", "Year", "Quarter")) %>% 
+  select(-Quarter)
 
 
 if (model_type != "Delta") {
@@ -217,6 +420,7 @@ if (model_type == "Beta") {
   df[, (factor_vars) := lapply(.SD, as.factor), .SDcols = factor_vars]
   
 }
+
 
 #### Breaking Test Data and Main Data up
 
