@@ -39,7 +39,7 @@ cat_cols <- c("HBT", "DepartmentType", "AttendanceCategory", "TreatmentLocation"
 df[, (cat_cols) := lapply(.SD, as.factor), .SDcols = cat_cols]
 
 # Sort for lag
-df <- df[order(HBT, TreatmentLocation, WeekEndingDate)]
+df <- df[order(HBT, TreatmentLocation, AttendanceCategory, WeekEndingDate)]
 
 # Lag previous week attendances
 df[, Lag1_Attendance := shift(NumberOfAttendancesEpisode, 1, type="lag"), by=.(HBT, TreatmentLocation)]
@@ -77,8 +77,10 @@ dtest  <- xgb.DMatrix(data = as.matrix(test_data[, ..predictor_cols]),  label = 
 params <- list(
   objective = "reg:squarederror",
   eval_metric = "rmse",
-  eta = 0.05,
-  max_depth = 5,
+  eta = 0.03,              # smaller learning rate
+  max_depth = 3,           # shallower trees
+  min_child_weight = 10,   # require more data per leaf
+  gamma = 1,               # require gain to split
   subsample = 0.8,
   colsample_bytree = 0.8
 )
