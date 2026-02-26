@@ -42,7 +42,37 @@ df[, (cat_cols) := lapply(.SD, as.factor), .SDcols = cat_cols]
 df <- df[order(HBT, TreatmentLocation, AttendanceCategory, WeekEndingDate)]
 
 # Lag previous week attendances
-df[, Lag1_Attendance := shift(NumberOfAttendancesEpisode, 1, type="lag"), by=.(HBT, TreatmentLocation)]
+df[, `:=`(
+  Lag1  = shift(NumberOfAttendancesEpisode, 1),
+  Lag2  = shift(NumberOfAttendancesEpisode, 2),
+  Lag3  = shift(NumberOfAttendancesEpisode, 3),
+  Lag4  = shift(NumberOfAttendancesEpisode, 4),
+  Lag12 = shift(NumberOfAttendancesEpisode, 12),  # ~3 months
+  Lag26 = shift(NumberOfAttendancesEpisode, 26),  # ~6 months
+  Lag52 = shift(NumberOfAttendancesEpisode, 52)   # 1 year seasonality
+), by = .(HBT, TreatmentLocation)]
+
+df[, RollMean_4 := frollmean(NumberOfAttendancesEpisode, 4, align = "right"),
+   by = .(HBT, TreatmentLocation)]
+
+df[, RollMean_12 := frollmean(NumberOfAttendancesEpisode, 12, align = "right"),
+   by = .(HBT, TreatmentLocation)]
+
+df[, `:=`(
+  Week_sin = sin(2*pi*WeekNum/52),
+  Week_cos = cos(2*pi*WeekNum/52),
+  Month_sin = sin(2*pi*MonthNum/12),
+  Month_cos = cos(2*pi*MonthNum/12)
+)]
+
+df[, `:=`(
+  Diff_1 = NumberOfAttendancesEpisode - Lag1,
+  PctChange_1 = (NumberOfAttendancesEpisode - Lag1) / Lag1
+), by = .(HBT, TreatmentLocation)]
+
+df[, Winter := as.integer(MonthNum %in% c(12,1,2))]
+
+df <- df[!is.na(Lag52)]
 
 # One-hot encode categorical variables on the full dataset
 df <- dummy_cols(df, select_columns = cat_cols, remove_first_dummy = FALSE, remove_selected_columns = FALSE) ### remove_selected_columns = FALSE is here so we can join the predictions back on at the end
@@ -120,80 +150,3 @@ test_meta_cleaned <- test_meta %>%
 ###########################
 #### Forecasting Begins ###
 ###########################
-
-last_date <- max(test_meta_cleaned$WeekEndingDate)
-
-last_lag <- test_meta_cleaned %>%
-  group_by(WeekEndingDate ,HBT, DepartmentType, AttendanceCategory, TreatmentLocation) %>%
-  summarise(Lag1_Attendance = last(Predicted_Attendance), .groups = "drop")%>%
-  mutate(WeekEndingDate = WeekEndingDate + 7)
-
-
-
-future_weeks <- seq.Date(
-  from = last_date + 7,         # start the week after the last date
-  to   = last_date + 365,       # 1 year ahead
-  by   = "week"
-)
-
-future_weeks
-
-future_data <- test_meta_cleaned %>%
-  select(HBT, DepartmentType, AttendanceCategory, TreatmentLocation) %>%
-  slice(rep(1:n(), each = length(future_weeks))) %>%
-  mutate(
-    WeekEndingDate = rep(future_weeks, times = nrow(test_meta_cleaned)),
-    WeekNum = week(WeekEndingDate),
-    MonthNum = month(WeekEndingDate),
-    Year = year(WeekEndingDate)
-  ) %>% 
-  distinct()
-
-future_data <- future_data %>%
-  left_join(last_lag, by = c("HBT", "DepartmentType", "AttendanceCategory", "TreatmentLocation", "WeekEndingDate"))
-
-future_data <- future_data %>%
-  arrange(HBT, DepartmentType, AttendanceCategory, TreatmentLocation, WeekEndingDate)
-
-
-future_data <- dummy_cols(future_data, select_columns = cat_cols, remove_first_dummy = FALSE, remove_selected_columns = FALSE)
-
-# Create storage for forecasts
-future_data$Predicted_Attendance <- NA
-
-missing_cols <- setdiff(predictor_cols, names(future_data))
-if (length(missing_cols) > 0) {
-  future_data[, (missing_cols) := 0]  # add missing columns as 0
-}
-
-setDT(future_data)
-
-future_data <- future_data %>%
-  arrange(HBT,
-          DepartmentType,
-          AttendanceCategory,
-          TreatmentLocation,
-          WeekEndingDate)
-
-unique_weeks <- sort(unique(future_data$WeekEndingDate))
-
-for (i in seq_along(unique_weeks)) {
-  
-  wk <- unique_weeks[i]
-  
-  week_rows <- which(future_data$WeekEndingDate == wk)
-  
-  week_matrix <- as.matrix(future_data[week_rows, ..predictor_cols])
-  
-  preds <- pmax(predict(model, week_matrix), 0)
-  
-  future_data$Predicted_Attendance[week_rows] <- preds
-  
-  if (i < length(unique_weeks)) {
-    
-    next_week_rows <- which(future_data$WeekEndingDate == unique_weeks[i + 1])
-    
-    # SAFE because ordering is identical within each week
-    future_data$Lag1_Attendance[next_week_rows] <- preds
-  }
-}
