@@ -31,7 +31,7 @@ Respiratory_Diseases <- Respiratory_Diseases %>%
 
 setDT(Respiratory_Diseases) 
 
-resp_month_avg <- Respiratory_Diseases %>%
+Resp_Month_Avg <- Respiratory_Diseases %>%
   mutate(MonthNum = month(WeekEndingDate)) %>%
   filter(Year > "2022") %>% 
   select(-Year) %>% 
@@ -41,14 +41,14 @@ resp_month_avg <- Respiratory_Diseases %>%
                    na.rm = TRUE)) %>% 
   ungroup()
 
-resp_week_avg_wide <- resp_month_avg %>%
+Resp_Week_Avg_Wide <- Resp_Month_Avg %>%
   pivot_wider(
     names_from  = Pathogen,
     values_from = starts_with("NumberCasesPerWeek"),
     names_prefix = "NumberCasesPerWeek_"
   )
 
-resp_month_avg_rates <- Respiratory_Diseases %>%
+Resp_Month_Avg_Rates <- Respiratory_Diseases %>%
   mutate(MonthNum = month(WeekEndingDate)) %>%
   filter(Year > "2022") %>% 
   select(-Year) %>% 
@@ -58,15 +58,15 @@ resp_month_avg_rates <- Respiratory_Diseases %>%
                    na.rm = TRUE)) %>% 
   ungroup()
 
-resp_week_avg_wide_rates <- resp_month_avg_rates %>%
+Resp_Week_Avg_Wide_Rates <- Resp_Month_Avg_Rates %>%
   pivot_wider(
     names_from  = Pathogen,
     values_from = starts_with("RateCasesPerWeek"),
     names_prefix = "RateCasesPerWeek_"
   )
 
-resp_week_avg_combined <- resp_week_avg_wide %>%
-  left_join(resp_week_avg_wide_rates,
+Resp_Week_Avg_Combined <- Resp_Week_Avg_Wide %>%
+  left_join(Resp_Week_Avg_Wide_Rates,
             by = c("WeekNum", "HBT"))
 
 Respiratory_Diseases <- dcast(
