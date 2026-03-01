@@ -48,7 +48,7 @@ Respiratory_Diseases <- dcast(
 Respiratory_Diseases[is.na(Respiratory_Diseases)] <- 0 ### This is because covid didn't exist pre 2020
 
 
-#### Date Cleaning 
+#### Data Cleaning 
 
 df <- df[AttendanceCategory == "Unplanned"]
 df <- df %>% 
@@ -62,6 +62,19 @@ df <- df %>%
     Year = lubridate::year(WeekEndingDate)
   ) %>% 
   select(-Country) ### Removes country before encoding and factoring starts, this whole column would just be 1 once encoded so pointless to keep it.
+
+df <- df %>%
+  mutate(HBT = as.character(HBT))
+
+Respiratory_Diseases <- Respiratory_Diseases %>%
+  mutate(HBT = as.character(HBT))
+
+df <- df %>%
+  left_join(
+    Respiratory_Diseases,
+    by = c("WeekEndingDate", "HBT")
+  )
+
 
 # Convert categorical variables to factors
 cat_cols <- c("HBT", "DepartmentType", "TreatmentLocation")
