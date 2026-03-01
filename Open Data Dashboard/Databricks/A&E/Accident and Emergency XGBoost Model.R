@@ -71,6 +71,9 @@ df[, `:=`(
 
 
 df[, Winter := as.integer(MonthNum %in% c(12,1,2))]
+df[, Spring  := as.integer(MonthNum %in% c(3,4,5))]
+df[, Summer  := as.integer(MonthNum %in% c(6,7,8))]
+df[, Autumn  := as.integer(MonthNum %in% c(9,10,11))]
 
 df <- df[!is.na(Lag52)]
 
@@ -152,7 +155,7 @@ test_meta_cleaned <- test_meta %>%
 ###########################
 
 last_date <- max(df$WeekEndingDate)
-future_weeks <- seq(last_date + 7, by = 7, length.out = 12)
+future_weeks <- seq(last_date + 7, by = 7, length.out = 52)
 
 future_base <- df %>%
   select(HBT, DepartmentType, AttendanceCategory, TreatmentLocation) %>%
@@ -174,7 +177,7 @@ real_history <- copy(df)   # df after full feature engineering
 
 forecast_results <- list()
 
-for (i in 1:12) {
+for (i in 1:52) {
   
   next_week <- max(history_dt$WeekEndingDate) + 7
   
@@ -211,6 +214,9 @@ for (i in 1:12) {
   
   
   history_dt[, Winter := as.integer(MonthNum %in% c(12,1,2))]
+  history_dt[, Spring  := as.integer(MonthNum %in% c(3,4,5))]
+  history_dt[, Summer  := as.integer(MonthNum %in% c(6,7,8))]
+  history_dt[, Autumn  := as.integer(MonthNum %in% c(9,10,11))]
   
   last_rows <- history_dt[
     , .SD[.N],
