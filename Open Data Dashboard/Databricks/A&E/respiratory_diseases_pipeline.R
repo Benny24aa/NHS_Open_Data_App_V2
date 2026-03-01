@@ -65,7 +65,9 @@ resp_week_avg_wide_rates <- resp_month_avg_rates %>%
     names_prefix = "RateCasesPerWeek_"
   )
 
-
+resp_week_avg_combined <- resp_week_avg_wide %>%
+  left_join(resp_week_avg_wide_rates,
+            by = c("WeekNum", "HBT"))
 
 Respiratory_Diseases <- dcast(
   Respiratory_Diseases,
