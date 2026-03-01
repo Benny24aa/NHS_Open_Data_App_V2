@@ -174,11 +174,6 @@ real_history <- copy(df)   # df after full feature engineering
 
 forecast_results <- list()
 
-<<<<<<< HEAD
-=======
-forecast_results <- list()
-
->>>>>>> 9a967d171ca4a3be05f38eee0d9e28e017901c2f
 for (i in 1:12) {
   
   next_week <- max(history_dt$WeekEndingDate) + 7
@@ -207,7 +202,6 @@ for (i in 1:12) {
                frollmean(NumberOfAttendancesEpisode, 12, align = "right"),
              by = .(HBT, DepartmentType, TreatmentLocation)]
   
-<<<<<<< HEAD
   history_dt[, `:=`(
     Week_sin = sin(2*pi*WeekNum/52),
     Week_cos = cos(2*pi*WeekNum/52),
@@ -218,8 +212,6 @@ for (i in 1:12) {
   
   history_dt[, Winter := as.integer(MonthNum %in% c(12,1,2))]
   
-=======
->>>>>>> 9a967d171ca4a3be05f38eee0d9e28e017901c2f
   last_rows <- history_dt[
     , .SD[.N],
     by = .(HBT, DepartmentType, TreatmentLocation)
