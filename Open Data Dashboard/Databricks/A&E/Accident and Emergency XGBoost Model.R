@@ -255,6 +255,7 @@ history_dt <- copy(df)
 real_history <- copy(df)   # df after full feature engineering
 
 forecast_results <- list()
+resp_cols <- grep("NumberCasesPerWeek_|RateCasesPerWeek_", names(history_dt), value = TRUE)
 
 for (i in 1:52) {
   
@@ -306,6 +307,24 @@ for (i in 1:52) {
   
   new_rows[, WeekEndingDate := next_week]
   
+  
+
+  new_rows[, `:=`(
+    MonthNum = month(WeekEndingDate),
+    WeekNum  = week(WeekEndingDate),
+    Year     = year(WeekEndingDate)
+  )]
+  
+  new_rows[, (resp_cols) := NULL]
+  
+
+  new_rows <- merge(
+    new_rows,
+    Resp_Week_Avg_Combined,
+    by = c("WeekNum", "HBT"),
+    all.x = TRUE
+  )
+  
   new_rows_enc <- dummy_cols(
     new_rows,
     select_columns = cat_cols,
@@ -333,3 +352,21 @@ future_forecast <- future_forecast[
 ]
 
 
+future_forecast_output <- future_forecast %>%
+  mutate(
+    NumberOfAttendancesEpisode = NA,
+    Residual = NA
+  )
+
+future_forecast_output <- rbind(
+  test_meta_cleaned,
+  future_forecast,
+  fill = TRUE
+)
+
+future_forecast_output <- future_forecast_output %>% 
+  select(-AttendanceCategory, -DepartmentType)
+
+write.csv(future_forecast_output,
+          "Databricks/future_forecast_output.csv",
+          row.names = FALSE)
