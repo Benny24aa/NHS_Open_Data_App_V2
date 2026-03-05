@@ -87,6 +87,7 @@ Respiratory_Diseases <- dcast(
 
 Respiratory_Diseases[is.na(Respiratory_Diseases)] <- 0 ### This is because covid didn't exist pre 2020
 
+rm(Resp_Week_Avg_Wide_Rates, Resp_Month_Avg, Resp_Week_Avg_Wide, Resp_Week_Avg_Wide, Resp_Month_Avg_Rates)
 
 #### Data Cleaning 
 
