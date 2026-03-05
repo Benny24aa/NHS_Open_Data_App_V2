@@ -31,12 +31,12 @@ Respiratory_Diseases <- Respiratory_Diseases %>%
 
 setDT(Respiratory_Diseases) 
 
-Resp_Month_Avg <- Respiratory_Diseases %>%
+Resp_Month_Avg_Rates <- Respiratory_Diseases %>%
   mutate(MonthNum = month(WeekEndingDate)) %>%
   filter(Year >= year(Sys.Date()) - 4) %>% 
   select(-Year) %>% 
   group_by(WeekNum, HBT, Pathogen) %>%
-  summarise(across(starts_with("NumberCasesPerWeek"),
+  summarise(across(starts_with("RateCasesPerWeek"),
                    mean,
                    na.rm = TRUE)) %>% 
   ungroup()
