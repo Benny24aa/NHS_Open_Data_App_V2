@@ -34,10 +34,50 @@ Respiratory_Diseases <- get_resource(res_id = "212412ba-cff2-43b9-bd40-f8d80688d
 
 Respiratory_Diseases <- Respiratory_Diseases %>%
   mutate(
-    WeekEndingDate = lubridate::ymd(WeekEndingDate)
+    WeekEndingDate = lubridate::ymd(WeekEndingDate),
+    WeekNum = lubridate::week(WeekEndingDate),
+    Year = lubridate::year(WeekEndingDate)
   )
 
 setDT(Respiratory_Diseases) 
+
+Resp_Month_Avg <- Respiratory_Diseases %>%
+  mutate(MonthNum = month(WeekEndingDate)) %>%
+  filter(Year >= year(Sys.Date()) - 4) %>% 
+  select(-Year) %>% 
+  group_by(WeekNum, HBT, Pathogen) %>%
+  summarise(across(starts_with("NumberCasesPerWeek"),
+                   mean,
+                   na.rm = TRUE)) %>% 
+  ungroup()
+
+Resp_Week_Avg_Wide <- Resp_Month_Avg %>%
+  pivot_wider(
+    names_from  = Pathogen,
+    values_from = starts_with("NumberCasesPerWeek"),
+    names_prefix = "NumberCasesPerWeek_"
+  )
+
+Resp_Month_Avg_Rates <- Respiratory_Diseases %>%
+  mutate(MonthNum = month(WeekEndingDate)) %>%
+  filter(Year >= year(Sys.Date()) - 4) %>% 
+  select(-Year) %>% 
+  group_by(WeekNum, HBT, Pathogen) %>%
+  summarise(across(starts_with("RateCasesPerWeek"),
+                   mean,
+                   na.rm = TRUE)) %>% 
+  ungroup()
+
+Resp_Week_Avg_Wide_Rates <- Resp_Month_Avg_Rates %>%
+  pivot_wider(
+    names_from  = Pathogen,
+    values_from = starts_with("RateCasesPerWeek"),
+    names_prefix = "RateCasesPerWeek_"
+  )
+
+Resp_Week_Avg_Combined <- Resp_Week_Avg_Wide %>%
+  left_join(Resp_Week_Avg_Wide_Rates,
+            by = c("WeekNum", "HBT"))
 
 Respiratory_Diseases <- dcast(
   Respiratory_Diseases,
