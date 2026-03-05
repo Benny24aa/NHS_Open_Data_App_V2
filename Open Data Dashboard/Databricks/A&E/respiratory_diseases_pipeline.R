@@ -33,7 +33,7 @@ setDT(Respiratory_Diseases)
 
 Resp_Month_Avg <- Respiratory_Diseases %>%
   mutate(MonthNum = month(WeekEndingDate)) %>%
-  filter(Year > "2022") %>% 
+  filter(Year >= year(Sys.Date()) - 4) %>% 
   select(-Year) %>% 
   group_by(WeekNum, HBT, Pathogen) %>%
   summarise(across(starts_with("NumberCasesPerWeek"),
@@ -50,7 +50,7 @@ Resp_Week_Avg_Wide <- Resp_Month_Avg %>%
 
 Resp_Month_Avg_Rates <- Respiratory_Diseases %>%
   mutate(MonthNum = month(WeekEndingDate)) %>%
-  filter(Year > "2022") %>% 
+  filter(Year >= year(Sys.Date()) - 4) %>% 
   select(-Year) %>% 
   group_by(WeekNum, HBT, Pathogen) %>%
   summarise(across(starts_with("RateCasesPerWeek"),
