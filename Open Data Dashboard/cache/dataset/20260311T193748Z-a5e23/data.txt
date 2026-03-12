@@ -1,0 +1,10 @@
+file: dataset.rds
+file_size: 8377
+pin_hash: a5e23057963b6c48
+type: rds
+title: 'dataset: a pinned closure'
+description: ~
+tags: ~
+urls: ~
+created: 20260311T193748Z
+api_version: 1
