@@ -1,3 +1,6 @@
+dir.create("cache", showWarnings = FALSE)
+app_start_time <- Sys.time()
+cat("App startup initiated at:", format(app_start_time), "\n")
 library(shinyWidgets)
 library(zoo)
 library(leaflet)
@@ -10,7 +13,6 @@ library(openssl)
 library(shinycssloaders)
 library(ISOweek)
 library(janitor)
-library(sf)
 library(shiny)
 library(glue)
 #### Databrick Related Libraries
@@ -18,8 +20,35 @@ library(DBI)
 library(odbc)
 library(Metrics)
 library(jsonlite)
+library(pins)
+
+board <- board_folder("cache")
+
+pin_write(board, data, "dataset")
+data <- pin_read(board, "dataset")
 options(httr_config = httr::config(ssl_verifypeer = FALSE))
 
+warm_cache <- function(file, download_fun, max_age_days = 14){
+  
+  if(file.exists(file)){
+    
+    age <- difftime(Sys.time(), file.info(file)$mtime, units = "days")
+    
+    if(age < max_age_days){
+      message("Loading cached data: ", file)
+      return(readRDS(file))
+    }
+    
+  }
+  
+  message("Refreshing cache: ", file)
+  
+  data <- download_fun()
+  
+  saveRDS(data, file)
+  
+  data
+}
 
 ##### Sourcing Reference Files 
 source("Global/Geo File.R")
@@ -63,17 +92,27 @@ Cancer_Metadata_Incidence <- read_csv("Metadata Files/Cancer Incidence Metadata.
 Cancer_31day_Metadata <- read_csv("Metadata Files/Cancer 31 Day Standard Cancer Metadata.csv")
 Cancer_62day_Metadata <- read_csv("Metadata Files/Cancer 62 Day Standard Cancer Metadata.csv")
 
-HealthBoards_shp <- st_read("Scottish Healthboards/SG_NHS_HealthBoards_2019.shp")%>%
-  st_transform(crs = 4326)%>%
-  st_simplify(dTolerance = 2000) %>% 
-  mutate(HBName = paste("NHS", HBName))
+HealthBoards_shp <- warm_cache(
+  "cache/healthboards_shp.rds",
+  function(){
+    st_read("Scottish Healthboards/SG_NHS_HealthBoards_2019.shp") %>%
+      st_transform(crs = 4326) %>%
+      st_simplify(dTolerance = 2000) %>% 
+      mutate(HBName = paste("NHS", HBName))
+  }
+)
 
 Weeks_AE_Map <- WeeklyAE_Healthboard %>% 
   distinct(WeekEndingDate) %>% 
   arrange(desc(WeekEndingDate)) %>% 
   slice(1:6)
 
-Populations_Brackets <- get_resource(res_id = "0876fc67-05e6-4e87-bc30-c4b0756fff04") %>% 
+Populations_Brackets <- warm_cache(
+  "cache/population_data.rds",
+  function(){
+    get_resource(res_id = "0876fc67-05e6-4e87-bc30-c4b0756fff04")
+  }
+) %>% 
   select(-HBQF, -SexQF) %>% 
   mutate(
     Year = ym(paste0(Year, "01")),
@@ -158,7 +197,12 @@ latest_resource <- pkg$result$resources %>%
   slice(1)
 
 # Reads this into from CKAN
-gp_practice_data <- read.csv(latest_resource$url, stringsAsFactors = FALSE)
+gp_practice_data <- warm_cache(
+  "cache/gp_practice_data.rds",
+  function(){
+    read.csv(latest_resource$url, stringsAsFactors = FALSE)
+  }
+)
 
 #### For most recent dispenser Data
 
@@ -181,4 +225,12 @@ latest_resource_disp <- pkg_disp$result$resources %>%
   slice(1)
 
 # Reads this into from CKAN
-disp_data <- read.csv(latest_resource_disp$url, stringsAsFactors = FALSE)
+disp_data <- warm_cache(
+  "cache/disp_data.rds",
+  function(){
+    read.csv(latest_resource_disp$url, stringsAsFactors = FALSE)
+  }
+)
+
+startup_time <- Sys.time() - app_start_time
+cat("App startup completed in:", round(startup_time, 2), "seconds\n")

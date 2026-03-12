@@ -30,12 +30,47 @@ library(kableExtra)
 library(tidyverse)
 
 
-HB_Lookup <- get_resource(res_id = "652ff726-e676-4a20-abda-435b98dd7bdc")
-Council_Lookup <- get_resource(res_id = "967937c4-8d67-4f39-974f-fd58c4acfda5")
-Interminate_Zone_Lookup <- get_resource(res_id = "e3e885cc-2530-4b3c-bead-9eda9782264f")
-Data_Zone_Lookup  <- get_resource(res_id = "395476ab-0720-4740-be07-ff4467141352")
-Hospital_Lookup <- get_resource(res_id = "c698f450-eeed-41a0-88f7-c1e40a568acc")
-Special_HBs <- get_resource(res_id = "0450a5a2-f600-4569-a9ae-5d6317141899")
+HB_Lookup <- warm_cache(
+  "cache/hb_lookup.rds",
+  function(){
+    get_resource(res_id = "652ff726-e676-4a20-abda-435b98dd7bdc")
+  }
+)
+
+Council_Lookup <- warm_cache(
+  "cache/council_lookup.rds",
+  function(){
+    get_resource(res_id = "967937c4-8d67-4f39-974f-fd58c4acfda5")
+  }
+)
+
+Interminate_Zone_Lookup <- warm_cache(
+  "cache/intermediate_zone_lookup.rds",
+  function(){
+    get_resource(res_id = "e3e885cc-2530-4b3c-bead-9eda9782264f")
+  }
+)
+
+Data_Zone_Lookup <- warm_cache(
+  "cache/data_zone_lookup.rds",
+  function(){
+    get_resource(res_id = "395476ab-0720-4740-be07-ff4467141352")
+  }
+)
+
+Hospital_Lookup <- warm_cache(
+  "cache/hospital_lookup.rds",
+  function(){
+    get_resource(res_id = "c698f450-eeed-41a0-88f7-c1e40a568acc")
+  }
+)
+
+Special_HBs <- warm_cache(
+  "cache/special_hb_lookup.rds",
+  function(){
+    get_resource(res_id = "0450a5a2-f600-4569-a9ae-5d6317141899")
+  }
+)
 
 HB_Lookup <- HB_Lookup |>
   select(-Country,-HBDateEnacted)|>

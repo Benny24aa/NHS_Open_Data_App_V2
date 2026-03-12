@@ -1,5 +1,10 @@
-Cancer_Waiting_Times_31_days <- get_resource(res_id = "58527343-a930-4058-bf9e-3c6e5cb04010") %>% 
-  filter(HBT != "S92000003") 
+Cancer_Waiting_Times_31_days <- warm_cache(
+  "cache/cancer_waiting_times_31_days.rds",
+  function(){
+    get_resource(res_id = "58527343-a930-4058-bf9e-3c6e5cb04010") %>% 
+      filter(HBT != "S92000003")
+  }
+)
 
 Cancer_Waiting_Times_31_days_T <- Cancer_Waiting_Times_31_days %>% 
   select(Quarter,HB,HBT, CancerType ,NumberOfEligibleReferrals31DayStandard, NumberOfEligibleReferralsTreatedWithin31Days) %>% 
@@ -25,8 +30,13 @@ Cancer_Waiting_Times_31_days_T <- full_join(Cancer_Waiting_Times_31_days_T, HB_L
   select(-GeoType, -HBT) %>% 
   rename(Health_Board_Patient_Treatment = HBName)
 
-Cancer_Waiting_Times_62_days <- get_resource(res_id = "23b3bbf7-7a37-4f86-974b-6360d6748e08") %>% 
-  filter(HBT != "S92000003")
+Cancer_Waiting_Times_62_days <- warm_cache(
+  "cache/cancer_waiting_times_62_days.rds",
+  function(){
+    get_resource(res_id = "23b3bbf7-7a37-4f86-974b-6360d6748e08") %>% 
+      filter(HBT != "S92000003")
+  }
+)
 
 Cancer_Waiting_Times_62_days_T <- Cancer_Waiting_Times_62_days %>% 
   select(Quarter,HB,HBT, CancerType ,NumberOfEligibleReferrals62DayStandard, NumberOfEligibleReferralsTreatedWithin62Days) %>% 
