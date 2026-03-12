@@ -200,9 +200,9 @@ params <- list(
 model <- xgb.train(
   params = params,
   data = dtrain,
-  nrounds = 2000,
+  nrounds = 10000,
   evals = list(train = dtrain, test = dtest), 
-  early_stopping_rounds = 20,
+  early_stopping_rounds = 50,
   print_every_n = 50
 )
 
@@ -367,6 +367,22 @@ future_forecast_output <- rbind(
 future_forecast_output <- future_forecast_output %>% 
   select(-AttendanceCategory, -DepartmentType)
 
-write.csv(future_forecast_output,
-          "Databricks/future_forecast_output.csv",
-          row.names = FALSE)
+Hospital_Lookup <- get_resource(res_id = "c698f450-eeed-41a0-88f7-c1e40a568acc") %>% 
+  select(TreatmentLocation = HospitalCode, HB = HealthBoard, HospitalName)
+
+HB_Lookup <- get_resource(res_id = "652ff726-e676-4a20-abda-435b98dd7bdc")
+
+HB_Lookup <- HB_Lookup |>
+  select(-Country,-HBDateEnacted)|>
+  filter(is.na(HBDateArchived))|>
+  select(-HBDateArchived)  
+
+Hospital_Lookup  <- left_join(HB_Lookup, Hospital_Lookup, by = 'HB')
+
+future_forecast_output <- future_forecast_output %>% 
+  select(WeekEndingDate, HB = HBT, TreatmentLocation, NumberOfAttendancesEpisode, Predicted_Attendance, Residual) %>%
+  left_join(Hospital_Lookup, by = c("HB", "TreatmentLocation")) %>%
+  select(-HB, -TreatmentLocation)
+
+write_xlsx(future_forecast_output,
+          "Databricks/future_forecast_output.xlsx")
