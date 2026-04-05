@@ -257,7 +257,7 @@ real_history <- copy(df)   # df after full feature engineering
 forecast_results <- list()
 resp_cols <- grep("NumberCasesPerWeek_|RateCasesPerWeek_", names(history_dt), value = TRUE)
 
-for (i in 1:52) {
+for (i in 1:12) {
   
   next_week <- max(history_dt$WeekEndingDate) + 7
   
