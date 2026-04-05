@@ -19,14 +19,20 @@ library(purrr)
 library(stringr)
 library(tidyr)
 library(data.table)
+library(writexl)
 
+#### SETUP
+
+### Bring in winter pressure flu/covid/rsv etc data
+
+#### Yes or No.
+resp_condition <- "Yes"
 
 # Load data - A&E Data 
 url <- "https://www.opendata.nhs.scot/dataset/weekly-accident-and-emergency-activity-and-waiting-times/resource/a5f7ca94-c810-41b5-a7c9-25c18d43e5a4/download/weekly_a&e_activity_waiting_times.csv"
 df <- fread(url)
 
 # Respiratory Diseases
-
 Respiratory_Diseases <- get_resource(res_id = "212412ba-cff2-43b9-bd40-f8d80688d8bf") %>% 
   select(WeekEnding, Pathogen, HBcode, NumberCasesPerWeek, RateCasesPerWeek) %>% 
   rename(WeekEndingDate = WeekEnding, HBT = HBcode)
@@ -88,6 +94,7 @@ Respiratory_Diseases <- dcast(
 Respiratory_Diseases[is.na(Respiratory_Diseases)] <- 0 ### This is because covid didn't exist pre 2020
 
 rm(Resp_Week_Avg_Wide_Rates, Resp_Month_Avg, Resp_Week_Avg_Wide, Resp_Week_Avg_Wide, Resp_Month_Avg_Rates)
+
 
 #### Data Cleaning 
 
@@ -257,7 +264,7 @@ real_history <- copy(df)   # df after full feature engineering
 forecast_results <- list()
 resp_cols <- grep("NumberCasesPerWeek_|RateCasesPerWeek_", names(history_dt), value = TRUE)
 
-for (i in 1:52) {
+for (i in 1:12) {
   
   next_week <- max(history_dt$WeekEndingDate) + 7
   
