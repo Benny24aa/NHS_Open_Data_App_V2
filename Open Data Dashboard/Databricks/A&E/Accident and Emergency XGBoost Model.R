@@ -33,6 +33,7 @@ url <- "https://www.opendata.nhs.scot/dataset/weekly-accident-and-emergency-acti
 df <- fread(url)
 
 # Respiratory Diseases
+if (resp_condition == "Yes") {
 Respiratory_Diseases <- get_resource(res_id = "212412ba-cff2-43b9-bd40-f8d80688d8bf") %>% 
   select(WeekEnding, Pathogen, HBcode, NumberCasesPerWeek, RateCasesPerWeek) %>% 
   rename(WeekEndingDate = WeekEnding, HBT = HBcode)
@@ -96,6 +97,12 @@ Respiratory_Diseases[is.na(Respiratory_Diseases)] <- 0 ### This is because covid
 rm(Resp_Week_Avg_Wide_Rates, Resp_Month_Avg, Resp_Week_Avg_Wide, Resp_Week_Avg_Wide, Resp_Month_Avg_Rates)
 
 
+} else {
+  Respiratory_Diseases <- NULL
+  Resp_Week_Avg_Combined <- NULL
+}
+
+
 #### Data Cleaning 
 
 df <- df[AttendanceCategory == "Unplanned"]
@@ -114,6 +121,7 @@ df <- df %>%
 df <- df %>%
   mutate(HBT = as.character(HBT))
 
+if (resp_condition == "Yes") {
 Respiratory_Diseases <- Respiratory_Diseases %>%
   mutate(HBT = as.character(HBT))
 
@@ -122,7 +130,7 @@ df <- df %>%
     Respiratory_Diseases,
     by = c("WeekEndingDate", "HBT")
   )
-
+}
 
 # Convert categorical variables to factors
 cat_cols <- c("HBT", "DepartmentType", "TreatmentLocation")
@@ -262,7 +270,12 @@ history_dt <- copy(df)
 real_history <- copy(df)   # df after full feature engineering
 
 forecast_results <- list()
-resp_cols <- grep("NumberCasesPerWeek_|RateCasesPerWeek_", names(history_dt), value = TRUE)
+if (resp_condition == "Yes") {
+  resp_cols <- grep("NumberCasesPerWeek_|RateCasesPerWeek_",
+                    names(history_dt), value = TRUE)
+} else {
+  resp_cols <- NULL
+}
 
 for (i in 1:12) {
   
@@ -322,15 +335,17 @@ for (i in 1:12) {
     Year     = year(WeekEndingDate)
   )]
   
-  new_rows[, (resp_cols) := NULL]
-  
-
-  new_rows <- merge(
-    new_rows,
-    Resp_Week_Avg_Combined,
-    by = c("WeekNum", "HBT"),
-    all.x = TRUE
-  )
+  if (resp_condition == "Yes") {
+    
+    new_rows[, (resp_cols) := NULL]
+    
+    new_rows <- merge(
+      new_rows,
+      Resp_Week_Avg_Combined,
+      by = c("WeekNum", "HBT"),
+      all.x = TRUE
+    )
+  }
   
   new_rows_enc <- dummy_cols(
     new_rows,
@@ -391,5 +406,12 @@ future_forecast_output <- future_forecast_output %>%
   left_join(Hospital_Lookup, by = c("HB", "TreatmentLocation")) %>%
   select(-HB, -TreatmentLocation)
 
-write_xlsx(future_forecast_output,
-          "Databricks/future_forecast_output.xlsx")
+write_xlsx(
+  future_forecast_output,
+  paste0(
+    "Databricks/future_forecast_output_",
+    tolower(resp_condition),
+    ".xlsx"
+  )
+)
+
