@@ -27,6 +27,7 @@ library(writexl)
 
 #### Yes or No.
 resp_condition <- "Yes"
+tree_values <- c(500, 1000, 2000, 5000, 10000)
 
 # Load data - A&E Data 
 url <- "https://www.opendata.nhs.scot/dataset/weekly-accident-and-emergency-activity-and-waiting-times/resource/a5f7ca94-c810-41b5-a7c9-25c18d43e5a4/download/weekly_a&e_activity_waiting_times.csv"
@@ -212,10 +213,16 @@ params <- list(
   colsample_bytree = 0.8
 )
 
+for (trees_n in tree_values) {
+  
+  history_dt <- copy(df)
+  real_history <- copy(df)
+  forecast_results <- list()
+
 model <- xgb.train(
   params = params,
   data = dtrain,
-  nrounds = 10000,
+  nrounds = trees_n,
   evals = list(train = dtrain, test = dtest), 
   early_stopping_rounds = 50,
   print_every_n = 50
@@ -265,9 +272,6 @@ future_data <- future_base[
 
 future_data <- as.data.table(future_data)
 
-# Keep full engineered dataset (before removing NA Lag52)
-history_dt <- copy(df)
-real_history <- copy(df)   # df after full feature engineering
 
 forecast_results <- list()
 if (resp_condition == "Yes") {
@@ -406,12 +410,19 @@ future_forecast_output <- future_forecast_output %>%
   left_join(Hospital_Lookup, by = c("HB", "TreatmentLocation")) %>%
   select(-HB, -TreatmentLocation)
 
+future_forecast_output <- future_forecast_output %>%
+  mutate(
+    Trees = trees_n,
+    Respiratory_Condition = resp_condition
+  )
+
 write_xlsx(
   future_forecast_output,
   paste0(
-    "Databricks/future_forecast_output_",
+    "Databricks/ae outputs/future_forecast_output_",
     tolower(resp_condition),
+    "_trees_", trees_n,
     ".xlsx"
   )
 )
-
+}
