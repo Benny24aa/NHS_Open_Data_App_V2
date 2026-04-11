@@ -457,8 +457,9 @@ hospital_performance_df <- hospital_performance_df %>%
 
 write_xlsx(
   hospital_performance_df,
-  "Databricks/ae outputs/hospital_model_performance.xlsx"
-)
+  paste0(
+  "Databricks/ae outputs/hospital_model_performance_", tolower(resp_condition), ".xlsx"
+))
 
 if (combine_results == TRUE) {
   
