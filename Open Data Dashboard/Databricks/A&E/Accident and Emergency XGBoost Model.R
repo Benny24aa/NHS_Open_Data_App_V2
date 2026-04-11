@@ -28,6 +28,7 @@ library(writexl)
 #### Yes or No.
 resp_condition <- "No"
 tree_values <- c(500, 1000, 2000, 5000, 10000)
+combine_results <- TRUE ### TRUE OR FALSE, to combine all forecast outputs in ae output folders into one file
 
 # Load data - A&E Data 
 url <- "https://www.opendata.nhs.scot/dataset/weekly-accident-and-emergency-activity-and-waiting-times/resource/a5f7ca94-c810-41b5-a7c9-25c18d43e5a4/download/weekly_a&e_activity_waiting_times.csv"
@@ -458,3 +459,24 @@ write_xlsx(
   hospital_performance_df,
   "Databricks/ae outputs/hospital_model_performance.xlsx"
 )
+
+if (combine_results == TRUE) {
+  
+  
+  files <- list.files(
+    path = "Databricks/ae outputs",
+    pattern = "^future_forecast_output_.*\\.xlsx$",
+    full.names = TRUE
+  )
+  
+  combined_forecast <- files %>%
+    set_names() %>%
+    map_dfr(~ read_excel(.x), .id = "source_file")
+
+
+write_xlsx(
+  combined_forecast,
+  file.path("Databricks/ae outputs", "combined_future_forecasts.xlsx")
+)
+
+}
