@@ -26,7 +26,7 @@ library(writexl)
 ### Bring in winter pressure flu/covid/rsv etc data
 
 #### Yes or No.
-resp_condition <- "Yes"
+resp_condition <- "No"
 tree_values <- c(500, 1000, 2000, 5000, 10000)
 
 # Load data - A&E Data 
@@ -213,6 +213,8 @@ params <- list(
   colsample_bytree = 0.8
 )
 
+model_performance <- list()
+hospital_performance_list <- list()
 for (trees_n in tree_values) {
   
   history_dt <- copy(df)
@@ -234,6 +236,11 @@ r2   <- R2(preds, test_data$NumberOfAttendancesEpisode)
 cat("RMSE:", rmse, "\n")
 cat("R²:", r2, "\n")
 
+model_performance[[as.character(trees_n)]] <- data.frame(
+  Trees = trees_n,
+  RMSE = rmse,
+  R2 = r2
+)
 
 importance_matrix <- xgb.importance(model = model)
 print(importance_matrix)
@@ -251,6 +258,20 @@ test_meta_cleaned <- test_meta %>%
     Residual = NumberOfAttendancesEpisode - Predicted_Attendance
   )
 
+hospital_performance <- test_meta_cleaned %>%
+  group_by(TreatmentLocation) %>%
+  summarise(
+    RMSE = sqrt(mean((NumberOfAttendancesEpisode - Predicted_Attendance)^2)),
+    R2   = cor(NumberOfAttendancesEpisode, Predicted_Attendance)^2,
+    Mean_Attendance = mean(NumberOfAttendancesEpisode, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Trees = trees_n,
+    NRMSE = RMSE / Mean_Attendance
+  )
+
+hospital_performance_list[[as.character(trees_n)]] <- hospital_performance
 ###########################
 #### Forecasting Begins ###
 ###########################
@@ -426,3 +447,14 @@ write_xlsx(
   )
 )
 }
+
+model_performance_df <- dplyr::bind_rows(model_performance)
+hospital_performance_df <- dplyr::bind_rows(hospital_performance_list)
+
+hospital_performance_df <- hospital_performance_df %>%
+  left_join(Hospital_Lookup, by = c("TreatmentLocation"))
+
+write_xlsx(
+  hospital_performance_df,
+  "Databricks/ae outputs/hospital_model_performance.xlsx"
+)
