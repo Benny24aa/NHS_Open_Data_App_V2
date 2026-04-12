@@ -26,11 +26,7 @@ library(writexl)
 ### Bring in winter pressure flu/covid/rsv etc data
 
 #### Yes or No.
-<<<<<<< HEAD
 resp_options <- c("Yes", "No")
-=======
-resp_condition <- c("Yes", "No")
->>>>>>> b3522946807efbaab2dc8f8ed1febcac4618c963
 tree_values <- c(500, 1000, 2000, 5000, 10000)
 combine_results <- TRUE ### TRUE OR FALSE, to combine all forecast outputs in ae output folders into one file
 for (resp_condition in resp_options) {
@@ -218,11 +214,6 @@ params <- list(
   subsample = 0.8,
   colsample_bytree = 0.8
 )
-<<<<<<< HEAD
-=======
-
-for (resp_condition in resp_options) {
->>>>>>> b3522946807efbaab2dc8f8ed1febcac4618c963
   
   model_performance <- list()
   hospital_performance_list <- list()
