@@ -26,7 +26,7 @@ library(writexl)
 ### Bring in winter pressure flu/covid/rsv etc data
 
 #### Yes or No.
-resp_condition <- "No"
+resp_condition <- c("Yes", "No")
 tree_values <- c(500, 1000, 2000, 5000, 10000)
 combine_results <- TRUE ### TRUE OR FALSE, to combine all forecast outputs in ae output folders into one file
 
@@ -214,9 +214,12 @@ params <- list(
   colsample_bytree = 0.8
 )
 
-model_performance <- list()
-hospital_performance_list <- list()
-for (trees_n in tree_values) {
+for (resp_condition in resp_options) {
+  
+  model_performance <- list()
+  hospital_performance_list <- list()
+  
+  for (trees_n in tree_values) {
   
   history_dt <- copy(df)
   real_history <- copy(df)
@@ -459,7 +462,7 @@ write_xlsx(
   hospital_performance_df,
   paste0(
   "Databricks/ae outputs/hospital_model_performance_", tolower(resp_condition), ".xlsx"
-))
+))}
 
 if (combine_results == TRUE) {
   
