@@ -23,8 +23,8 @@ By comparing recent data with historical trends, the dashboard supports a better
                          column(3, selectInput(
                            inputId = "ae_year_input",
                            label = "Select Year",
-                           choices = sort(2015:2025, decreasing = TRUE), 
-                           selected = 2025,
+                           choices = sort(2015:2026, decreasing = TRUE), 
+                           selected = 2026,
                            multiple = FALSE
                          ))
                          

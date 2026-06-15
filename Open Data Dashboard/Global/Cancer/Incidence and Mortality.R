@@ -1,6 +1,16 @@
-Cancer_Data_Mortality_HB <- get_resource(res_id = "57f0983f-864e-4dbd-b3dc-ea8f16de83a4")
-Cancer_Data_Incidence_HB <- get_resource(res_id = "3aef16b7-8af6-4ce0-a90b-8a29d6870014")
+Cancer_Data_Mortality_HB <- warm_cache(
+  "cache/cancer_mortality_hb.rds",
+  function(){
+    get_resource(res_id = "57f0983f-864e-4dbd-b3dc-ea8f16de83a4")
+  }
+)
 
+Cancer_Data_Incidence_HB <- warm_cache(
+  "cache/cancer_incidence_hb.rds",
+  function(){
+    get_resource(res_id = "3aef16b7-8af6-4ce0-a90b-8a29d6870014")
+  }
+)
 Cancer_Data_Mortality_HB <- full_join(Cancer_Data_Mortality_HB, HB_Lookup, by = "HB") %>% 
   mutate(DataType = "Mortality") %>% 
   rename(GeoCode = HB, GeoName = HBName) %>% 

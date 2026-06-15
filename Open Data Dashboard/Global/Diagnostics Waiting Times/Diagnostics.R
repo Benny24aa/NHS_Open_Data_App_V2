@@ -1,8 +1,16 @@
-diagnostics_waiting_times <- get_resource(res_id = "10dfe6f3-32de-4039-84c2-7e7794a06b31") ### Loads in data from open data scotland
-
-HB_Pop_Estimates <- get_resource(res_id = "27a72cc8-d6d8-430c-8b4f-3109a9ceadb1")
-HB_Pop_Estimates <- HB_Pop_Estimates %>% 
-  select(Year, HB, Sex, AllAges) 
+diagnostics_waiting_times <- warm_cache(
+  "cache/diagnostics_waiting_times.rds",
+  function(){
+    get_resource(res_id = "10dfe6f3-32de-4039-84c2-7e7794a06b31")
+  }
+)
+HB_Pop_Estimates <- warm_cache(
+  "cache/hb_population_estimates.rds",
+  function(){
+    get_resource(res_id = "27a72cc8-d6d8-430c-8b4f-3109a9ceadb1") %>% 
+      select(Year, HB, Sex, AllAges)
+  }
+)
 
 # Check if 2023 data is available
 if (2023 %in% HB_Pop_Estimates$Year) {

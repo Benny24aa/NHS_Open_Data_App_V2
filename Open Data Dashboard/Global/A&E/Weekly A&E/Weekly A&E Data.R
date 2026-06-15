@@ -1,7 +1,12 @@
 #### Load data from PHS Open Data
-WeeklyAE <- get_resource(res_id = "a5f7ca94-c810-41b5-a7c9-25c18d43e5a4")
-AE_Sites <- get_resource(res_id = "1a4e3f48-3d9b-4769-80e9-3ef6d27852fe")
+WeeklyAE <- get_resource(res_id = "a5f7ca94-c810-41b5-a7c9-25c18d43e5a4") 
 
+AE_Sites <- warm_cache(
+  "cache/ae_sites_lookup.rds",
+  function(){
+    get_resource(res_id = "1a4e3f48-3d9b-4769-80e9-3ef6d27852fe")
+  }
+)
 #### Prepare lookup table 
 HB_Lookup_AE <- HB_Lookup %>%
   select(-GeoType) %>%
@@ -17,7 +22,7 @@ WeeklyAE <- WeeklyAE %>%
     WeekEndingDate = ymd(WeekEndingDate)
   ) %>%
   select(-Country, -DepartmentType) %>%
-  full_join(HB_Lookup_AE, by = "HBT") %>%
+  left_join(HB_Lookup_AE, by = "HBT") %>%
   rename(TreatmentLocationCode = TreatmentLocation) %>%
   left_join(AE_Sites, by = "TreatmentLocationCode") %>%
   filter(CurrentDepartmentType == "Type 1") %>% ### Removing 2 historical Glasgow locations from the dataset as 20/30 rows of data in 2015 were classed as Type 3 (Minor Surgery) based on the reference files
@@ -53,15 +58,22 @@ WeeklyAE_Healthboard <- WeeklyAE_Healthboard %>%
     .groups = "drop"
   )
 
-MonthlyAEDemographics <- get_resource(res_id = "6abbf8e4-e4e0-4a56-a7b9-f7c7b4171ff3") %>% 
-  select(-SexQF, -DeprivationQF, -AgeQF, -Country) %>% 
-  filter(!is.na(Deprivation)) %>% 
-  full_join(HB_Lookup_AE, by = "HBT")%>%
-  mutate(
-    Month = ym(Month)
-  ) %>% 
-  select(-HBT) %>% 
-  filter(!is.na(Age))
+MonthlyAEDemographics <- warm_cache(
+  "cache/monthly_ae_demographics.rds",
+  function(){
+    
+    get_resource(res_id = "6abbf8e4-e4e0-4a56-a7b9-f7c7b4171ff3") %>% 
+      select(-SexQF, -DeprivationQF, -AgeQF, -Country) %>% 
+      filter(!is.na(Deprivation)) %>% 
+      left_join(HB_Lookup_AE, by = "HBT") %>%
+      mutate(
+        Month = ym(Month)
+      ) %>% 
+      select(-HBT) %>% 
+      filter(!is.na(Age))
+    
+  }
+)
 
 AE_Department_Type_Options <- MonthlyAEDemographics %>% 
   select(DepartmentType) %>% 
@@ -101,8 +113,8 @@ Sex_Summary_AE <- MonthlyAEDemographics %>%
   )
 
 Monthly_AE_Demographic_Data <- Deprivation_Summary_AE %>%
-  full_join(Age_Summary_AE, by = c("Month", "DepartmentType", "HBName")) %>%
-  full_join(Sex_Summary_AE, by = c("Month", "DepartmentType", "HBName"))
+  left_join(Age_Summary_AE, by = c("Month", "DepartmentType", "HBName")) %>%
+  left_join(Sex_Summary_AE, by = c("Month", "DepartmentType", "HBName"))
 
 latest_two_months_ae_demo <- Monthly_AE_Demographic_Data %>%
   distinct(Month) %>%
@@ -113,20 +125,27 @@ latest_two_months_ae_demo <- Monthly_AE_Demographic_Data %>%
 
 rm(Age_Summary_AE, Deprivation_Summary_AE, Sex_Summary_AE)
 
-Referral_Source_AE <- get_resource(res_id = "235407ca-1676-472e-9e4d-6e7230934a95") %>% 
-  select(-Country, -AgeQF, -ReferralQF) %>% 
-  mutate(
-    Age = replace_na(Age, "Unknown"),
-    Referral = replace_na(Referral, "Unknown"),
-    Month = ymd(paste0(Month, "01"))
-  ) %>% 
-  group_by(Month, HBT, DepartmentType, Age, Referral) %>% 
-  summarize(
-    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  full_join(HB_Lookup_AE, by = "HBT") %>% 
-  select(-HBT)
+Referral_Source_AE <- warm_cache(
+  "cache/referral_source_ae.rds",
+  function(){
+    
+    get_resource(res_id = "235407ca-1676-472e-9e4d-6e7230934a95") %>% 
+      select(-Country, -AgeQF, -ReferralQF) %>% 
+      mutate(
+        Age = replace_na(Age, "Unknown"),
+        Referral = replace_na(Referral, "Unknown"),
+        Month = ymd(paste0(Month, "01"))
+      ) %>% 
+      group_by(Month, HBT, DepartmentType, Age, Referral) %>% 
+      summarize(
+        NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      left_join(HB_Lookup_AE, by = "HBT") %>% 
+      select(-HBT)
+    
+  }
+)
 
 Referral_Source_All_Ages_AE <- Referral_Source_AE %>% 
   group_by(Month, HBName, DepartmentType, Referral) %>% 
@@ -173,20 +192,27 @@ Referral_Source_AE_Graph <- Referral_Source_AE_Graph %>%
 ######### Discharge Stuff
 
 
-Discharge_Source_AE <- get_resource(res_id = "c4622324-f59c-4011-a67b-83b59c59ca94") %>% 
-  select(-Country, -AgeQF, -DischargeQF) %>% 
-  mutate(
-    Age = replace_na(Age, "Not Available"),
-    Discharge = replace_na(Discharge, "Not Available"),
-    Month = ymd(paste0(Month, "01"))
-  ) %>% 
-  group_by(Month, HBT, DepartmentType, Age, Discharge) %>% 
-  summarize(
-    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  full_join(HB_Lookup_AE, by = "HBT") %>% 
-  select(-HBT)
+Discharge_Source_AE <- warm_cache(
+  "cache/discharge_source_ae.rds",
+  function(){
+    
+    get_resource(res_id = "c4622324-f59c-4011-a67b-83b59c59ca94") %>% 
+      select(-Country, -AgeQF, -DischargeQF) %>% 
+      mutate(
+        Age = replace_na(Age, "Not Available"),
+        Discharge = replace_na(Discharge, "Not Available"),
+        Month = ymd(paste0(Month, "01"))
+      ) %>% 
+      group_by(Month, HBT, DepartmentType, Age, Discharge) %>% 
+      summarize(
+        NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      left_join(HB_Lookup_AE, by = "HBT") %>% 
+      select(-HBT)
+    
+  }
+)
 
 
 Discharge_Source_All_Ages_AE <- Discharge_Source_AE %>% 
@@ -233,15 +259,22 @@ Discharge_Source_AE_Graph <- Discharge_Source_AE_Graph %>%
 
 ######### When Data
 
-When_Source_AE <- get_resource(res_id = "022c3b27-6a58-48dc-8038-8f1f93bb0e78") %>% 
- group_by(Month, HBT, DepartmentType, Week, InOut) %>% 
-  summarize(
-    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  full_join(HB_Lookup_AE, by = "HBT") %>% 
-  select(-HBT) %>% 
-  mutate(Month = ymd(paste0(Month, "01")))
+When_Source_AE <- warm_cache(
+  "cache/when_source_ae.rds",
+  function(){
+    
+    get_resource(res_id = "022c3b27-6a58-48dc-8038-8f1f93bb0e78") %>% 
+      group_by(Month, HBT, DepartmentType, Week, InOut) %>% 
+      summarize(
+        NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      left_join(HB_Lookup_AE, by = "HBT") %>% 
+      select(-HBT) %>% 
+      mutate(Month = ymd(paste0(Month, "01")))
+    
+  }
+)
 
 When_Source_AE_Graph <- When_Source_AE
 
@@ -289,18 +322,25 @@ When_Source_AE_InOut <- When_Source_AE_InOut %>%
     values_from = NumberOfAttendances
   )
 
-When_Source_AE_Final <- full_join(When_Source_AE_InOut, When_Source_AE_Week, by = c("Month", "DepartmentType", "HBName"))
+When_Source_AE_Final <- left_join(When_Source_AE_InOut, When_Source_AE_Week, by = c("Month", "DepartmentType", "HBName"))
 
 
-When_Hour_Data_AE <- get_resource(res_id = "022c3b27-6a58-48dc-8038-8f1f93bb0e78") %>% 
-  group_by(Month, HBT, DepartmentType, Hour, Week, InOut) %>% 
-  summarize(
-    NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  full_join(HB_Lookup_AE, by = "HBT") %>% 
-  select(-HBT) %>% 
-  mutate(Month = ymd(paste0(Month, "01")))
+When_Hour_Data_AE <- warm_cache(
+  "cache/when_hour_data_ae.rds",
+  function(){
+    
+    get_resource(res_id = "022c3b27-6a58-48dc-8038-8f1f93bb0e78") %>% 
+      group_by(Month, HBT, DepartmentType, Hour, Week, InOut) %>% 
+      summarize(
+        NumberOfAttendances = sum(NumberOfAttendances, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
+      left_join(HB_Lookup_AE, by = "HBT") %>% 
+      select(-HBT) %>% 
+      mutate(Month = ymd(paste0(Month, "01")))
+    
+  }
+)
 
 When_Month_List_AE <- When_Hour_Data_AE %>% 
   select(Month, InOut, HBName, Week, Hour) %>% 
