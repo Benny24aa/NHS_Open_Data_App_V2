@@ -54,6 +54,7 @@ library(httr)
 r <- GET("https://www.opendata.nhs.scot")
 
 print(status_code(r))
+
 ```
 
 ```{r}
@@ -81,6 +82,8 @@ library(data.table)
 library(writexl)
 library(rsconnect)
 library(quarto)
+
+rsconnect::writeManifest()
 
 #### SETUP
 
