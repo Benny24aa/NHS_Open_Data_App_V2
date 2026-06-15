@@ -20,6 +20,8 @@ library(stringr)
 library(tidyr)
 library(data.table)
 library(writexl)
+library(rsconnect)
+library(quarto)
 
 #### SETUP
 
