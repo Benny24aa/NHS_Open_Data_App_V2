@@ -1,8 +1,62 @@
 ---
 title: "AE XGBoost Posit Connect"
-format: html
+format:
+  html:
+    search: false
+    code-fold: false
+    code-tools: false
 ---
-```{posit connect}
+
+```{r}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  include = FALSE,
+  results = "hide",
+  message = FALSE,
+  warning = FALSE
+)
+
+getwd()
+dir.exists("Databricks/ae outputs")
+
+library(here)
+
+project_root <- here()
+
+output_dir <- file.path(
+  project_root,
+  "Databricks",
+  "ae outputs"
+)
+
+dir.create(
+  output_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+library(here)
+
+output_dir <- "../ae outputs"
+
+dir.create(
+  output_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+cat("WD =", getwd(), "\n")
+cat("OUTPUT =", normalizePath(output_dir, mustWork = FALSE), "\n")
+cat("EXISTS =", dir.exists(output_dir), "\n")
+
+library(httr)
+
+r <- GET("https://www.opendata.nhs.scot")
+
+print(status_code(r))
+```
+
+```{r}
 library(data.table)
 library(xgboost)
 library(caret)
@@ -25,6 +79,8 @@ library(stringr)
 library(tidyr)
 library(data.table)
 library(writexl)
+library(rsconnect)
+library(quarto)
 
 #### SETUP
 
@@ -34,10 +90,24 @@ library(writexl)
 resp_options <- c("Yes", "No")
 tree_values <- c(500, 1000, 2000, 5000, 10000)
 combine_results <- TRUE ### TRUE OR FALSE, to combine all forecast outputs in ae output folders into one file
-for (resp_condition in resp_options) {
-# Load data - A&E Data 
+
+
+
+
 url <- "https://www.opendata.nhs.scot/dataset/weekly-accident-and-emergency-activity-and-waiting-times/resource/a5f7ca94-c810-41b5-a7c9-25c18d43e5a4/download/weekly_a&e_activity_waiting_times.csv"
-df <- fread(url)
+
+cat("Downloading AE data once...\n")
+
+df_master <- fread(url)
+
+cat("Download complete\n")
+
+for (resp_condition in resp_options) {
+
+  cat("Running:", resp_condition, "\n")
+
+  # Fresh copy every loop
+  df <- data.table::copy(df_master)
 
 
 # Respiratory Diseases
@@ -447,11 +517,15 @@ future_forecast_output <- future_forecast_output %>%
 
 write_xlsx(
   future_forecast_output,
-  paste0(
-    "Databricks/ae outputs/future_forecast_output_",
-    tolower(resp_condition),
-    "_trees_", trees_n,
-    ".xlsx"
+  file.path(
+    output_dir,
+    paste0(
+      "future_forecast_output_",
+      tolower(resp_condition),
+      "_trees_",
+      trees_n,
+      ".xlsx"
+    )
   )
 )
 }
@@ -462,29 +536,42 @@ hospital_performance_df <- dplyr::bind_rows(hospital_performance_list)
 hospital_performance_df <- hospital_performance_df %>%
   left_join(Hospital_Lookup, by = c("TreatmentLocation"))
 
-write_xlsx(
-  hospital_performance_df,
+outfile <- file.path(
+  output_dir,
   paste0(
-  "Databricks/ae outputs/hospital_model_performance_", tolower(resp_condition), ".xlsx"
-))}
+    "hospital_model_performance_",
+    tolower(resp_condition),
+    ".xlsx"
+  )
+)
+
+cat("Writing:", outfile, "\n")
+
+write_xlsx(
+  hospital_performance_df, outfile
+)
+}
 
 if (combine_results == TRUE) {
   
   
   files <- list.files(
-    path = "Databricks/ae outputs",
+  path = output_dir,
     pattern = "^future_forecast_output_.*\\.xlsx$",
     full.names = TRUE
   )
   
-  combined_forecast <- files %>%
-    set_names() %>%
-    map_dfr(~ read_excel(.x), .id = "source_file")
+ combined_forecast <- files %>%
+  set_names() %>%
+  map_dfr(~ readxl::read_excel(.x), .id = "source_file")
 
 
 write_xlsx(
   combined_forecast,
-  file.path("Databricks/ae outputs", "combined_future_forecasts.xlsx")
+file.path(
+  output_dir,
+  "combined_future_forecasts.xlsx"
+)
 )
 
 }
