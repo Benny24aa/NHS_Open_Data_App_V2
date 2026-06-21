@@ -27,7 +27,16 @@ fluidRow(
                           "2000 trees"   = 2000,
                           "5000 trees"   = 5000,
                           "10000 trees"   = 10000
-                        )))
+                        ))),
+  
+  column(3, selectInput("AI_Model_XGBoost_Hospital", "Select Hospital", 
+                        choices = unique(accident_emergency_xgboost_model$HospitalName))),
+  
+  fluidRow(
+    column(12,
+           plotlyOutput("XGBoost_Attendance_Plot", height = "600px")
+    )
+  )
   
 )         
                                       
