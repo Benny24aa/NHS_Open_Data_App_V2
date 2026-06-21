@@ -3605,3 +3605,60 @@ observeEvent(
   },
   ignoreInit = TRUE
 )
+
+output$XGBoost_Attendance_Plot <- renderPlotly({
+  
+  req(input$AI_Model_XGBoost_Healthboard,
+      input$AI_Model_XGBoost_Diseases,
+      input$AI_Model_XGBoost_Trees)
+  
+  plot_data <- accident_emergency_xgboost_model %>%
+    dplyr::filter(
+      HBName == input$AI_Model_XGBoost_Healthboard,
+      Respiratory_Condition ==
+        ifelse(input$AI_Model_XGBoost_Diseases == "Disease_Yes",
+               "Yes",
+               "No"),
+      Trees == as.numeric(input$AI_Model_XGBoost_Trees),
+      HospitalName == input$AI_Model_XGBoost_Hospital
+    ) %>%
+    arrange(WeekEndingDate)
+  
+  plot_ly(plot_data, x = ~WeekEndingDate) %>%
+    
+    add_lines(
+      y = ~NumberOfAttendancesEpisode,
+      name = "Actual Attendances",
+      line = list(color = "#1f77b4", width = 2),
+      hovertemplate =
+        paste(
+          "<b>Date:</b> %{x}<br>",
+          "<b>Actual:</b> %{y}<extra></extra>"
+        )
+    ) %>%
+    
+    add_lines(
+      y = ~Predicted_Attendance,
+      name = "Predicted Attendances",
+      line = list(color = "#d62728",
+                  width = 2,
+                  dash = "dash"),
+      hovertemplate =
+        paste(
+          "<b>Date:</b> %{x}<br>",
+          "<b>Predicted:</b> %{y}<extra></extra>"
+        )
+    ) %>%
+    
+    layout(
+      title = paste(
+        input$AI_Model_XGBoost_Healthboard,
+        "- XGBoost Predictions"
+      ),
+      xaxis = list(title = "Week Ending Date"),
+      yaxis = list(title = "Attendances"),
+      hovermode = "x unified",
+      legend = list(orientation = "h")
+    )
+})
+
