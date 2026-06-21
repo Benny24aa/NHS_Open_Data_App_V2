@@ -69,6 +69,10 @@ source("Global/A&E/Weekly A&E/Weekly A&E Data.R")
 ### Sourcing in AI Workflow Data (External Databricks Pipeline)
 # source("Global/AI Workflow/AI Workflow.R")
 
+### Sourcing in combined forecast from XGBoost Posit Connect Output
+source("Global/AI Workflow/Posit Connect XGBoost Output.R")
+
+
 gender_palette <- c("Male" = "#0078D4",
                     "Female" = "#E1C7DF")
 
