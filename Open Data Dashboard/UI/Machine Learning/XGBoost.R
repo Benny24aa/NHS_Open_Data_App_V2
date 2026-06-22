@@ -29,8 +29,7 @@ fluidRow(
                           "10000 trees"   = 10000
                         ))),
   
-  column(3, selectInput("AI_Model_XGBoost_Hospital", "Select Hospital", 
-                        choices = unique(accident_emergency_xgboost_model$HospitalName))),
+  column(3, uiOutput("ae_xgboost_hospital_filter")),
   
   fluidRow(
     column(12,

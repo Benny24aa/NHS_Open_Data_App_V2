@@ -3662,3 +3662,17 @@ output$XGBoost_Attendance_Plot <- renderPlotly({
     )
 })
 
+output$ae_xgboost_hospital_filter <- renderUI({
+  
+  hospital_list <- accident_emergency_xgboost_model %>% 
+    filter(HBName %in% input$AI_Model_XGBoost_Healthboard) %>% 
+    pull(HospitalName) %>% 
+    unique()
+  
+  selectInput(
+    inputId = "AI_Model_XGBoost_Hospital",
+    label = "Select a Hospital",
+    choices = hospital_list,
+    selected = hospital_list[1]
+  )
+})
